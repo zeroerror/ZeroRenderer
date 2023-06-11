@@ -21,10 +21,13 @@ Texture::Texture(const std::string& path) {
 	if (m_LocalBuffer) {
 		stbi_image_free(m_LocalBuffer);
 	}
+
+	std::cout << "Texture::Texture() " << m_RendererID << std::endl;
 }
 
 Texture::~Texture() {
 	GLCall(glDeleteTextures(1, &m_RendererID));
+	std::cout << "Texture::~Texture() " << m_RendererID << std::endl;
 }
 
 unsigned int Texture::GetID()const { return m_RendererID; }

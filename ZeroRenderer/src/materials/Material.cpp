@@ -2,17 +2,24 @@
 
 #include <GL/glew.h>
 #include <glm/ext/vector_float4.hpp>
-#include <Texture.h>
+
+#include "Texture.h"
 
 Material::Material() {
+	diffuseTextureAssetID = 0;
 	diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); 
-	diffuseTexture = nullptr;
 	specularIntensity = 0.5f;
 	shininess = 32.0f;
+	shaderAssetID = 0;
+	std::cout << "Material::Material() " << std::endl;
 }
 
-void Material::SetDiffuseTexture(Texture* diffuseTexture) {
-	this->diffuseTexture = diffuseTexture;
+Material::~Material() {
+	std::cout << "Material::~Material() " << std::endl;
+}
+
+void Material::SetDiffuseTexture(unsigned int diffuseTextureID) {
+	this->diffuseTextureAssetID = diffuseTextureID;
 }
 
 void Material::SetDiffuseColor(const glm::vec4& diffuseColor) {
@@ -27,11 +34,6 @@ void Material::SetShininess(float shininess) {
 	this->shininess = shininess;
 }
 
-void Material::SetShader(Shader* shader) {
-	this->shader = shader;
-}
-
-void Material::Bind() const{
-	diffuseTexture->Bind();
-	shader->Bind();
+void Material::SetShader(unsigned int shaderID) {
+	this->shaderAssetID = shaderID;
 }

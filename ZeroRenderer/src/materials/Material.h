@@ -1,24 +1,22 @@
 #pragma once
 
 #include <glm/ext/vector_float4.hpp>
-#include <Texture.h>
-#include <Shader.h>
 
 class Material {
 
 public:
 	Material();
+	~Material();
 
-	Texture* diffuseTexture;
-	Shader* shader;
+	unsigned int diffuseTextureAssetID;
 	glm::vec4 diffuseColor;
 	float specularIntensity;
 	float shininess;
+	unsigned int shaderAssetID;
 
-	void SetDiffuseTexture(Texture* texture);
+	void SetDiffuseTexture(unsigned int textureAssetID);
 	void SetDiffuseColor(const glm::vec4& color);
 	void SetSpecularIntensity(float intensity);
 	void SetShininess(float value);
-	void SetShader(Shader* shader);
-	void Bind() const;
+	void SetShader(unsigned int shaderAssetID);
 };

@@ -21,10 +21,12 @@ Shader::Shader(const std::string& filePath){
 	ShaderProgramSource source = ParseShader(filePath);
 	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
 	GLCall(glUseProgram(m_RendererID));
+	std::cout << "Shader::Shader() " << m_RendererID << std::endl;
 }
 
 Shader::~Shader() {
 	GLCall(glDeleteProgram(m_RendererID));
+	std::cout << "Shader::~Shader() " << m_RendererID << std::endl; 
 }
 
 unsigned int Shader::GetID() const { return m_RendererID; }

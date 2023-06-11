@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -27,8 +27,8 @@
     <ClCompile Include="src\debug\GLDebug.cpp" />
     <ClCompile Include="src\gameObject\GameObject.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\manager\ShaderManager.cpp" />
-    <ClCompile Include="src\manager\TextureManager.cpp" />
+    <ClCompile Include="src\repo\ShaderRepo.cpp" />
+    <ClCompile Include="src\repo\TextureRepo.cpp" />
     <ClCompile Include="src\materials\Material.cpp" />
     <ClCompile Include="src\materials\Shader.cpp" />
     <ClCompile Include="src\materials\Texture.cpp" />
@@ -36,8 +36,7 @@
     <ClCompile Include="src\model\VertexArray.cpp" />
     <ClCompile Include="src\model\VertexBuffer.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
-    <ClCompile Include="src\tests\Camera3DCubeTest.cpp" />
-    <ClCompile Include="src\tests\LightTest.cpp" />
+    <ClCompile Include="src\tests\PipelineTest.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -64,8 +63,8 @@
     <ClInclude Include="src\component\Transform.h" />
     <ClInclude Include="src\debug\GLDebug.h" />
     <ClInclude Include="src\gameObject\GameObject.h" />
-    <ClInclude Include="src\manager\ShaderManager.h" />
-    <ClInclude Include="src\manager\TextureManager.h" />
+    <ClInclude Include="src\repo\ShaderRepo.h" />
+    <ClInclude Include="src\repo\TextureRepo.h" />
     <ClInclude Include="src\materials\Material.h" />
     <ClInclude Include="src\materials\Shader.h" />
     <ClInclude Include="src\materials\Texture.h" />
@@ -74,8 +73,7 @@
     <ClInclude Include="src\model\VertexBuffer.h" />
     <ClInclude Include="src\model\VertexBufferLayout.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
-    <ClInclude Include="src\tests\Camera3DCubeTest.h" />
-    <ClInclude Include="src\tests\LightTest.h" />
+    <ClInclude Include="src\tests\PipelineTest.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />
@@ -710,7 +708,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)src\3DObject;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\manager;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)src\3DObject;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
     </ClCompile>

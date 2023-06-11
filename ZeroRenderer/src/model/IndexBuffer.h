@@ -12,7 +12,5 @@ public:
 	void Ctor(const unsigned int* data, unsigned int count);
 	void Bind() const;
 	void UnBind() const;
-
-	inline unsigned int GetCount() const { return m_count; };
-
+	unsigned int GetCount() const;
 };

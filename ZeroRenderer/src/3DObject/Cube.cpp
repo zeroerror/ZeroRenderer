@@ -15,8 +15,8 @@ void Cube::Ctor(float width, float height, float depth) {
 	float halfHeight = height / 2.0f;
 	float halfDepth = depth / 2.0f;
 
-	this->va = VertexArray();
-	this->va.Ctor();
+	this->va = new VertexArray();
+	this->va->Ctor();
 
 	this->m_vb = VertexBuffer();
 	this->m_vb.Ctor(new float[40]{
@@ -35,20 +35,18 @@ void Cube::Ctor(float width, float height, float depth) {
 	this->m_vbLayout.Push<float>(3);
 	this->m_vbLayout.Push<float>(2);
 
-	this->va.AddBuffer(m_vb, m_vbLayout);
+	this->va->AddBuffer(m_vb, m_vbLayout);
 
 	if (!this->m_ibInit) {
-		this->m_ib = IndexBuffer();
-		this->m_ib.Ctor(m_indiceArray, 36);
+		this->ib = new IndexBuffer();
+		this->ib->Ctor(m_indiceArray, 36);
 		this->m_ibInit = true;
 		std::cout << "Init InderBuffer" << std::endl;
 	}
 }
 
-Cube::~Cube() {}
-
-IndexBuffer* Cube::GetIndexBuffer() {
-	return &m_ib;
+Cube::~Cube() {
+	std::cout << "Cube::~Cube()" << std::endl;
 }
 
 Cube* Cube::CreateCube(const float& width, const float& height, const float& depth) {
@@ -57,7 +55,7 @@ Cube* Cube::CreateCube(const float& width, const float& height, const float& dep
 	return cube;
 }
 
-IndexBuffer Cube::m_ib;
+IndexBuffer* Cube::ib;
 bool Cube::m_ibInit;
 
 unsigned int Cube::m_indiceArray[36] = {

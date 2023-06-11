@@ -5,7 +5,9 @@
 
 Camera3DController::Camera3DController() {
 }
-Camera3DController::~Camera3DController() {}
+Camera3DController::~Camera3DController() {
+	std::cout << "Camera3DController::~Camera3DController()" << std::endl;
+}
 
 void Camera3DController::Inject(Camera3D* camera, GLFWwindow* window) {
 	this->camera = camera;

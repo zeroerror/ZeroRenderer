@@ -1,5 +1,4 @@
-#include "tests/Camera3DCubeTest.h"
-#include "tests/LightTest.h"
+#include "PipelineTest.h"
 #include "GLDebug.h"
 
 #include <GL/glew.h>
@@ -39,8 +38,6 @@ int main() {
 	if (glewInit() != GLEW_OK)
 		std::cout << "ERROR" << std::endl;
 
-
-
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	{
@@ -56,15 +53,8 @@ int main() {
 		test::TestMenu* testMenu = new test::TestMenu(curTest);
 		curTest = testMenu;
 
-		testMenu->RegisterTest("Camera3D Cube Test", [window, screen_width, screen_height]() {
-			test::Camera3DCubeTest* test = new test::Camera3DCubeTest();
-			test->Ctor(window, screen_width, screen_height);
-			return test;
-			}
-		);
-
-		testMenu->RegisterTest("Light Test", [window, screen_width, screen_height]() {
-			test::LightTest* test = new test::LightTest();
+		testMenu->RegisterTest("Pipeline Test", [window, screen_width, screen_height]() {
+			test::PipelineTest* test = new test::PipelineTest();
 			test->Ctor(window, screen_width, screen_height);
 			return test;
 			}
@@ -82,15 +72,28 @@ int main() {
 		float halfHeight = 0.1;
 		float halfDepth = 0.1;
 		float* data = new float[40]{
-			// 顶点坐标 + 纹理坐标
-			-halfWidth, -halfHeight, -halfDepth, 0.0f, 0.0f,     // 顶点0
-			halfWidth, -halfHeight, -halfDepth, 1.0f, 0.0f,      // 顶点1
-			halfWidth, halfHeight, -halfDepth, 1.0f, 1.0f,       // 顶点2
-			-halfWidth, halfHeight, -halfDepth, 0.0f, 1.0f,      // 顶点3
-			-halfWidth, -halfHeight, halfDepth, 0.0f, 0.0f,      // 顶点4
-			halfWidth, -halfHeight, halfDepth, 1.0f, 0.0f,       // 顶点5
-			halfWidth, halfHeight, halfDepth, 1.0f, 1.0f,        // 顶点6
-			-halfWidth, halfHeight, halfDepth, 0.0f, 1.0f        // 顶点7
+			-halfWidth, -halfHeight, -halfDepth, 0.0f, 0.0f,
+			halfWidth, -halfHeight, -halfDepth, 1.0f, 0.0f,
+			halfWidth, halfHeight, -halfDepth, 1.0f, 1.0f,
+			-halfWidth, halfHeight, -halfDepth, 0.0f, 1.0f,
+			-halfWidth, -halfHeight, halfDepth, 0.0f, 0.0f,
+			halfWidth, -halfHeight, halfDepth, 1.0f, 0.0f,
+			halfWidth, halfHeight, halfDepth, 1.0f, 1.0f,
+			-halfWidth, halfHeight, halfDepth, 0.0f, 1.0f
+		};
+		GLuint indiceArray[36] = {
+			0, 1, 2, 
+			2, 3, 0,
+			1, 5, 6,  
+			6, 2, 1,
+			5, 4, 7,  
+			7, 6, 5,
+			4, 0, 3,  
+			3, 7, 4,
+			3, 2, 6,  
+			6, 7, 3,
+			4, 5, 1,  
+			1, 0, 4
 		};
 		GLuint size = 40 * sizeof(GL_FLOAT);
 		GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
@@ -103,21 +106,7 @@ int main() {
 
 		GLuint ibo;
 		GLCall(glGenBuffers(1, &ibo));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-		GLuint indiceArray[36] = {
-	0, 1, 2,  // 面0
-	2, 3, 0,
-	1, 5, 6,  // 面1
-	6, 2, 1,
-	5, 4, 7,  // 面2
-	7, 6, 5,
-	4, 0, 3,  // 面3
-	3, 7, 4,
-	3, 2, 6,  // 面4
-	6, 7, 3,
-	4, 5, 1,  // 面5
-	1, 0, 4
-		};
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo))
 		GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), indiceArray, GL_STATIC_DRAW));
 
 		Shader shader = Shader("res/shader/CubeTest.shader");
@@ -125,8 +114,7 @@ int main() {
 		glm::quat rot = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
 		GLCall(glEnable(GL_DEPTH_TEST));
 		GLCall(glDepthFunc(GL_LESS));
-		//	GLCall(glDepthMask(GL_TRUE));
-			//-------------------------------------------------------------------------
+		//-------------------------------------------------------------------------
 
 		while (!glfwWindowShouldClose(window)) {
 			GLCall(glfwPollEvents());
@@ -138,6 +126,7 @@ int main() {
 			float rotationSpeed = 0.01f;
 			glm::quat rotationDelta = glm::angleAxis(rotationSpeed, glm::vec3(1.0f, 1.0f, 0.0f));
 			rot = rot * rotationDelta;
+			shader.Bind();
 			shader.SetUniformMat4f("u_ModRotationMatrix", glm::toMat4(rot));
 			GLCall(glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr));
 			//--------------------------------------------------------------

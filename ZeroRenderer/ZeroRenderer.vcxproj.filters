@@ -8,8 +8,6 @@
     <ClCompile Include="src\component\Transform.cpp" />
     <ClCompile Include="src\gameObject\GameObject.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\tests\Camera3DCubeTest.cpp" />
-    <ClCompile Include="src\tests\LightTest.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -28,8 +26,9 @@
     <ClCompile Include="src\materials\Shader.cpp" />
     <ClCompile Include="src\materials\Texture.cpp" />
     <ClCompile Include="src\debug\GLDebug.cpp" />
-    <ClCompile Include="src\manager\ShaderManager.cpp" />
-    <ClCompile Include="src\manager\TextureManager.cpp" />
+    <ClCompile Include="src\tests\PipelineTest.cpp" />
+    <ClCompile Include="src\repo\ShaderRepo.cpp" />
+    <ClCompile Include="src\repo\TextureRepo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\3DObject\Cube.h" />
@@ -38,8 +37,7 @@
     <ClInclude Include="src\component\DirectLight.h" />
     <ClInclude Include="src\component\Transform.h" />
     <ClInclude Include="src\gameObject\GameObject.h" />
-    <ClInclude Include="src\tests\Camera3DCubeTest.h" />
-    <ClInclude Include="src\tests\LightTest.h" />
+    <ClInclude Include="src\tests\PipelineTest.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\detail\_features.hpp" />
     <ClInclude Include="src\vendor\glm\detail\_fixes.hpp" />
@@ -349,8 +347,8 @@
     <ClInclude Include="src\materials\Shader.h" />
     <ClInclude Include="src\materials\Texture.h" />
     <ClInclude Include="src\debug\GLDebug.h" />
-    <ClInclude Include="src\manager\ShaderManager.h" />
-    <ClInclude Include="src\manager\TextureManager.h" />
+    <ClInclude Include="src\repo\ShaderRepo.h" />
+    <ClInclude Include="src\repo\TextureRepo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

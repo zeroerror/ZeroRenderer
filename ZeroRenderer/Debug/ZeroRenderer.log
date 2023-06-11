@@ -1,39 +1,32 @@
 ﻿  Cube.cpp
 D:\Works\ZeroRenderer\ZeroRenderer\src\3DObject\Cube.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
   Main.cpp
-D:\Works\ZeroRenderer\ZeroRenderer\src\Main.cpp(81,24): warning C4305: “初始化”: 从“double”到“float”截断
-D:\Works\ZeroRenderer\ZeroRenderer\src\Main.cpp(82,25): warning C4305: “初始化”: 从“double”到“float”截断
-D:\Works\ZeroRenderer\ZeroRenderer\src\Main.cpp(83,24): warning C4305: “初始化”: 从“double”到“float”截断
+D:\Works\ZeroRenderer\ZeroRenderer\src\Main.cpp(71,24): warning C4305: “初始化”: 从“double”到“float”截断
+D:\Works\ZeroRenderer\ZeroRenderer\src\Main.cpp(72,25): warning C4305: “初始化”: 从“double”到“float”截断
+D:\Works\ZeroRenderer\ZeroRenderer\src\Main.cpp(73,24): warning C4305: “初始化”: 从“double”到“float”截断
   Camera3D.cpp
   Camera3DController.cpp
-D:\Works\ZeroRenderer\ZeroRenderer\src\component\Camera3DController.cpp(49,18): warning C4244: “初始化”: 从“genType”转换到“float”，可能丢失数据
+D:\Works\ZeroRenderer\ZeroRenderer\src\component\Camera3DController.cpp(51,18): warning C4244: “初始化”: 从“genType”转换到“float”，可能丢失数据
           with
           [
               genType=double
           ]
-D:\Works\ZeroRenderer\ZeroRenderer\src\component\Camera3DController.cpp(50,20): warning C4244: “初始化”: 从“genType”转换到“float”，可能丢失数据
+D:\Works\ZeroRenderer\ZeroRenderer\src\component\Camera3DController.cpp(52,20): warning C4244: “初始化”: 从“genType”转换到“float”，可能丢失数据
           with
           [
               genType=double
           ]
-  TextureManager.cpp
-D:\Works\ZeroRenderer\ZeroRenderer\src\manager\TextureManager.cpp(26,20): warning C4018: “<”: 有符号/无符号不匹配
   Material.cpp
   Shader.cpp
   Texture.cpp
   VertexArray.cpp
   Renderer.cpp
-  Camera3DCubeTest.cpp
-D:\Works\ZeroRenderer\ZeroRenderer\src\tests\Camera3DCubeTest.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\Works\ZeroRenderer\ZeroRenderer\src\tests\Camera3DCubeTest.cpp(28,18): warning C4244: “=”: 从“const int”转换到“float”，可能丢失数据
-D:\Works\ZeroRenderer\ZeroRenderer\src\tests\Camera3DCubeTest.cpp(29,19): warning C4244: “=”: 从“const int”转换到“float”，可能丢失数据
-  LightTest.cpp
-D:\Works\ZeroRenderer\ZeroRenderer\src\tests\LightTest.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-D:\Works\ZeroRenderer\ZeroRenderer\src\tests\LightTest.cpp(17,18): warning C4244: “=”: 从“const int”转换到“float”，可能丢失数据
-D:\Works\ZeroRenderer\ZeroRenderer\src\tests\LightTest.cpp(18,19): warning C4244: “=”: 从“const int”转换到“float”，可能丢失数据
+  ShaderRepo.cpp
+  TextureRepo.cpp
+  PipelineTest.cpp
+D:\Works\ZeroRenderer\ZeroRenderer\src\tests\PipelineTest.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\Works\ZeroRenderer\ZeroRenderer\src\tests\PipelineTest.cpp(57,18): warning C4244: “=”: 从“const int”转换到“float”，可能丢失数据
+D:\Works\ZeroRenderer\ZeroRenderer\src\tests\PipelineTest.cpp(58,19): warning C4244: “=”: 从“const int”转换到“float”，可能丢失数据
   Test.cpp
   正在生成代码...
-LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-glew32s.lib(glew.obj) : warning LNK4099: 未找到 PDB“vc120.pdb”(使用“glew32s.lib(glew.obj)”或在“D:\Works\ZeroRenderer\ZeroRenderer\Debug\vc120.pdb”中寻找)；正在链接对象，如同没有调试信息一样
   ZeroRenderer.vcxproj -> D:\Works\ZeroRenderer\ZeroRenderer\Debug\ZeroRenderer.exe
