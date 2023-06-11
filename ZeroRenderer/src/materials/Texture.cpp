@@ -27,7 +27,7 @@ Texture::~Texture() {
 	GLCall(glDeleteTextures(1, &m_RendererID));
 }
 
-inline unsigned int Texture::GetID()const { return m_RendererID; }
+unsigned int Texture::GetID()const { return m_RendererID; }
 
 void Texture::Bind(unsigned int slot)const {
 	GLCall(glActiveTexture(GL_TEXTURE0 + slot));

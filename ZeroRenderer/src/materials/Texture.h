@@ -12,7 +12,7 @@ public:
 	Texture(const std::string& path);
 	~Texture();
 
-	inline unsigned int GetID() const;
+	unsigned int GetID() const;
 
 	void Bind(unsigned int slot = 0) const;
 	void UnBind() const;

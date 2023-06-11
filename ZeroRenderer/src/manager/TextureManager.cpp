@@ -1,4 +1,5 @@
 #include "TextureManager.h"
+#include "Texture.h"
 
 TextureManager::TextureManager() {
     allTextures = std::unordered_map<unsigned int, Texture*>();
