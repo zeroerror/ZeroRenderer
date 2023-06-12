@@ -2,7 +2,7 @@
 
 namespace test {
 
-	TestMenu::TestMenu(Test*& currentTestPointer)
+	TestMenu::TestMenu(std::shared_ptr<Test>& currentTestPointer)
 		:m_CurrentTest(currentTestPointer) {
 
 	}

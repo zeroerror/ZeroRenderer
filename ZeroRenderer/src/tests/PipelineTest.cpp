@@ -43,7 +43,6 @@ namespace test {
 
 		LoadAssetsDatabase();
 		CreateWindow();
-		InitOpenGL();
 		LoadCamera();
 		LoadShaders();
 		LoadTextures();
@@ -89,37 +88,13 @@ namespace test {
 	}
 
 	void PipelineTest::OnRender() {
-		GLCall(glfwMakeContextCurrent(window));
-		GLCall(glClearColor(0.8f, 1.0f, 1.0f, 1.0f));
-		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		GLCall(glEnable(GL_DEPTH_TEST));
-		GLCall(glDepthFunc(GL_LESS));
-		GLCall(glDepthMask(GL_TRUE));
+		SetGL();
+		RenderObject();
+		CallGL();
 
-		for (size_t i = 0; i < 10; i++) {
-			Cube* cube = m_cubes[i];
-			Material* material = cube->material;
-
-			unsigned textureID = m_assetID2textureID[material->diffuseTextureAssetID];
-			Texture* texture = m_textureRepo->GetTexture(textureID);
-			texture->Bind();
-
-			unsigned shaderID = m_assetID2shaderID[material->shaderAssetID];
-			Shader* shader = m_shaderRepo->GetShader(shaderID);
-			shader->Bind();
-			shader->SetUniform1i("u_Texture", 0);
-			shader->SetUniformMat4f("u_MVP", camera.GetMVPMatrix_Perspective(cube->transform.GetPosition()));
-			shader->SetUniformMat4f("u_ModRotationMatrix", glm::toMat4(cube->transform.GetRotation()));
-
-			VertexArray* va = cube->va;
-			IndexBuffer* ib = cube->ib;
-			va->Bind();
-			ib->Bind();
-
-			GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+		if (glfwWindowShouldClose(window)) {
+			delete this;
 		}
-
-		GLCall(glfwSwapBuffers(window));
 	}
 
 	void PipelineTest::LoadAssetsDatabase() {
@@ -159,10 +134,6 @@ namespace test {
 		std::cout << glGetString(GL_VERSION) << std::endl;
 	}
 
-	void PipelineTest::InitOpenGL() {
-
-	}
-
 	void PipelineTest::LoadCamera() {
 		camera = Camera3D();
 		camera.width = m_screen_width;
@@ -186,4 +157,41 @@ namespace test {
 		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("Res/Textures/jerry.png", textureID));
 	}
 
+	void PipelineTest::SetGL() {
+		GLCall(glfwMakeContextCurrent(window));
+		GLCall(glClearColor(0.8f, 1.0f, 1.0f, 1.0f));
+		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+		GLCall(glEnable(GL_DEPTH_TEST));
+		GLCall(glDepthFunc(GL_LESS));
+		GLCall(glDepthMask(GL_TRUE));
+	}
+
+	void PipelineTest::RenderObject() {
+		for (size_t i = 0; i < 10; i++) {
+			Cube* cube = m_cubes[i];
+			Material* material = cube->material;
+
+			unsigned textureID = m_assetID2textureID[material->diffuseTextureAssetID];
+			Texture* texture = m_textureRepo->GetTexture(textureID);
+			texture->Bind();
+
+			unsigned shaderID = m_assetID2shaderID[material->shaderAssetID];
+			Shader* shader = m_shaderRepo->GetShader(shaderID);
+			shader->Bind();
+			shader->SetUniform1i("u_Texture", 0);
+			shader->SetUniformMat4f("u_MVP", camera.GetMVPMatrix_Perspective(cube->transform.GetPosition()));
+			shader->SetUniformMat4f("u_ModRotationMatrix", glm::toMat4(cube->transform.GetRotation()));
+
+			VertexArray* va = cube->va;
+			IndexBuffer* ib = cube->ib;
+			va->Bind();
+			ib->Bind();
+
+			GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+		}
+	}
+
+	void PipelineTest::CallGL() {
+		GLCall(glfwSwapBuffers(window));
+	}
 }

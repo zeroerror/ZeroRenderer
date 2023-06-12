@@ -23,19 +23,19 @@ namespace test {
 
 	class TestMenu:public Test {
 	public:
-		TestMenu(Test*& currentTestPointer);
+		TestMenu(std::shared_ptr<Test>& currentTestPointer);
 		~TestMenu();
 
 		void OnImGuiRender() override;
 
-		void RegisterTest(const std::string& name, std::function<Test* ()> ctor) {
+		void RegisterTest(const std::string& name, std::function<std::shared_ptr<Test>()> ctor) {
 			m_Tests.push_back(std::make_pair(name, ctor));
 		}
 
 
 	private:
-		Test*& m_CurrentTest;
-		std::vector<std::pair<std::string, std::function<Test* ()>>> m_Tests;
+		std::shared_ptr<Test>& m_CurrentTest;
+		std::vector<std::pair<std::string, std::function<std::shared_ptr<Test> ()>>> m_Tests;
 	};
 
 }

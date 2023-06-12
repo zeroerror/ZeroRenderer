@@ -44,10 +44,10 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	test::Test* curTest = nullptr;
+	std::shared_ptr<test::Test> curTest = nullptr;
 	test::TestMenu* testMenu = new test::TestMenu(curTest);
 	testMenu->RegisterTest("Pipeline Test", []() {
-		test::PipelineTest* test = new test::PipelineTest();
+		std::shared_ptr<test::PipelineTest> test = std::make_shared<test::PipelineTest>();
 		test->Init();
 		return test;
 	});
@@ -64,7 +64,6 @@ int main() {
 		ImGui::Begin("Test Menu");
 
 		if (curTest != nullptr && ImGui::Button("<-")) {
-			delete curTest;
 			curTest = nullptr;
 		}
 

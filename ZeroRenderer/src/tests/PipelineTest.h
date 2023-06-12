@@ -44,10 +44,13 @@ namespace test {
 
 		void LoadAssetsDatabase();
 		void CreateWindow();
-		void InitOpenGL();
 		void LoadCamera();
 		void LoadShaders();
 		void LoadTextures();
+
+		void SetGL();
+		void RenderObject();
+		void CallGL();
 
 	};
 
