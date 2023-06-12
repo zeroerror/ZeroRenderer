@@ -17,6 +17,7 @@ namespace test {
 	public:
 		Camera3D camera;
 		GLFWwindow* window;
+		ImGuiContext* imguiContext;
 		const float moveSpeed = 0.1f;
 		const float rotateSpeed = 0.1f;
 
@@ -26,14 +27,9 @@ namespace test {
 		void Init();
 		void OnUpdate(const float& deltaTime) override;
 		void OnRender() override;
+		void OnImGuiRender() override;
 
 	private:
-		int m_screen_width;
-		int m_screen_height;
-		Cube* m_cubes[10];
-		Camera3DController m_cameraController;
-		ShaderRepo* m_shaderRepo;
-		TextureRepo* m_textureRepo;
 		std::unordered_map<std::string, unsigned int> m_assetPath2AssetID;
 		std::unordered_map<unsigned int, std::string> m_assetID2AssetPath;
 		std::unordered_map<unsigned int, unsigned int> m_assetID2shaderID;
@@ -41,13 +37,26 @@ namespace test {
 		std::unordered_map<std::string, unsigned int> m_assetPath2shaderID;
 		std::unordered_map<std::string, unsigned int> m_assetPath2textureID;
 
+		int m_screen_width;
+		int m_screen_height;
+		bool m_cameraControllerEnabled;
+		Cube* m_cubes[10];
+		Camera3DController m_cameraController;
+		ShaderRepo* m_shaderRepo;
+		TextureRepo* m_textureRepo;
+		glm::vec3 m_lightPosition;
+		glm::vec3 m_ambientColor;
+		glm::vec3 m_diffuseColor;
+		glm::vec3 m_specularColor;
+
 		void LoadAssetsDatabase();
-		void CreateWindow();
+		void InitOpenGL();
+		void InitImGui();
 		void LoadCamera();
 		void LoadShaders();
 		void LoadTextures();
 
-		void SetGL();
+		void Repaint();
 		void RenderObject();
 		void CallGL();
 

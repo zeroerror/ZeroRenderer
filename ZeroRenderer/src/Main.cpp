@@ -11,6 +11,7 @@
 int main() {
 	const char* glsl_version = "#version 330 core";
 	GLFWwindow* window;
+	ImGuiContext* imguiContext;
 
 	/* Initialize the library */
 	if (!glfwInit()) {
@@ -39,7 +40,7 @@ int main() {
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	imguiContext = ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
@@ -58,19 +59,21 @@ int main() {
 		GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
+		ImGui::SetCurrentContext(imguiContext);
 		ImGui_ImplGlfw_NewFrame();
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui::NewFrame();
-		ImGui::Begin("Test Menu");
 
+		ImGui::Begin("Test Menu");
 		if (curTest != nullptr && ImGui::Button("<-")) {
 			curTest = nullptr;
 		}
 
 		testMenu->OnImGuiRender();
+		ImGui::SetCurrentContext(imguiContext);
 		GLCall(glfwMakeContextCurrent(window));
-
 		ImGui::End();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		GLCall(glfwSwapBuffers(window));
@@ -78,6 +81,7 @@ int main() {
 		if (curTest != nullptr) {
 			curTest->OnUpdate(0.1f);
 			curTest->OnRender();
+			curTest->OnImGuiRender();
 			if (curTest->isClosed) {
 				curTest = nullptr;
 			}

@@ -24,6 +24,8 @@ namespace test {
 
 		m_shaderRepo = new ShaderRepo();
 		m_textureRepo = new TextureRepo();
+
+		m_cameraControllerEnabled = false;
 	}
 
 	PipelineTest::~PipelineTest() {
@@ -34,6 +36,7 @@ namespace test {
 		}
 		delete m_shaderRepo;
 		delete m_textureRepo;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwDestroyWindow(window);
 	}
 
@@ -42,12 +45,12 @@ namespace test {
 		m_screen_height = 1080;
 
 		LoadAssetsDatabase();
-		CreateWindow();
+		InitOpenGL();
+		InitImGui();
 		LoadCamera();
 		LoadShaders();
 		LoadTextures();
 
-		// ====== 硬件输入事件注册: 设置窗口的用户指针
 		glfwSetWindowUserPointer(window, this);
 		glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
 			PipelineTest* camera3DCubeTest = static_cast<PipelineTest*>(glfwGetWindowUserPointer(window));
@@ -56,9 +59,9 @@ namespace test {
 			glm::vec3 forward = camTrans.GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans.SetPosition(pos);
-		});
+			});
 
-		// ====== Scene Loading
+		// ====== Scene
 		Material* material = new Material();
 		material->SetDiffuseTexture(1000);
 		material->SetShader(1000);
@@ -75,21 +78,54 @@ namespace test {
 			cube->material = material;
 			m_cubes[i] = cube;
 		}
+		
+		// Light 
+		m_lightPosition = glm::vec3(0.0f, 0.0f, 5.0f); // 光源位置
+		m_ambientColor = glm::vec3(0.2f, 0.2f, 0.2f); // 环境光颜色
+		m_diffuseColor = glm::vec3(1.0f, 1.0f, 1.0f); // 漫反射颜色
+		m_specularColor = glm::vec3(1.0f, 1.0f, 1.0f); // 镜面反射颜色
 	}
 
 	void PipelineTest::OnUpdate(const float& deltaTime) {
-		m_cameraController.Update(deltaTime);
+		if (m_cameraControllerEnabled) {
+			m_cameraController.Update(deltaTime);
+		}
 		camera.Update(deltaTime);
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT_ALT)) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			m_cameraControllerEnabled = true;
+		}
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			m_cameraControllerEnabled = false;
+		}
 	}
 
 	void PipelineTest::OnRender() {
-		SetGL();
+		Repaint();
 		RenderObject();
-		CallGL();
-
 		if (glfwWindowShouldClose(window)) {
 			isClosed = true;
 		}
+	}
+
+	void PipelineTest::OnImGuiRender() {
+		ImGui::SetCurrentContext(imguiContext);
+		ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Begin("Lighting");
+		ImGui::SliderFloat3("Light Position", &m_lightPosition.x, -10.0f, 10.0f);
+		ImGui::SliderFloat3("Ambient Color", &m_ambientColor.x, 0.0f, 1.0f);
+		ImGui::SliderFloat3("Diffuse Color", &m_diffuseColor.x, 0.0f, 1.0f);
+		ImGui::SliderFloat3("Specular Color", &m_specularColor.x, 0.0f, 1.0f);
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		CallGL();
 	}
 
 	void PipelineTest::LoadAssetsDatabase() {
@@ -99,7 +135,7 @@ namespace test {
 		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(1000, "Res/Textures/jerry.png"));
 	}
 
-	void PipelineTest::CreateWindow() {
+	void PipelineTest::InitOpenGL() {
 		/* Initialize the library */
 		if (!glfwInit())
 			return;
@@ -129,6 +165,16 @@ namespace test {
 		std::cout << glGetString(GL_VERSION) << std::endl;
 	}
 
+	void PipelineTest::InitImGui(){
+		IMGUI_CHECKVERSION();
+		imguiContext = ImGui::CreateContext();
+		ImGui::SetCurrentContext(imguiContext);
+		
+		ImGui::StyleColorsLight();
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init();
+	}
+
 	void PipelineTest::LoadCamera() {
 		camera = Camera3D();
 		camera.width = m_screen_width;
@@ -152,7 +198,7 @@ namespace test {
 		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("Res/Textures/jerry.png", textureID));
 	}
 
-	void PipelineTest::SetGL() {
+	void PipelineTest::Repaint() {
 		GLCall(glfwMakeContextCurrent(window));
 		GLCall(glClearColor(0.8f, 1.0f, 1.0f, 1.0f));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
@@ -173,9 +219,14 @@ namespace test {
 			unsigned shaderID = m_assetID2shaderID[material->shaderAssetID];
 			Shader* shader = m_shaderRepo->GetShader(shaderID);
 			shader->Bind();
+
 			shader->SetUniform1i("u_Texture", 0);
 			shader->SetUniformMat4f("u_MVP", camera.GetMVPMatrix_Perspective(cube->transform.GetPosition()));
 			shader->SetUniformMat4f("u_ModRotationMatrix", glm::toMat4(cube->transform.GetRotation()));
+			shader->SetUniform3f("u_LightPosition", m_lightPosition.x, m_lightPosition.y, m_lightPosition.z);
+			shader->SetUniform3f("u_AmbientColor", m_ambientColor.x, m_ambientColor.y, m_ambientColor.z);
+			shader->SetUniform3f("u_DiffuseColor", m_diffuseColor.x, m_diffuseColor.y, m_diffuseColor.z);
+			shader->SetUniform3f("u_SpecularColor", m_specularColor.x, m_specularColor.y, m_specularColor.z);
 
 			VertexArray* va = cube->va;
 			IndexBuffer* ib = cube->ib;
@@ -187,6 +238,7 @@ namespace test {
 	}
 
 	void PipelineTest::CallGL() {
+		GLCall(glfwMakeContextCurrent(window));
 		GLCall(glfwSwapBuffers(window));
 	}
 }

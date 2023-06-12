@@ -35,12 +35,6 @@ void Camera3DController::Update(const float& dt) {
 		glm::vec3 forward = camTrans.GetForward();
 		camTrans.SetPosition(camTrans.GetPosition() + forward * moveSpeed);
 	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_ALT)) {
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	}
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	}
 
 	double xPos, yPos;
 	glfwGetCursorPos(window, &xPos, &yPos);
