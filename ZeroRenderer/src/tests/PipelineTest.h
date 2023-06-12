@@ -24,7 +24,6 @@ namespace test {
 		~PipelineTest();
 
 		void Init();
-		void ProcessInput();
 		void OnUpdate(const float& deltaTime) override;
 		void OnRender() override;
 

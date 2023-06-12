@@ -50,7 +50,7 @@ int main() {
 		std::shared_ptr<test::PipelineTest> test = std::make_shared<test::PipelineTest>();
 		test->Init();
 		return test;
-	});
+		});
 
 	while (!glfwWindowShouldClose(window)) {
 		GLCall(glfwMakeContextCurrent(window));
@@ -78,6 +78,9 @@ int main() {
 		if (curTest != nullptr) {
 			curTest->OnUpdate(0.1f);
 			curTest->OnRender();
+			if (curTest->isClosed) {
+				curTest = nullptr;
+			}
 		}
 	}
 

@@ -77,12 +77,7 @@ namespace test {
 		}
 	}
 
-	void PipelineTest::ProcessInput() {
-
-	}
-
 	void PipelineTest::OnUpdate(const float& deltaTime) {
-		ProcessInput();
 		m_cameraController.Update(deltaTime);
 		camera.Update(deltaTime);
 	}
@@ -93,7 +88,7 @@ namespace test {
 		CallGL();
 
 		if (glfwWindowShouldClose(window)) {
-			delete this;
+			isClosed = true;
 		}
 	}
 

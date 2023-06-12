@@ -12,12 +12,13 @@ namespace test {
 	class Test {
 
 	public:
-		Test() {}
+		Test() { isClosed = false; }
 		virtual	~Test() {}
 
 		virtual void OnUpdate(const float& deltaTime) {}
 		virtual void OnRender() {}
 		virtual void OnImGuiRender() {}
+		bool isClosed;
 
 	};
 
