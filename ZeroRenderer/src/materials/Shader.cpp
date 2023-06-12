@@ -19,17 +19,19 @@
 
 Shader::Shader(const std::string& filePath){
 	ShaderProgramSource source = ParseShader(filePath);
-	m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
-	GLCall(glUseProgram(m_RendererID));
-	std::cout << "Shader::Shader() " << m_RendererID << std::endl;
+	m_programID = CreateShader(source.VertexSource, source.FragmentSource);
+	GLCall(glUseProgram(m_programID));
+	std::cout << "Shader::Shader() " << m_programID << std::endl;
 }
 
 Shader::~Shader() {
-	GLCall(glDeleteProgram(m_RendererID));
-	std::cout << "Shader::~Shader() " << m_RendererID << std::endl; 
+	std::cout << "Shader::~Shader() " << m_programID << std::endl;
+	GLCall(glDeleteShader(m_vsID));
+	GLCall(glDeleteShader(m_fsID));
+	GLCall(glDeleteProgram(m_programID));
 }
 
-unsigned int Shader::GetID() const { return m_RendererID; }
+unsigned int Shader::GetID() const { return m_programID; }
 
 ShaderProgramSource Shader::ParseShader(const std::string& filePath) {
 	std::ifstream stream(filePath);
@@ -86,23 +88,23 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 }
 
 unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader) {
-	unsigned int program = glCreateProgram();
-	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+	unsigned int programID = glCreateProgram();
+	m_vsID = CompileShader(GL_VERTEX_SHADER, vertexShader);
+	m_fsID = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
-	GLCall(glAttachShader(program, vs));
-	GLCall(glAttachShader(program, fs));
-	GLCall(glLinkProgram(program));
-	GLCall(glValidateProgram(program));
+	GLCall(glAttachShader(programID, m_vsID));
+	GLCall(glAttachShader(programID, m_fsID));
+	GLCall(glLinkProgram(programID));
+	GLCall(glValidateProgram(programID));
 
-	GLCall(glDeleteShader(vs));
-	GLCall(glDeleteShader(fs));
+	GLCall(glDeleteShader(m_vsID));
+	GLCall(glDeleteShader(m_fsID));
 
-	return program;
+	return programID;
 }
 
 void Shader::Bind() const {
-	GLCall(glUseProgram(m_RendererID));
+	GLCall(glUseProgram(m_programID));
 }
 
 void Shader::UnBind() const {
@@ -134,7 +136,7 @@ int Shader::GetUniformLocation(const std::string& name) {
 		return m_UniformLocationCache[name];
 	}
 
-	GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));
+	GLCall(int location = glGetUniformLocation(m_programID, name.c_str()));
 	m_UniformLocationCache[name] = location;
 
 	if (location == -1) {

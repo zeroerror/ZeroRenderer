@@ -17,17 +17,19 @@ public:
 
 public:
 	Transform transform;
-	Texture* texture;
-	Material* material;
-	VertexArray* va;
-	static IndexBuffer* ib;
 	float width;
 	float height;
 	float depth;
+
+	Texture* texture;
+	Material* material;
+
+	VertexArray* va;
+	VertexBuffer* vb;
+	IndexBuffer* ib;
+
 private:
-	VertexBuffer m_vb;
 	VertexBufferLayout m_vbLayout;
 	static unsigned int m_indiceArray[];
-	static bool m_ibInit;
 };
 

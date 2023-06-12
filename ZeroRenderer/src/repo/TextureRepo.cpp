@@ -5,6 +5,7 @@ TextureRepo::TextureRepo() {
 }
 
 TextureRepo::~TextureRepo() {
+	std::cout << "TextureRepo::~TextureRepo() " << std::endl;
 	for (auto& texture : allTextures) {
 		texture.second->~Texture();
 	}

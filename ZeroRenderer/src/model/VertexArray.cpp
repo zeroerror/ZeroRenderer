@@ -8,6 +8,7 @@ VertexArray::VertexArray()
 {}
 
 VertexArray::~VertexArray() {
+	std::cout << "VertexArray::~VertexArray() " << m_RendererID << std::endl;
 	GLCall(glDeleteVertexArrays(1, &m_RendererID));
 }
 
@@ -16,12 +17,12 @@ void VertexArray::Ctor() {
 	GLCall(glBindVertexArray(m_RendererID));
 }
 
-void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout) {
+void VertexArray::AddBuffer(const VertexBuffer* vb, const VertexBufferLayout& layout) {
 	// 1. Bind the vertex array object
 	GLCall(glBindVertexArray(m_RendererID));
 
 	// 2. Bind the vertex buffer object
-	vb.Bind();
+	vb->Bind();
 
 	// 3. Set the layout of the vertex buffer object
 	const auto& elements = layout.GetElements();

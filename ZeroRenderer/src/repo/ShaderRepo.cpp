@@ -6,6 +6,7 @@ ShaderRepo::ShaderRepo() {
 }
 
 ShaderRepo::~ShaderRepo() {
+	std::cout << "ShaderRepo::~ShaderRepo() " << std::endl;
 	for (auto& shader : allShaders) {
 		shader.second->~Shader();
 	}

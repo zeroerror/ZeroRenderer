@@ -5,7 +5,9 @@
 #include "IndexBuffer.h"
 #include "Material.h"
 
-Cube::Cube() {}
+Cube::Cube() {
+	std::cout << "Cube::Cube()" << std::endl;
+}
 
 void Cube::Ctor(float width, float height, float depth) {
 	this->width = width;
@@ -18,8 +20,8 @@ void Cube::Ctor(float width, float height, float depth) {
 	this->va = new VertexArray();
 	this->va->Ctor();
 
-	this->m_vb = VertexBuffer();
-	this->m_vb.Ctor(new float[40]{
+	this->vb = new VertexBuffer();
+	this->vb->Ctor(new float[40]{
 		// 顶点坐标 + 纹理坐标
 		-halfWidth, -halfHeight, -halfDepth, 0.0f, 0.0f,     // 顶点0
 		halfWidth, -halfHeight, -halfDepth, 1.0f, 0.0f,      // 顶点1
@@ -29,24 +31,23 @@ void Cube::Ctor(float width, float height, float depth) {
 		halfWidth, -halfHeight, halfDepth, 1.0f, 0.0f,       // 顶点5
 		halfWidth, halfHeight, halfDepth, 1.0f, 1.0f,        // 顶点6
 		-halfWidth, halfHeight, halfDepth, 0.0f, 1.0f        // 顶点7
-		}, 40 * sizeof(float));
+					}, 40 * sizeof(float));
 
 	this->m_vbLayout = VertexBufferLayout();
 	this->m_vbLayout.Push<float>(3);
 	this->m_vbLayout.Push<float>(2);
 
-	this->va->AddBuffer(m_vb, m_vbLayout);
+	this->va->AddBuffer(vb, m_vbLayout);
 
-	if (!this->m_ibInit) {
-		this->ib = new IndexBuffer();
-		this->ib->Ctor(m_indiceArray, 36);
-		this->m_ibInit = true;
-		std::cout << "Init InderBuffer" << std::endl;
-	}
+	this->ib = new IndexBuffer();
+	this->ib->Ctor(m_indiceArray, 36);
 }
 
 Cube::~Cube() {
 	std::cout << "Cube::~Cube()" << std::endl;
+	delete vb;
+	delete va;
+	delete ib;
 }
 
 Cube* Cube::CreateCube(const float& width, const float& height, const float& depth) {
@@ -54,9 +55,6 @@ Cube* Cube::CreateCube(const float& width, const float& height, const float& dep
 	cube->Ctor(width, height, depth);
 	return cube;
 }
-
-IndexBuffer* Cube::ib;
-bool Cube::m_ibInit;
 
 unsigned int Cube::m_indiceArray[36] = {
 	0, 1, 2,  // 面0

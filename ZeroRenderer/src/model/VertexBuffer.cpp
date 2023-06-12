@@ -1,10 +1,12 @@
 #include "VertexBuffer.h"
 #include <GL/glew.h>
+#include <iostream>
 
 VertexBuffer::VertexBuffer() {
 }
 
 VertexBuffer::~VertexBuffer() {
+	std::cout << "VertexBuffer::~VertexBuffer() " << m_RendererID << std::endl;
 	glDeleteBuffers(1, &m_RendererID);
 }
 

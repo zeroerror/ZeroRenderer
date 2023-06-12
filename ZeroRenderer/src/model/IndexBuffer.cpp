@@ -1,6 +1,7 @@
 #include "IndexBuffer.h"
 #include <GLDebug.h>
 #include <GL/glew.h>
+#include <iostream>
 
 IndexBuffer::IndexBuffer()
 	:m_RendererID(0), m_count(0)
@@ -8,8 +9,13 @@ IndexBuffer::IndexBuffer()
 }
 
 IndexBuffer::~IndexBuffer() {
-	glDeleteBuffers(1, &m_RendererID);
+	std::cout << "IndexBuffer::~IndexBuffer() " << m_RendererID << std::endl;
+
+	if (m_RendererID != 0) {
+		GLCall(glDeleteBuffers(1, &m_RendererID));
+	}
 }
+
 
 void IndexBuffer::Ctor(const unsigned int* data, unsigned int count) {
 	m_count = count;

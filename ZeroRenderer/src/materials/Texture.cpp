@@ -26,8 +26,9 @@ Texture::Texture(const std::string& path) {
 }
 
 Texture::~Texture() {
-	GLCall(glDeleteTextures(1, &m_RendererID));
 	std::cout << "Texture::~Texture() " << m_RendererID << std::endl;
+	GLCall(glDeleteTextures(1,&m_RendererID));
+	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 unsigned int Texture::GetID()const { return m_RendererID; }
