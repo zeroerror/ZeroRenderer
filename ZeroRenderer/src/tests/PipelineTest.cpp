@@ -10,7 +10,7 @@
 #include "Camera3DController.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
-#include "DirectLight.h"
+#include "SpotLight.h"
 
 namespace test {
 
@@ -73,7 +73,13 @@ namespace test {
 		cube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
 		cube->material = material;
 		m_cubes[0] = cube;
-		for (int i = 1; i < 10; i++) {
+
+		cube = Cube::CreateCube(20.0f, 0.5f, 20.0f);
+		cube->transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		cube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
+		cube->material = material;
+		m_cubes[1] = cube;
+		for (int i = 2; i < 10; i++) {
 			Cube* cube = Cube::CreateCube(1.0f + i, 1.0f, 1.0f + i);
 			cube->transform.SetPosition(glm::vec3(i * 1.0f, i * 1.0f, i * 1.0f));
 			cube->transform.SetRotation(glm::angleAxis(glm::radians(18.0f * i), glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -82,9 +88,9 @@ namespace test {
 		}
 
 		// Light 
-		m_directLight = DirectLight();
-		m_directLight.transform.SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
-		m_directLight.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		m_spotLight = SpotLight();
+		m_spotLight.transform.SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+		m_spotLight.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	void PipelineTest::OnUpdate(const float& deltaTime) {
@@ -96,6 +102,7 @@ namespace test {
 		if (glfwGetKey(window, GLFW_KEY_LEFT_ALT)) {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			m_cameraControllerEnabled = true;
+			m_cameraController.InitCursorPos();
 		}
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -117,32 +124,33 @@ namespace test {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::Begin("Lighting");
+		ImGui::Begin("Light Menu");
+		glm::vec3 lightPos = m_spotLight.transform.GetPosition();
+		ImGui::SliderFloat3("Spot Light Position", &lightPos.x, -10.0f, 10.0f);
+		m_spotLight.transform.SetPosition(lightPos);
+		// glm::quat lightRot = m_spotLight.transform.GetRotation();
+		// glm::vec3 euler = glm::eulerAngles(lightRot);
+		// euler = glm::degrees(euler);
+		// ImGui::SliderFloat3("Spot Light Rotation", &euler.x, 0.0f, 360.0f);
+		// euler = glm::radians(euler);
+		// lightRot = glm::quat(euler);
+		// m_spotLight.transform.SetRotation(lightRot);
+		glm::vec3 lightColor = m_spotLight.color;
+		ImGui::SliderFloat3("Spot Light Color", &lightColor.x, 0.0f, 1.0f);
+		m_spotLight.color = lightColor;
+		ImGui::End();
 
-		glm::vec3 lightPos = m_directLight.transform.GetPosition();
-		ImGui::SliderFloat3("Light Position", &lightPos.x, -10.0f, 10.0f);
-		m_directLight.transform.SetPosition(lightPos);
-
-		glm::quat lightRot = m_directLight.transform.GetRotation();
-		glm::vec3 euler = glm::eulerAngles(lightRot);
-		euler = glm::degrees(euler);
-		ImGui::SliderFloat3("Light Rotation", &euler.x, 0.0f, 360.0f);
-		euler = glm::radians(euler);
-		lightRot = glm::quat(euler);
-		m_directLight.transform.SetRotation(lightRot);
-
-		glm::vec3 lightColor = m_directLight.color;
-		ImGui::SliderFloat3("Light Color", &lightColor.x, 0.0f, 1.0f);
-		m_directLight.color = lightColor;
-
+		ImGui::Begin("Camera Controller Menu");
+		ImGui::SliderFloat("Camera Move Speed", &m_cameraController.moveSpeed, 0.0f, 1.0f);
+		ImGui::SliderFloat("Camera Rotate Speed", &m_cameraController.rotateSpeed, 0.0f, 1.0f);
 		ImGui::End();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+
 		// - cube 0 show light pos.
 		m_cubes[0]->transform.SetPosition(lightPos);
-		m_cubes[0]->transform.SetRotation(lightRot);
 
 		CallGL();
 	}
@@ -242,9 +250,14 @@ namespace test {
 			shader->SetUniform1i("u_texture", 0);
 			shader->SetUniformMat4f("u_mvp", camera.GetMVPMatrix_Perspective(cube->transform.GetPosition()));
 			shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(cube->transform.GetRotation()));
-			glm::vec3 lightDir = m_directLight.transform.GetForward();
-			shader->SetUniform3f("u_lightDirection", lightDir.x, lightDir.y, lightDir.z);
-			shader->SetUniform3f("u_lightColor", m_directLight.color.x, m_directLight.color.y, m_directLight.color.z);
+
+			glm::vec3 modPosition = cube->transform.GetPosition();
+			shader->SetUniform3f("u_modPosition", modPosition.x, modPosition.y, modPosition.z);
+
+			glm::vec3 lightPos = m_spotLight.transform.GetPosition();
+			shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+
+			shader->SetUniform3f("u_lightColor", m_spotLight.color.x, m_spotLight.color.y, m_spotLight.color.z);
 
 			VertexArray* va = cube->va;
 			IndexBuffer* ib = cube->ib;

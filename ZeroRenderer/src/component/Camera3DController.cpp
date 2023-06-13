@@ -55,10 +55,6 @@ void Camera3DController::Update(const float& dt) {
 	//std::cout << "Camera3D Position " << glm::to_string(camera->transform.GetPosition()) << std::endl;
 }
 
-void Camera3DController::SetMoveSpeed(const float& moveSpeed) {
-	this->moveSpeed = moveSpeed;
-}
-
-void Camera3DController::SetRotateSpeed(const float& rotateSpeed) {
-	this->rotateSpeed = rotateSpeed;
+void Camera3DController::InitCursorPos() {
+	glfwGetCursorPos(window, &m_cursorPosX, &m_cursorPosY);
 }

@@ -10,8 +10,7 @@ public:
 
 	void Inject(Camera3D* camera, GLFWwindow* window);
 	void Update(const float& dt);
-	void SetMoveSpeed(const float& moveSpeed);
-	void SetRotateSpeed(const float& rotateSpeed);
+	void InitCursorPos();
 
 public:
 	Camera3D* camera;

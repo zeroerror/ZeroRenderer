@@ -10,7 +10,7 @@
 #include "Cube.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
-#include "DirectLight.h"
+#include "SpotLight.h"
 
 namespace test {
 
@@ -40,12 +40,14 @@ namespace test {
 
 		int m_screen_width;
 		int m_screen_height;
-		bool m_cameraControllerEnabled;
-		Cube* m_cubes[10];
+
 		Camera3DController m_cameraController;
+		bool m_cameraControllerEnabled;
+
+		Cube* m_cubes[10];
 		ShaderRepo* m_shaderRepo;
 		TextureRepo* m_textureRepo;
-		DirectLight m_directLight;
+		SpotLight m_spotLight;
 
 		void LoadAssetsDatabase();
 		void InitOpenGL();

@@ -8,7 +8,6 @@ public:
 	~DirectLight() {};
 
 public:
-	Transform transform;
 	glm::vec3 color;
 
 };
