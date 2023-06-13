@@ -54,7 +54,6 @@
     <ClInclude Include="Dependencies\GLEW\include\GL\wglew.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
-    <ClInclude Include="res\shader\Material.h" />
     <ClInclude Include="src\3DObject\Cube.h" />
     <ClInclude Include="src\component\Camera3D.h" />
     <ClInclude Include="src\component\Camera3DController.h" />

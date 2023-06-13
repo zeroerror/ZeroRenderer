@@ -32,7 +32,7 @@ glm::mat4 Camera3D::GetMVPMatrix_Ortho(const glm::vec3& pos, const glm::quat& ro
 	float halfWidth = 10;
 	float halfHeight = 10;
 	float nearPlane = 0.1f;
-	float farPlane = 10.0f;
+	float farPlane = 100.0f;
 	glm::mat4 proj = glm::orthoRH(-halfWidth, halfWidth, -halfHeight, halfHeight, nearPlane, farPlane);
 
 	glm::mat4 mvp = proj * view * model;

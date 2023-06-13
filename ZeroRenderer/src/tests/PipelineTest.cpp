@@ -61,53 +61,59 @@ namespace test {
 			glm::vec3 forward = camTrans.GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans.SetPosition(pos);
-		});
+			});
 
 		// ====== Scene
-		Material* material = new Material();
-		material->SetDiffuseTexture(1000);
-		material->SetShader(1000);
+		Material* defaultMaterial = new Material();
+		defaultMaterial->SetDiffuseTexture(1000);
+		defaultMaterial->SetShader(1000);
 
-		Cube* cube = Cube::CreateCube(1.0f, 1.0f, 1.0f);
-		cube->transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-		cube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
-		cube->material = material;
-		m_cubes[0] = cube;
+		Material* lightMaterial = new Material();
+		lightMaterial->SetDiffuseTexture(1000);
+		lightMaterial->SetShader(2000);
 
-		cube = Cube::CreateCube(20.0f, 0.5f, 20.0f);
-		cube->transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		Cube* lightCube = Cube::CreateCube(1.0f, 1.0f, 1.0f);
+		lightCube->transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		lightCube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
+		lightCube->material = defaultMaterial;
+		m_cubes[0] = lightCube;
+
+		Cube* cube = Cube::CreateCube(5.0f, 5.0f, 5.0f);
+		cube->transform.SetPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
 		cube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
-		cube->material = material;
+		cube->material = lightMaterial;
 		m_cubes[1] = cube;
+
 		for (int i = 2; i < 10; i++) {
-			Cube* cube = Cube::CreateCube(1.0f + i, 1.0f, 1.0f + i);
-			cube->transform.SetPosition(glm::vec3(i * 1.0f, i * 1.0f, i * 1.0f));
-			cube->transform.SetRotation(glm::angleAxis(glm::radians(18.0f * i), glm::vec3(0.0f, 1.0f, 0.0f)));
-			cube->material = material;
+			Cube* cube = Cube::CreateCube(i, 2, i);
+			cube->transform.SetPosition(glm::vec3(i, i, i));
+			cube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
+			cube->material = lightMaterial;
 			m_cubes[i] = cube;
 		}
 
 		// Light 
 		m_spotLight = SpotLight();
-		m_spotLight.transform.SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
-		m_spotLight.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		m_spotLight.transform.SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
+		m_spotLight.color = glm::vec4(0.8f, 0.8f, 0.8f, 0.8f);
 	}
 
 	void PipelineTest::OnUpdate(const float& deltaTime) {
+		if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+			m_cameraControllerEnabled = true;
+			m_cameraController.InitCursorPos();
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			m_cameraControllerEnabled = false;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+
 		if (m_cameraControllerEnabled) {
 			m_cameraController.Update(deltaTime);
 		}
 		camera.Update(deltaTime);
-
-		if (glfwGetKey(window, GLFW_KEY_LEFT_ALT)) {
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			m_cameraControllerEnabled = true;
-			m_cameraController.InitCursorPos();
-		}
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			m_cameraControllerEnabled = false;
-		}
 	}
 
 	void PipelineTest::OnRender() {
@@ -126,7 +132,7 @@ namespace test {
 
 		ImGui::Begin("Light Menu");
 		glm::vec3 lightPos = m_spotLight.transform.GetPosition();
-		ImGui::SliderFloat3("Spot Light Position", &lightPos.x, -10.0f, 10.0f);
+		ImGui::SliderFloat3("Spot Light Position", &lightPos.x, -20.0f, 20.0f);
 		m_spotLight.transform.SetPosition(lightPos);
 		// glm::quat lightRot = m_spotLight.transform.GetRotation();
 		// glm::vec3 euler = glm::eulerAngles(lightRot);
@@ -148,7 +154,6 @@ namespace test {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-
 		// - cube 0 show light pos.
 		m_cubes[0]->transform.SetPosition(lightPos);
 
@@ -156,10 +161,11 @@ namespace test {
 	}
 
 	void PipelineTest::LoadAssetsDatabase() {
-		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("Res/Models/Cube.obj", 1000));
 		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("Res/Textures/jerry.png", 1000));
-		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(1000, "Res/Models/Cube.obj"));
+		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("Res/Textures/room.png", 2000));
+
 		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(1000, "Res/Textures/jerry.png"));
+		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(2000, "Res/Textures/room.png"));
 	}
 
 	void PipelineTest::InitOpenGL() {
@@ -214,15 +220,23 @@ namespace test {
 	}
 
 	void PipelineTest::LoadShaders() {
-		unsigned int shaderID = m_shaderRepo->LoadShader("Res/Shader/Cube.shader");
+		unsigned int shaderID = m_shaderRepo->LoadShader("Res/Shader/Default.shader");
 		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(1000, shaderID));
-		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("Res/Shader/Cube.shader", shaderID));
+		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("Res/Shader/Default.shader", shaderID));
+
+		shaderID = m_shaderRepo->LoadShader("Res/Shader/DefaultLight.shader");
+		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(2000, shaderID));
+		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("Res/Shader/DefaultLight.shader", shaderID));
 	}
 
 	void PipelineTest::LoadTextures() {
 		unsigned int textureID = m_textureRepo->LoadTexture("Res/Textures/jerry.png");
 		m_assetID2textureID.insert(std::pair<unsigned int, unsigned int>(1000, textureID));
 		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("Res/Textures/jerry.png", textureID));
+
+		textureID = m_textureRepo->LoadTexture("Res/Textures/room.png");
+		m_assetID2textureID.insert(std::pair<unsigned int, unsigned int>(2000, textureID));
+		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("Res/Textures/room.png", textureID));
 	}
 
 	void PipelineTest::Repaint() {
@@ -235,6 +249,7 @@ namespace test {
 	}
 
 	void PipelineTest::RenderObject() {
+		glm::vec3 lightPos = m_spotLight.transform.GetPosition();
 		for (size_t i = 0; i < 10; i++) {
 			Cube* cube = m_cubes[i];
 			Material* material = cube->material;
@@ -254,9 +269,7 @@ namespace test {
 			glm::vec3 modPosition = cube->transform.GetPosition();
 			shader->SetUniform3f("u_modPosition", modPosition.x, modPosition.y, modPosition.z);
 
-			glm::vec3 lightPos = m_spotLight.transform.GetPosition();
 			shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
-
 			shader->SetUniform3f("u_lightColor", m_spotLight.color.x, m_spotLight.color.y, m_spotLight.color.z);
 
 			VertexArray* va = cube->va;

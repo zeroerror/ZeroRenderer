@@ -16,12 +16,12 @@ uniform vec3 u_lightPosition;
 void main()
 {
     v_texCoord = texCoord;
-	
-	vec3 pos = vec3(position.x, position.y, position.z);
-	v_normal = normalize(pos - u_modPosition);
-    v_lightDirection = normalize(pos - u_lightPosition);
+    vec4 rotatedPosition = u_modRotationMatrix * position;
+    gl_Position = u_mvp * rotatedPosition;
 
-    gl_Position = u_mvp * u_modRotationMatrix * position;
+	vec3 localPos = vec3(rotatedPosition.x, rotatedPosition.y, rotatedPosition.z);
+	v_normal = normalize(localPos);
+    v_lightDirection = normalize(localPos - u_lightPosition);
 }
 
 
@@ -44,5 +44,4 @@ void main()
     vec3 diffuse = u_lightColor * intensity; 
 
     color = vec4(textureColor.rgb * diffuse, textureColor.a);
-    color = vec4(-dot(v_normal, v_lightDirection),-dot(v_normal, v_lightDirection),-dot(v_normal, v_lightDirection),1);
 }
