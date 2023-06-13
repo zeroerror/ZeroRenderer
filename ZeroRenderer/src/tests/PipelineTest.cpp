@@ -1,3 +1,5 @@
+#include "PipelineTest.h"
+
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <GL/glew.h>
@@ -6,9 +8,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "Camera3DController.h"
-#include "PipelineTest.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
+#include "DirectLight.h"
 
 namespace test {
 
@@ -80,10 +82,9 @@ namespace test {
 		}
 		
 		// Light 
-		m_lightPosition = glm::vec3(0.0f, 0.0f, 5.0f); // 光源位置
-		m_ambientColor = glm::vec3(0.2f, 0.2f, 0.2f); // 环境光颜色
-		m_diffuseColor = glm::vec3(1.0f, 1.0f, 1.0f); // 漫反射颜色
-		m_specularColor = glm::vec3(1.0f, 1.0f, 1.0f); // 镜面反射颜色
+		m_directLight =  DirectLight();
+		m_directLight.transform.SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+		m_directLight.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
 	void PipelineTest::OnUpdate(const float& deltaTime) {
@@ -117,10 +118,15 @@ namespace test {
 		ImGui::NewFrame();
 
 		ImGui::Begin("Lighting");
-		ImGui::SliderFloat3("Light Position", &m_lightPosition.x, -10.0f, 10.0f);
-		ImGui::SliderFloat3("Ambient Color", &m_ambientColor.x, 0.0f, 1.0f);
-		ImGui::SliderFloat3("Diffuse Color", &m_diffuseColor.x, 0.0f, 1.0f);
-		ImGui::SliderFloat3("Specular Color", &m_specularColor.x, 0.0f, 1.0f);
+
+		glm::vec3 lightPos = m_directLight.transform.GetPosition();
+		ImGui::SliderFloat3("Light Position", &lightPos.x, -10.0f, 10.0f);
+		m_directLight.transform.SetPosition(lightPos);
+		
+		glm::vec3 lightColor = m_directLight.color;
+		ImGui::SliderFloat3("Light Color", &lightColor.x, 0.0f, 1.0f);
+		m_directLight.color = lightColor;
+		
 		ImGui::End();
 
 		ImGui::Render();
@@ -223,10 +229,8 @@ namespace test {
 			shader->SetUniform1i("u_Texture", 0);
 			shader->SetUniformMat4f("u_MVP", camera.GetMVPMatrix_Perspective(cube->transform.GetPosition()));
 			shader->SetUniformMat4f("u_ModRotationMatrix", glm::toMat4(cube->transform.GetRotation()));
-			shader->SetUniform3f("u_LightPosition", m_lightPosition.x, m_lightPosition.y, m_lightPosition.z);
-			shader->SetUniform3f("u_AmbientColor", m_ambientColor.x, m_ambientColor.y, m_ambientColor.z);
-			shader->SetUniform3f("u_DiffuseColor", m_diffuseColor.x, m_diffuseColor.y, m_diffuseColor.z);
-			shader->SetUniform3f("u_SpecularColor", m_specularColor.x, m_specularColor.y, m_specularColor.z);
+			shader->SetUniform3f("u_LightPosition", m_directLight.transform.GetPosition().x, m_directLight.transform.GetPosition().y, m_directLight.transform.GetPosition().z);
+			shader->SetUniform3f("u_LightColor", m_directLight.color.x, m_directLight.color.y, m_directLight.color.z);
 
 			VertexArray* va = cube->va;
 			IndexBuffer* ib = cube->ib;

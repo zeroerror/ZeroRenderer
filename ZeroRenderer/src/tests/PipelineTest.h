@@ -10,6 +10,7 @@
 #include "Cube.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
+#include "DirectLight.h"
 
 namespace test {
 
@@ -44,10 +45,7 @@ namespace test {
 		Camera3DController m_cameraController;
 		ShaderRepo* m_shaderRepo;
 		TextureRepo* m_textureRepo;
-		glm::vec3 m_lightPosition;
-		glm::vec3 m_ambientColor;
-		glm::vec3 m_diffuseColor;
-		glm::vec3 m_specularColor;
+		DirectLight m_directLight;
 
 		void LoadAssetsDatabase();
 		void InitOpenGL();
