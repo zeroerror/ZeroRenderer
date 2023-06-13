@@ -61,14 +61,14 @@ namespace test {
 			glm::vec3 forward = camTrans.GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans.SetPosition(pos);
-			});
+		});
 
 		// ====== Scene
 		Material* material = new Material();
 		material->SetDiffuseTexture(1000);
 		material->SetShader(1000);
 
-		Cube* cube = Cube::CreateCube(20.0f, 0.5f, 20.0f);
+		Cube* cube = Cube::CreateCube(1.0f, 1.0f, 1.0f);
 		cube->transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 		cube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
 		cube->material = material;
@@ -80,9 +80,9 @@ namespace test {
 			cube->material = material;
 			m_cubes[i] = cube;
 		}
-		
+
 		// Light 
-		m_directLight =  DirectLight();
+		m_directLight = DirectLight();
 		m_directLight.transform.SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
 		m_directLight.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
@@ -122,15 +122,28 @@ namespace test {
 		glm::vec3 lightPos = m_directLight.transform.GetPosition();
 		ImGui::SliderFloat3("Light Position", &lightPos.x, -10.0f, 10.0f);
 		m_directLight.transform.SetPosition(lightPos);
-		
+
+		glm::quat lightRot = m_directLight.transform.GetRotation();
+		glm::vec3 euler = glm::eulerAngles(lightRot);
+		euler = glm::degrees(euler);
+		ImGui::SliderFloat3("Light Rotation", &euler.x, 0.0f, 360.0f);
+		euler = glm::radians(euler);
+		lightRot = glm::quat(euler);
+		m_directLight.transform.SetRotation(lightRot);
+
 		glm::vec3 lightColor = m_directLight.color;
 		ImGui::SliderFloat3("Light Color", &lightColor.x, 0.0f, 1.0f);
 		m_directLight.color = lightColor;
-		
+
 		ImGui::End();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		// - cube 0 show light pos.
+		m_cubes[0]->transform.SetPosition(lightPos);
+		m_cubes[0]->transform.SetRotation(lightRot);
+
 		CallGL();
 	}
 
@@ -171,11 +184,11 @@ namespace test {
 		std::cout << glGetString(GL_VERSION) << std::endl;
 	}
 
-	void PipelineTest::InitImGui(){
+	void PipelineTest::InitImGui() {
 		IMGUI_CHECKVERSION();
 		imguiContext = ImGui::CreateContext();
 		ImGui::SetCurrentContext(imguiContext);
-		
+
 		ImGui::StyleColorsLight();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
@@ -226,11 +239,12 @@ namespace test {
 			Shader* shader = m_shaderRepo->GetShader(shaderID);
 			shader->Bind();
 
-			shader->SetUniform1i("u_Texture", 0);
-			shader->SetUniformMat4f("u_MVP", camera.GetMVPMatrix_Perspective(cube->transform.GetPosition()));
-			shader->SetUniformMat4f("u_ModRotationMatrix", glm::toMat4(cube->transform.GetRotation()));
-			shader->SetUniform3f("u_LightPosition", m_directLight.transform.GetPosition().x, m_directLight.transform.GetPosition().y, m_directLight.transform.GetPosition().z);
-			shader->SetUniform3f("u_LightColor", m_directLight.color.x, m_directLight.color.y, m_directLight.color.z);
+			shader->SetUniform1i("u_texture", 0);
+			shader->SetUniformMat4f("u_mvp", camera.GetMVPMatrix_Perspective(cube->transform.GetPosition()));
+			shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(cube->transform.GetRotation()));
+			glm::vec3 lightDir = m_directLight.transform.GetForward();
+			shader->SetUniform3f("u_lightDirection", lightDir.x, lightDir.y, lightDir.z);
+			shader->SetUniform3f("u_lightColor", m_directLight.color.x, m_directLight.color.y, m_directLight.color.z);
 
 			VertexArray* va = cube->va;
 			IndexBuffer* ib = cube->ib;
