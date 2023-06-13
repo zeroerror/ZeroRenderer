@@ -18,7 +18,7 @@ void main()
     v_TexCoord = texCoord;
 	
 	vec3 pos = vec3(position.x, position.y, position.z);
-	v_Normal = normalize(pos - u_ModPosition);
+	v_Normal = normalize(u_ModPosition - pos);
 	v_lightDirection = normalize(pos - u_LightPosition);
 
     gl_Position = u_MVP * u_ModRotationMatrix * position;
@@ -41,7 +41,7 @@ void main()
 {
     vec4 textureColor = texture(u_Texture, v_TexCoord);
     float intensity = max(dot(v_Normal, v_lightDirection), 0.0);
-    vec3 diffuse = u_LightColor * intensity; // 计算漫反射光照强度
+    vec3 diffuse = u_LightColor * intensity; 
 
     color = vec4(textureColor.rgb * diffuse, textureColor.a);
 }
