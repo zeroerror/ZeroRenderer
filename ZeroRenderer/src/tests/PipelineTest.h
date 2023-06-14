@@ -10,13 +10,14 @@
 #include "Cube.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
+#include "Material.h"
 #include "SpotLight.h"
 
 namespace test {
 
-	class PipelineTest :public Test {
+	class PipelineTest:public Test {
 	public:
-		Camera3D camera;
+		Camera3D* camera;
 		GLFWwindow* window;
 		ImGuiContext* imguiContext;
 		const float moveSpeed = 0.1f;
@@ -45,9 +46,13 @@ namespace test {
 		bool m_cameraControllerEnabled;
 
 		Cube* m_cubes[10];
+		Cube* m_lightCube;
+		Cube* m_depthMapCube;
 		ShaderRepo* m_shaderRepo;
 		TextureRepo* m_textureRepo;
-		SpotLight m_spotLight;
+		SpotLight* m_spotLight;
+		GLuint m_depthTexture;
+		GLuint m_framebuffer;
 
 		void LoadAssetsDatabase();
 		void InitOpenGL();
@@ -57,8 +62,11 @@ namespace test {
 		void LoadTextures();
 
 		void Repaint();
-		void RenderObject();
-		void CallGL();
+		void RenderScene();
+		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& lightPos, const glm::vec3& lightColor);
+		void RenderObjectForDepthMap();
+		void RenderSceneShadowMap();
+		void Draw();
 
 	};
 

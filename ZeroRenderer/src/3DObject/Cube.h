@@ -16,7 +16,7 @@ public:
 	static Cube* CreateCube(const float& width, const float& height, const float& depth);
 
 public:
-	Transform transform;
+	Transform* transform;
 	float width;
 	float height;
 	float depth;

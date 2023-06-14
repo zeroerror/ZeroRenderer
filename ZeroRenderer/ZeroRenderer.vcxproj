@@ -58,9 +58,11 @@
     <ClInclude Include="src\component\Camera3D.h" />
     <ClInclude Include="src\component\Camera3DController.h" />
     <ClInclude Include="src\component\DirectLight.h" />
+    <ClInclude Include="src\component\SpotLight.h" />
     <ClInclude Include="src\component\Transform.h" />
     <ClInclude Include="src\debug\GLDebug.h" />
     <ClInclude Include="src\gameObject\GameObject.h" />
+    <ClInclude Include="src\generic\ShadowType.h" />
     <ClInclude Include="src\repo\ShaderRepo.h" />
     <ClInclude Include="src\repo\TextureRepo.h" />
     <ClInclude Include="src\materials\Material.h" />
@@ -706,7 +708,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)src\3DObject;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)src\3DObject;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
     </ClCompile>

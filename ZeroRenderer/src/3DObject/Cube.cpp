@@ -7,6 +7,7 @@
 
 Cube::Cube() {
 	std::cout << "Cube::Cube()" << std::endl;
+	transform = new Transform();
 }
 
 void Cube::Ctor(float width, float height, float depth) {

@@ -16,24 +16,24 @@ void Camera3DController::Inject(Camera3D* camera, GLFWwindow* window) {
 }
 
 void Camera3DController::Update(const float& dt) {
-	Transform& camTrans = camera->transform;
+	Transform* camTrans = camera->transform;
 
 	//- Camera Move
 	if (glfwGetKey(window, GLFW_KEY_A)) {
-		glm::vec3 right = camTrans.GetRight();
-		camTrans.SetPosition(camTrans.GetPosition() + -right * moveSpeed);
+		glm::vec3 right = camTrans->GetRight();
+		camTrans->SetPosition(camTrans->GetPosition() + -right * moveSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D)) {
-		glm::vec3 right = camTrans.GetRight();
-		camTrans.SetPosition(camTrans.GetPosition() + right * moveSpeed);
+		glm::vec3 right = camTrans->GetRight();
+		camTrans->SetPosition(camTrans->GetPosition() + right * moveSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_W)) {
-		glm::vec3 forward = camTrans.GetForward();
-		camTrans.SetPosition(camTrans.GetPosition() + -forward * moveSpeed);
+		glm::vec3 forward = camTrans->GetForward();
+		camTrans->SetPosition(camTrans->GetPosition() + -forward * moveSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S)) {
-		glm::vec3 forward = camTrans.GetForward();
-		camTrans.SetPosition(camTrans.GetPosition() + forward * moveSpeed);
+		glm::vec3 forward = camTrans->GetForward();
+		camTrans->SetPosition(camTrans->GetPosition() + forward * moveSpeed);
 	}
 
 	double xPos, yPos;
@@ -44,9 +44,9 @@ void Camera3DController::Update(const float& dt) {
 	m_cursorPosX = xPos;
 	float yawRadius = -glm::radians(cursorOffsetX * rotateSpeed);
 	float pitchRadius = -glm::radians(cursorOffsetY * rotateSpeed);
-	glm::quat camRot = camTrans.GetRotation();
+	glm::quat camRot = camTrans->GetRotation();
 	camRot = glm::quat(glm::vec3(0, yawRadius, 0)) * camRot * glm::quat(glm::vec3(pitchRadius, 0, 0));
-	camTrans.SetRotation(camRot);
+	camTrans->SetRotation(camRot);
 
 	camera->Update(dt);
 

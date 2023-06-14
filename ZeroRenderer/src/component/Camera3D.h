@@ -20,7 +20,7 @@ public:
 
 
 public:
-	Transform transform;
+	Transform* transform;
 	float width;
 	float height;
 	float depth;

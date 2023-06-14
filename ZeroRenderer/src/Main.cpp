@@ -55,7 +55,6 @@ int main() {
 
 	while (!glfwWindowShouldClose(window)) {
 		GLCall(glfwMakeContextCurrent(window));
-		GLCall(glfwPollEvents());
 		GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
@@ -70,12 +69,14 @@ int main() {
 		}
 
 		testMenu->OnImGuiRender();
+
 		ImGui::SetCurrentContext(imguiContext);
 		GLCall(glfwMakeContextCurrent(window));
 		ImGui::End();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		GLCall(glfwPollEvents());
 		GLCall(glfwSwapBuffers(window));
 
 		if (curTest != nullptr) {

@@ -347,6 +347,8 @@
     <ClInclude Include="src\debug\GLDebug.h" />
     <ClInclude Include="src\repo\ShaderRepo.h" />
     <ClInclude Include="src\repo\TextureRepo.h" />
+    <ClInclude Include="src\component\SpotLight.h" />
+    <ClInclude Include="src\generic\ShadowType.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

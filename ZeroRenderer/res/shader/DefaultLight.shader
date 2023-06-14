@@ -45,6 +45,5 @@ void main()
     vec4 textureColor = texture(u_texture, v_texCoord);
     float intensity = -min(dot(v_normal, v_lightDirection), 0.0);
     vec3 diffuse = u_lightColor * intensity; 
-
     color = vec4(textureColor.rgb * diffuse, textureColor.a);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Transform.h"
+#include "ShadowType.h"
 
 class DirectLight {
 public:
@@ -9,5 +10,5 @@ public:
 
 public:
 	glm::vec3 color;
-
+	ShadowType shadowType;
 };

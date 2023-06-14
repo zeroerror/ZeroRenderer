@@ -14,7 +14,7 @@ public:
 
 	unsigned int GetID() const;
 
-	void Bind(unsigned int slot = 0) const;
+	void Bind(unsigned int slot) const;
 	void UnBind() const;
 
 	inline int GetWidth() const { return m_Width; }
