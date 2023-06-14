@@ -61,7 +61,7 @@ namespace test {
 			glm::vec3 forward = camTrans.GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans.SetPosition(pos);
-			});
+		});
 
 		// ====== Scene
 		Material* defaultMaterial = new Material();

@@ -3,6 +3,7 @@
 
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec2 texCoord;
+layout(location = 2) in vec3 normal;
 
 out vec2 v_texCoord;
 out vec3 v_normal;
@@ -19,8 +20,8 @@ void main()
     vec4 rotatedPosition = u_modRotationMatrix * position;
     gl_Position = u_mvp * rotatedPosition;
 
+	v_normal = normal;
 	vec3 localPos = vec3(rotatedPosition.x, rotatedPosition.y, rotatedPosition.z);
-	v_normal = normalize(localPos);
     v_lightDirection = normalize(localPos - u_lightPosition);
 }
 
