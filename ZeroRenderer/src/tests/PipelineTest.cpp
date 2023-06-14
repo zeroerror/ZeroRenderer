@@ -72,8 +72,8 @@ namespace test {
 		lightMaterial->SetDiffuseTexture(1000);
 		lightMaterial->SetShader(2000);
 
-		Cube* lightCube = Cube::CreateCube(1.0f, 1.0f, 1.0f);
-		lightCube->transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		Cube* lightCube = Cube::CreateCube(0.2f, 0.2f, 0.2f);
+		lightCube->transform.SetPosition(glm::vec3(0.0f, 5.0f, 5.0f));
 		lightCube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
 		lightCube->material = defaultMaterial;
 		m_cubes[0] = lightCube;
@@ -85,9 +85,9 @@ namespace test {
 		m_cubes[1] = cube;
 
 		for (int i = 2; i < 10; i++) {
-			Cube* cube = Cube::CreateCube(i, 2, i);
-			cube->transform.SetPosition(glm::vec3(i, i, i));
-			cube->transform.SetRotation(glm::quat(glm::vec3(0, 0, 0)));
+			Cube* cube = Cube::CreateCube(i * 2.0f, 2.0f, 2.0);
+			cube->transform.SetPosition(glm::vec3(i * 2.0f, i * 2.0f, i * 2.0f));
+			cube->transform.SetRotation(glm::quat(glm::vec3(0.0f, glm::radians(i * 18.0f), 0.0f)));
 			cube->material = lightMaterial;
 			m_cubes[i] = cube;
 		}
@@ -142,7 +142,7 @@ namespace test {
 				pos += right * deltaTime * 10.0f;
 				m_spotLight.transform.SetPosition(pos);
 			}
-			if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+			if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
 				glm::vec3 pos = m_spotLight.transform.GetPosition();
 				pos.y += deltaTime * 10.0f;
 				m_spotLight.transform.SetPosition(pos);

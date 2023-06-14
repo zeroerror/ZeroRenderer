@@ -17,7 +17,7 @@
 #include "Renderer.h"
 #include "GLDebug.h"
 
-Shader::Shader(const std::string& filePath){
+Shader::Shader(const std::string& filePath) {
 	ShaderProgramSource source = ParseShader(filePath);
 	m_programID = CreateShader(source.VertexSource, source.FragmentSource);
 	GLCall(glUseProgram(m_programID));

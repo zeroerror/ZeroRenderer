@@ -20,7 +20,9 @@ void main()
     vec4 rotatedPosition = u_modRotationMatrix * position;
     gl_Position = u_mvp * rotatedPosition;
 
-	v_normal = normal;
+    mat3 u_modRotationMatrix3 = mat3(u_modRotationMatrix);
+	v_normal = u_modRotationMatrix3 * normal;
+    
 	vec3 localPos = vec3(rotatedPosition.x, rotatedPosition.y, rotatedPosition.z);
     v_lightDirection = normalize(localPos - u_lightPosition);
 }
