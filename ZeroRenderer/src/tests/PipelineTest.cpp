@@ -138,34 +138,35 @@ namespace test {
 		glm::vec3 right = glm::cross(glm::vec3(0, -1, 0), forward);
 
 		if (!m_cameraControllerEnabled) {
+			float lightMoveSpeed = 2.0f;
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 				glm::vec3 pos = m_spotLight->transform->GetPosition();
-				pos += forward * deltaTime * 10.0f;
+				pos += forward * deltaTime * lightMoveSpeed;
 				m_spotLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 				glm::vec3 pos = m_spotLight->transform->GetPosition();
-				pos -= forward * deltaTime * 10.0f;
+				pos -= forward * deltaTime * lightMoveSpeed;
 				m_spotLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 				glm::vec3 pos = m_spotLight->transform->GetPosition();
-				pos -= right * deltaTime * 10.0f;
+				pos -= right * deltaTime * lightMoveSpeed;
 				m_spotLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 				glm::vec3 pos = m_spotLight->transform->GetPosition();
-				pos += right * deltaTime * 10.0f;
+				pos += right * deltaTime * lightMoveSpeed;
 				m_spotLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
 				glm::vec3 pos = m_spotLight->transform->GetPosition();
-				pos.y += deltaTime * 10.0f;
+				pos.y += deltaTime * lightMoveSpeed;
 				m_spotLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
 				glm::vec3 pos = m_spotLight->transform->GetPosition();
-				pos.y -= deltaTime * 10.0f;
+				pos.y -= deltaTime * lightMoveSpeed;
 				m_spotLight->transform->SetPosition(pos);
 			}
 			m_lightCube->transform->SetPosition(m_spotLight->transform->GetPosition());
@@ -275,7 +276,6 @@ namespace test {
 		camera = new Camera3D();
 		camera->width = m_screen_width;
 		camera->height = m_screen_height;
-		camera->depth = 1000;
 		camera->transform->SetPosition(glm::vec3(0, 0, 20));
 		camera->transform->SetRotation(glm::quat(glm::vec3(0, 0, 0)));
 		m_cameraController = Camera3DController();
@@ -336,7 +336,7 @@ namespace test {
 		glm::quat rot = m_lightCube->transform->GetRotation();
 		RenderObject(material, va, ib, pos, rot, lightPos, lightColor);
 
-		// - Depth Map Cube
+		// - Screen Cube 
 		material = m_depthMapCube->material;
 		va = m_depthMapCube->va;
 		ib = m_depthMapCube->ib;
@@ -346,6 +346,8 @@ namespace test {
 		Shader* shader = m_shaderRepo->GetShader(shaderID);
 		shader->Bind();
 		shader->SetUniform1i("u_depthMapTexture", 2);
+		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+		shader->SetUniform1f("u_farPlane", camera->farPlane);
 		RenderObject(material, va, ib, pos, rot, lightPos, lightColor);
 	}
 
@@ -370,11 +372,11 @@ namespace test {
 		// Check if framebuffer is complete
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 			std::cout << "########################## Framebuffer is not complete!" << std::endl;
-		}else{
+		}
+		else {
 			RenderObjectForDepthMap();
 		}
 
-		// 将帧缓冲对象解绑
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		camTrans->SetPosition(beforeCameraPos);
@@ -411,6 +413,12 @@ namespace test {
 		shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
 		shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
 		shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
+
+		shader->SetUniform1i("u_depthMapTexture", 2);
+		glm::mat4 lightSpaceMatrix = m_spotLight->GetLightSpaceMatrix();
+		shader->SetUniformMat4f("u_lightSpaceMatrix", lightSpaceMatrix);
+		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+		shader->SetUniform1f("u_farPlane", camera->farPlane);
 
 		va->Bind();
 		ib->Bind();

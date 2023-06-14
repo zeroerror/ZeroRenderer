@@ -23,7 +23,7 @@ public:
 	Transform* transform;
 	float width;
 	float height;
-	float depth;
-
+	float nearPlane;
+	float farPlane;
 
 };

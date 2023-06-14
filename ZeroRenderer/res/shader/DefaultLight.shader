@@ -40,10 +40,43 @@ in vec3 v_lightDirection;
 uniform sampler2D u_texture;
 uniform vec3 u_lightColor;
 
+uniform sampler2D u_depthMapTexture;
+uniform mat4 u_lightSpaceMatrix;
+uniform float u_nearPlane;
+uniform float u_farPlane;
+
+float calculateShadowFactor(vec4 fragPosition, vec3 lightDirection)
+{
+    vec4 lightSpacePosition = u_lightSpaceMatrix * fragPosition;
+    lightSpacePosition /= lightSpacePosition.w;
+
+    float currentDepth = lightSpacePosition.z;
+    float depthBias = 0.005; // 调整偏差以解决阴影失真问题
+
+    vec2 texCoord = lightSpacePosition.xy * 0.5 + 0.5;
+    float shadowMapDepth = texture(u_depthMapTexture, texCoord).r;
+    float linearMapDepth = (2.0 * u_nearPlane) / (u_farPlane + u_nearPlane - shadowMapDepth * (u_farPlane - u_nearPlane));
+    return linearMapDepth;
+
+    if (currentDepth - depthBias > linearMapDepth)
+        return 0.0; // 片段在阴影中
+    else
+        return 1.0; // 片段不在阴影中
+}
+
 void main()
 {
-    vec4 textureColor = texture(u_texture, v_texCoord);
+    vec4 outColor = texture(u_texture, v_texCoord);
+
+    // - Lambert Light Model -
     float intensity = -min(dot(v_normal, v_lightDirection), 0.0);
     vec3 diffuse = u_lightColor * intensity; 
-    color = vec4(textureColor.rgb * diffuse, textureColor.a);
+    outColor = vec4(outColor.rgb * diffuse, outColor.a);
+
+    // - Shadow -
+    vec4 fragPosition = vec4(gl_FragCoord.xyz, 1.0); 
+    float shadowFactor = calculateShadowFactor(fragPosition, v_lightDirection);
+    outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
+
+    color = outColor;
 }

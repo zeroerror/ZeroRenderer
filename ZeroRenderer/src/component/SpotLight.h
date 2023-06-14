@@ -10,6 +10,8 @@ public:
 	};
 	~SpotLight() {};
 
+	glm::mat4 GetLightSpaceMatrix();
+
 public:
     Transform* transform;
 	glm::vec3 color;

@@ -25,13 +25,13 @@ layout(location = 0) out vec4 color;
 
 in vec2 v_texCoord;
 uniform sampler2D u_depthMapTexture;
+uniform float u_nearPlane;
+uniform float u_farPlane;
 
 void main()
 {
     float depthValue = texture(u_depthMapTexture, v_texCoord).r;
-    float nearPlane = 0.1;  // 近裁剪面
-    float farPlane = 1000.0;  // 远裁剪面
-    float linearDepth = 2.0 * nearPlane / (farPlane + nearPlane - depthValue * (farPlane - nearPlane));
+    float linearDepth = 2.0 * u_nearPlane / (u_farPlane + u_nearPlane - depthValue * (u_farPlane - u_nearPlane));
     vec3 depthColor = vec3(linearDepth);
     color = vec4(depthColor, 1.0);
 

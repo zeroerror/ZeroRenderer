@@ -22,6 +22,7 @@
     <ClCompile Include="src\3DObject\Cube.cpp" />
     <ClCompile Include="src\component\Camera3D.cpp" />
     <ClCompile Include="src\component\Camera3DController.cpp" />
+    <ClCompile Include="src\component\SpotLight.cpp" />
     <ClCompile Include="src\component\Transform.cpp" />
     <ClCompile Include="src\debug\GLDebug.cpp" />
     <ClCompile Include="src\gameObject\GameObject.cpp" />
