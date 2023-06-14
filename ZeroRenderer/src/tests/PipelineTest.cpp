@@ -114,6 +114,45 @@ namespace test {
 			m_cameraController.Update(deltaTime);
 		}
 		camera.Update(deltaTime);
+
+		// - Light Position Control - For Debug
+		glm::vec3 forward = -camera.transform.GetForward();
+		forward.y = 0;
+		forward = glm::normalize(forward);
+		glm::vec3 right = glm::cross(glm::vec3(0, -1, 0), forward);
+
+		if (!m_cameraControllerEnabled) {
+			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+				glm::vec3 pos = m_spotLight.transform.GetPosition();
+				pos += forward * deltaTime * 10.0f;
+				m_spotLight.transform.SetPosition(pos);
+			}
+			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+				glm::vec3 pos = m_spotLight.transform.GetPosition();
+				pos -= forward * deltaTime * 10.0f;
+				m_spotLight.transform.SetPosition(pos);
+			}
+			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+				glm::vec3 pos = m_spotLight.transform.GetPosition();
+				pos -= right * deltaTime * 10.0f;
+				m_spotLight.transform.SetPosition(pos);
+			}
+			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+				glm::vec3 pos = m_spotLight.transform.GetPosition();
+				pos += right * deltaTime * 10.0f;
+				m_spotLight.transform.SetPosition(pos);
+			}
+			if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+				glm::vec3 pos = m_spotLight.transform.GetPosition();
+				pos.y += deltaTime * 10.0f;
+				m_spotLight.transform.SetPosition(pos);
+			}
+			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+				glm::vec3 pos = m_spotLight.transform.GetPosition();
+				pos.y -= deltaTime * 10.0f;
+				m_spotLight.transform.SetPosition(pos);
+			}
+		}
 	}
 
 	void PipelineTest::OnRender() {
@@ -131,16 +170,6 @@ namespace test {
 		ImGui::NewFrame();
 
 		ImGui::Begin("Light Menu");
-		glm::vec3 lightPos = m_spotLight.transform.GetPosition();
-		ImGui::SliderFloat3("Spot Light Position", &lightPos.x, -20.0f, 20.0f);
-		m_spotLight.transform.SetPosition(lightPos);
-		// glm::quat lightRot = m_spotLight.transform.GetRotation();
-		// glm::vec3 euler = glm::eulerAngles(lightRot);
-		// euler = glm::degrees(euler);
-		// ImGui::SliderFloat3("Spot Light Rotation", &euler.x, 0.0f, 360.0f);
-		// euler = glm::radians(euler);
-		// lightRot = glm::quat(euler);
-		// m_spotLight.transform.SetRotation(lightRot);
 		glm::vec3 lightColor = m_spotLight.color;
 		ImGui::SliderFloat3("Spot Light Color", &lightColor.x, 0.0f, 1.0f);
 		m_spotLight.color = lightColor;
@@ -154,8 +183,8 @@ namespace test {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		// - cube 0 show light pos.
-		m_cubes[0]->transform.SetPosition(lightPos);
+		// - cube 0 show light pos. - For Debug
+		m_cubes[0]->transform.SetPosition(m_spotLight.transform.GetPosition());
 
 		CallGL();
 	}
