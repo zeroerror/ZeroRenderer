@@ -29,6 +29,7 @@
     <ClCompile Include="src\repo\ShaderRepo.cpp" />
     <ClCompile Include="src\repo\TextureRepo.cpp" />
     <ClCompile Include="src\component\SpotLight.cpp" />
+    <ClCompile Include="src\component\DirectLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\3DObject\Cube.h" />

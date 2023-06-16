@@ -12,6 +12,7 @@
 #include "TextureRepo.h"
 #include "Material.h"
 #include "SpotLight.h"
+#include <DirectLight.h>
 
 namespace test {
 
@@ -45,12 +46,12 @@ namespace test {
 		Camera3DController m_cameraController;
 		bool m_cameraControllerEnabled;
 
-		Cube* m_cubes[10];
+		std::vector<Cube*> m_cubes;
 		Cube* m_lightCube;
 		Cube* m_depthMapCube;
 		ShaderRepo* m_shaderRepo;
 		TextureRepo* m_textureRepo;
-		SpotLight* m_spotLight;
+		DirectLight* m_directLight;
 		GLuint m_depthTexture;
 		GLuint m_framebuffer;
 
@@ -63,7 +64,7 @@ namespace test {
 
 		void Repaint();
 		void RenderScene();
-		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& lightPos, const glm::vec3& lightColor);
+		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot,const glm::mat4& cameraMVPMatrix,const glm::mat4& lightMVPMatrix);
 		void RenderObjectForDepthMap();
 		void RenderSceneShadowMap();
 		void Draw();

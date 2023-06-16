@@ -12,6 +12,7 @@
 #include "TextureRepo.h"
 #include "SpotLight.h"
 #include "ShadowType.h"
+#include "CameraType.h"
 
 namespace test {
 
@@ -81,37 +82,37 @@ namespace test {
 		depthMapMaterial->SetDiffuseTexture(1000);
 		depthMapMaterial->SetShader(3000);
 
+		// Light 
+		m_directLight = new DirectLight();
+		m_directLight->shadowType = ShadowType::Hard;
+		m_directLight->transform->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+		m_directLight->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(135.0f), 0)));
+		m_directLight->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 		// 创建中央光源Cube
-		m_lightCube = Cube::CreateCube(0.2f, 0.2f, 0.2f);
-		m_lightCube->transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-		m_lightCube->transform->SetRotation(glm::quat(glm::vec3(0, 0, 0)));
+		m_lightCube = Cube::CreateCube(0.2f, 0.2f, 1.0f);
 		m_lightCube->material = lightCubeMaterial;
 
 		// 创建用于展示光照深度贴图的屏幕Cube
-		m_depthMapCube = Cube::CreateCube(5.0f, 5.0f, 0.5f);
-		m_depthMapCube->transform->SetPosition(glm::vec3(0.0f, 0.0f, -10.0f));
-		m_depthMapCube->transform->SetRotation(glm::quat(glm::vec3(0, 0, 0)));
+		m_depthMapCube = Cube::CreateCube(10.0f, 10.0f, 0.5f);
+		m_depthMapCube->transform->SetPosition(glm::vec3(0.0f, 10.0f, 10.0f));
+		m_depthMapCube->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
 		m_depthMapCube->material = depthMapMaterial;
 
-		// 创建环绕中心的Cube
-		float radius = 5.0f;
-		for (int i = 0; i < 10; i++) {
-			float angle = glm::radians((360.0f / 10) * i);
-			float x = radius * cos(angle);
-			float z = radius * sin(angle);
+		// 创建地面
+		Cube* groundCube = Cube::CreateCube(10.0f, 0.1f, 10.0f);
+		groundCube->material = defaultLightMaterial;
+		m_cubes.push_back(groundCube);
 
-			Cube* cube = Cube::CreateCube(2.0f, 2.0f, 0.5f);
-			cube->transform->SetPosition(glm::vec3(x, 0.0f, z));
-			cube->transform->SetRotation(glm::quat(glm::vec3(0.0f, angle, 0.0f)));
-			cube->material = defaultLightMaterial;
-			m_cubes[i] = cube;
-		}
+		Cube* cube1 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
+		cube1->transform->SetPosition(glm::vec3(-2.0f, 2.0f, 0.0f));
+		cube1->material = defaultLightMaterial;
+		m_cubes.push_back(cube1);
 
-		// Light 
-		m_spotLight = new SpotLight();
-		m_spotLight->shadowType = ShadowType::Hard;
-		m_spotLight->transform->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
-		m_spotLight->color = glm::vec4(0.8f, 0.8f, 0.8f, 0.8f);
+		Cube* cube2 = Cube::CreateCube(2.0f, 3.0f, 2.0f);
+		cube2->transform->SetPosition(glm::vec3(2.0f, 2.0f, 0.0f));
+		cube2->material = defaultLightMaterial;
+		m_cubes.push_back(cube2);
 	}
 
 	void PipelineTest::OnUpdate(const float& deltaTime) {
@@ -140,43 +141,68 @@ namespace test {
 		if (!m_cameraControllerEnabled) {
 			float lightMoveSpeed = 2.0f;
 			if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-				glm::vec3 pos = m_spotLight->transform->GetPosition();
+				glm::vec3 pos = m_directLight->transform->GetPosition();
 				pos += forward * deltaTime * lightMoveSpeed;
-				m_spotLight->transform->SetPosition(pos);
+				m_directLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-				glm::vec3 pos = m_spotLight->transform->GetPosition();
+				glm::vec3 pos = m_directLight->transform->GetPosition();
 				pos -= forward * deltaTime * lightMoveSpeed;
-				m_spotLight->transform->SetPosition(pos);
+				m_directLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-				glm::vec3 pos = m_spotLight->transform->GetPosition();
+				glm::vec3 pos = m_directLight->transform->GetPosition();
 				pos -= right * deltaTime * lightMoveSpeed;
-				m_spotLight->transform->SetPosition(pos);
+				m_directLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-				glm::vec3 pos = m_spotLight->transform->GetPosition();
+				glm::vec3 pos = m_directLight->transform->GetPosition();
 				pos += right * deltaTime * lightMoveSpeed;
-				m_spotLight->transform->SetPosition(pos);
+				m_directLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-				glm::vec3 pos = m_spotLight->transform->GetPosition();
+				glm::vec3 pos = m_directLight->transform->GetPosition();
 				pos.y += deltaTime * lightMoveSpeed;
-				m_spotLight->transform->SetPosition(pos);
+				m_directLight->transform->SetPosition(pos);
 			}
 			if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-				glm::vec3 pos = m_spotLight->transform->GetPosition();
+				glm::vec3 pos = m_directLight->transform->GetPosition();
 				pos.y -= deltaTime * lightMoveSpeed;
-				m_spotLight->transform->SetPosition(pos);
+				m_directLight->transform->SetPosition(pos);
 			}
-			m_lightCube->transform->SetPosition(m_spotLight->transform->GetPosition());
+			m_lightCube->transform->SetPosition(m_directLight->transform->GetPosition());
+
+			// - Light Rotation Control - For Debug
+			float lightRotateSpeed = 1.0f;
+			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+				glm::quat rot = m_directLight->transform->GetRotation();
+				rot *= glm::angleAxis(glm::radians(lightRotateSpeed), glm::vec3(1, 0, 0));
+				m_directLight->transform->SetRotation(rot);
+			}
+			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+				glm::quat rot = m_directLight->transform->GetRotation();
+				rot *= glm::angleAxis(glm::radians(-lightRotateSpeed), glm::vec3(1, 0, 0));
+				m_directLight->transform->SetRotation(rot);
+			}
+			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+				glm::quat rot = m_directLight->transform->GetRotation();
+				rot *= glm::angleAxis(glm::radians(lightRotateSpeed), glm::vec3(0, 1, 0));
+				m_directLight->transform->SetRotation(rot);
+			}
+			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+				glm::quat rot = m_directLight->transform->GetRotation();
+				rot *= glm::angleAxis(glm::radians(-lightRotateSpeed), glm::vec3(0, 1, 0));
+				m_directLight->transform->SetRotation(rot);
+			}
+			m_lightCube->transform->SetRotation(m_directLight->transform->GetRotation());
+
 		}
 	}
 
 	void PipelineTest::OnRender() {
 		Repaint();
 
-		if (m_spotLight->shadowType != ShadowType::None) {
+		if (m_directLight->shadowType != ShadowType::None) {
 			RenderSceneShadowMap();
 			Repaint();
 		}
@@ -195,9 +221,9 @@ namespace test {
 		ImGui::NewFrame();
 
 		ImGui::Begin("Light Menu");
-		glm::vec3 lightColor = m_spotLight->color;
+		glm::vec3 lightColor = m_directLight->color;
 		ImGui::SliderFloat3("Spot Light Color", &lightColor.x, 0.0f, 1.0f);
-		m_spotLight->color = lightColor;
+		m_directLight->color = lightColor;
 		ImGui::End();
 
 		ImGui::Begin("Camera Controller Menu");
@@ -274,10 +300,12 @@ namespace test {
 
 	void PipelineTest::LoadCamera() {
 		camera = new Camera3D();
-		camera->width = m_screen_width;
-		camera->height = m_screen_height;
-		camera->transform->SetPosition(glm::vec3(0, 0, 20));
-		camera->transform->SetRotation(glm::quat(glm::vec3(0, 0, 0)));
+		camera->scrWidth = m_screen_width;
+		camera->scrHeight = m_screen_height;
+		camera->transform->SetPosition(glm::vec3(0, 20, -20));
+		camera->transform->SetRotation(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
+		camera->nearPlane = 0.1f;
+		camera->farPlane = 1000.0f;
 		m_cameraController = Camera3DController();
 		m_cameraController.Inject(camera, window);
 	}
@@ -307,25 +335,27 @@ namespace test {
 	}
 
 	void PipelineTest::Repaint() {
-		GLCall(glfwMakeContextCurrent(window));
-		GLCall(glClearColor(0.8f, 1.0f, 1.0f, 1.0f));
-		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		GLCall(glEnable(GL_DEPTH_TEST));
-		GLCall(glDepthFunc(GL_LESS));
-		GLCall(glDepthMask(GL_TRUE));
+		glfwMakeContextCurrent(window);
+		glClearColor(0.8f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glDepthFunc(GL_LESS);
+		glDepthMask(GL_TRUE);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
+
 	void PipelineTest::RenderScene() {
-		glm::vec3 lightPos = m_spotLight->transform->GetPosition();
-		glm::vec3 lightColor = m_spotLight->color;
-		for (size_t i = 0; i < 10; i++) {
-			Cube* cube = m_cubes[i];
+		for (auto cube : m_cubes) {
 			Material* material = cube->material;
 			VertexArray* va = cube->va;
 			IndexBuffer* ib = cube->ib;
 			glm::vec3 pos = cube->transform->GetPosition();
 			glm::quat rot = cube->transform->GetRotation();
-			RenderObject(material, va, ib, pos, rot, lightPos, lightColor);
+			glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
+			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
 		}
 
 		// - Light Cube
@@ -334,7 +364,9 @@ namespace test {
 		IndexBuffer* ib = m_lightCube->ib;
 		glm::vec3 pos = m_lightCube->transform->GetPosition();
 		glm::quat rot = m_lightCube->transform->GetRotation();
-		RenderObject(material, va, ib, pos, rot, lightPos, lightColor);
+		glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
 
 		// - Screen Cube 
 		material = m_depthMapCube->material;
@@ -342,22 +374,12 @@ namespace test {
 		ib = m_depthMapCube->ib;
 		pos = m_depthMapCube->transform->GetPosition();
 		rot = m_depthMapCube->transform->GetRotation();
-		unsigned shaderID = m_assetID2shaderID[material->shaderAssetID];
-		Shader* shader = m_shaderRepo->GetShader(shaderID);
-		shader->Bind();
-		shader->SetUniform1i("u_depthMapTexture", 2);
-		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
-		shader->SetUniform1f("u_farPlane", camera->farPlane);
-		RenderObject(material, va, ib, pos, rot, lightPos, lightColor);
+		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
 	}
 
 	void PipelineTest::RenderSceneShadowMap() {
-		Transform* camTrans = camera->transform;
-		Transform* lightTrans = m_spotLight->transform;
-		glm::vec3 beforeCameraPos = camTrans->GetPosition();
-		glm::quat beforeCameraRot = camTrans->GetRotation();
-		camTrans->SetPosition(lightTrans->GetPosition());
-		camTrans->SetRotation(lightTrans->GetRotation());
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -379,25 +401,21 @@ namespace test {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		camTrans->SetPosition(beforeCameraPos);
-		camTrans->SetRotation(beforeCameraRot);
 	}
 
 	void PipelineTest::RenderObjectForDepthMap() {
-		glm::vec3 lightPos = m_spotLight->transform->GetPosition();
-		glm::vec3 lightColor = m_spotLight->color;
-		for (size_t i = 0; i < 10; i++) {
-			Cube* cube = m_cubes[i];
+		for (auto cube : m_cubes) {
 			Material* material = cube->material;
 			VertexArray* va = cube->va;
 			IndexBuffer* ib = cube->ib;
 			glm::vec3 pos = cube->transform->GetPosition();
 			glm::quat rot = cube->transform->GetRotation();
-			RenderObject(material, va, ib, pos, rot, lightPos, lightColor);
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
+			RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
 		}
 	}
 
-	void PipelineTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::vec3& lightPos, const glm::vec3& lightColor) {
+	void PipelineTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
 		unsigned textureID = m_assetID2textureID[material->diffuseTextureAssetID];
 		Texture* texture = m_textureRepo->GetTexture(textureID);
 		texture->Bind(1);
@@ -407,16 +425,19 @@ namespace test {
 		shader->Bind();
 
 		shader->SetUniform1i("u_texture", 1);
-		shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(pos));
+		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
 		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
 
 		shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+		glm::vec3 lightPos = m_directLight->transform->GetPosition();
+		glm::vec3 lightColor = m_directLight->color;
+		glm::vec3 lightDirection = -m_directLight->GetLightDirection();
 		shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+		shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
 		shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
 
 		shader->SetUniform1i("u_depthMapTexture", 2);
-		glm::mat4 lightSpaceMatrix = m_spotLight->GetLightSpaceMatrix();
-		shader->SetUniformMat4f("u_lightSpaceMatrix", lightSpaceMatrix);
+		shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
 		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
 		shader->SetUniform1f("u_farPlane", camera->farPlane);
 
