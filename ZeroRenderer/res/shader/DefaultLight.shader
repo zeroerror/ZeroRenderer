@@ -1,7 +1,7 @@
 #shader vertex
 #version 330 core
 
-layout(location = 0) in vec4 relativePosition;
+layout(location = 0) in vec4 originPosition;
 layout(location = 1) in vec2 texCoord;
 layout(location = 2) in vec3 normal;
 
@@ -17,14 +17,14 @@ uniform vec3 u_lightPosition;
 void main()
 {
     v_texCoord = texCoord;
-    vec4 rotatedPosition = u_modRotationMatrix * relativePosition;
+    vec4 rotatedPosition = u_modRotationMatrix * originPosition;
     vec4 glPos = u_mvp * rotatedPosition;
     gl_Position = glPos;
 
     mat3 u_modRotationMatrix3 = mat3(u_modRotationMatrix);
     v_normal = u_modRotationMatrix3 * normal;
     
-    v_relativePosition = relativePosition;
+    v_relativePosition = rotatedPosition;
 }
 
 #shader fragment
@@ -56,13 +56,16 @@ void main()
 
     // ------ Shadow -------
     vec4 lightViewPos = (u_lightMVPMatrix * v_relativePosition);
-    vec3 lightViewMapPos  = lightViewPos.xyz / lightViewPos.w;
-    lightViewMapPos  = lightViewMapPos * 0.5f + 0.5f;
-    float currentDepth = lightViewMapPos.z ;
-    float mapDepth = texture(u_depthMapTexture,lightViewMapPos.xy).r;
-    float bias = 0.0f;
-    float shadow = currentDepth < (mapDepth + bias) ? 0.f : 1.f;// 当前深度值小于_DepthMap说明不在阴影中
-    outColor.rgb *= (1-shadow);
+    vec2 lightViewMapPos  = lightViewPos.xy / lightViewPos.w;
+    float curDepth = lightViewPos.z / lightViewPos.w;
+    curDepth = curDepth * 0.5 + 0.5;
+    float mapDepth = texture(u_depthMapTexture,lightViewMapPos).r;
 
-    color = outColor;
+    color = vec4(vec3(lightViewMapPos.x), 1.0);
+
+
+    // float bias = 0.02f;
+    // float shadow = curDepth >= (mapDepth + bias) ? 0 : 1;// 当前深度值小于_DepthMap说明不在阴影中
+    // outColor.rgb *= (1-shadow);
+    // color = outColor;
 }

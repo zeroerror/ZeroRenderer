@@ -8,6 +8,7 @@
 #include "Camera3D.h"
 #include "Camera3DController.h"
 #include "Cube.h"
+#include "Rectangle.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
 #include "Material.h"
@@ -48,7 +49,7 @@ namespace test {
 
 		std::vector<Cube*> m_cubes;
 		Cube* m_lightCube;
-		Cube* m_depthMapCube;
+		Rectangle* m_depthMapImage;
 		ShaderRepo* m_shaderRepo;
 		TextureRepo* m_textureRepo;
 		DirectLight* m_directLight;

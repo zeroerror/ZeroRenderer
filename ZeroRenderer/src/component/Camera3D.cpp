@@ -10,8 +10,9 @@
 Camera3D::Camera3D() {
 	transform = new Transform();
 	nearPlane = 0.1f;
-	farPlane = 100.0f;
-	orthoSize = 100.0f;
+	farPlane = 1000.0f;
+	orthoSize = 10.0f;
+	fov = 45.0f;
 	cameraType = CameraType::Perspective;
 }
 
@@ -45,9 +46,9 @@ glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) {
 	glm::quat cameraRot = transform->GetRotation();
 	glm::mat4 view = glm::toMat4(glm::inverse(cameraRot));
 
-	float constexpr fov = glm::radians(45.0f); 
+	float fovRadians = glm::radians(fov); 
 	float aspectRatio = scrWidth / scrHeight;
-	glm::mat4 proj = glm::perspectiveRH(fov, aspectRatio, nearPlane, farPlane);
+	glm::mat4 proj = glm::perspectiveRH(fovRadians, aspectRatio, nearPlane, farPlane);
 
 	glm::mat4 mvp = proj * view * model;
 

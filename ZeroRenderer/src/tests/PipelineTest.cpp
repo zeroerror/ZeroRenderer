@@ -86,31 +86,36 @@ namespace test {
 		m_directLight = new DirectLight();
 		m_directLight->shadowType = ShadowType::Hard;
 		m_directLight->transform->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-		m_directLight->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(135.0f), 0)));
+		m_directLight->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(180.0f), 0)));
+		m_directLight->fov = camera->fov;
+		m_directLight->scrWidth = camera->scrWidth;
+		m_directLight->scrHeight = camera->scrHeight;
+		m_directLight->nearPlane = camera->nearPlane;
+		m_directLight->farPlane = camera->farPlane;
 		m_directLight->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// 创建中央光源Cube
 		m_lightCube = Cube::CreateCube(0.2f, 0.2f, 1.0f);
 		m_lightCube->material = lightCubeMaterial;
 
-		// 创建用于展示光照深度贴图的屏幕Cube
-		m_depthMapCube = Cube::CreateCube(10.0f, 10.0f, 0.5f);
-		m_depthMapCube->transform->SetPosition(glm::vec3(0.0f, 10.0f, 10.0f));
-		m_depthMapCube->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
-		m_depthMapCube->material = depthMapMaterial;
+		// 创建光照深度贴图2D图片
+		m_depthMapImage = Rectangle::CreateRectangle(10.0f, 10.0f);
+		m_depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 10.0f));
+		m_depthMapImage->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+		m_depthMapImage->material = depthMapMaterial;
 
 		// 创建地面
-		Cube* groundCube = Cube::CreateCube(10.0f, 0.1f, 10.0f);
+		Cube* groundCube = Cube::CreateCube(20.0f, 0.1f, 30.0f);
 		groundCube->material = defaultLightMaterial;
 		m_cubes.push_back(groundCube);
 
 		Cube* cube1 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
-		cube1->transform->SetPosition(glm::vec3(-2.0f, 2.0f, 0.0f));
+		cube1->transform->SetPosition(glm::vec3(-2.0f, 1.0f, 0.0f));
 		cube1->material = defaultLightMaterial;
 		m_cubes.push_back(cube1);
 
-		Cube* cube2 = Cube::CreateCube(2.0f, 3.0f, 2.0f);
-		cube2->transform->SetPosition(glm::vec3(2.0f, 2.0f, 0.0f));
+		Cube* cube2 = Cube::CreateCube(1.0f, 4.0f, 1.0f);
+		cube2->transform->SetPosition(glm::vec3(2.0f, 2.0f, 2.0f));
 		cube2->material = defaultLightMaterial;
 		m_cubes.push_back(cube2);
 	}
@@ -173,29 +178,27 @@ namespace test {
 			m_lightCube->transform->SetPosition(m_directLight->transform->GetPosition());
 
 			// - Light Rotation Control - For Debug
-			float lightRotateSpeed = 1.0f;
+			float rotateX = 0;
+			float rotateY = 0;
+			float lightRotateSpeed = 10.0f;
 			if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-				glm::quat rot = m_directLight->transform->GetRotation();
-				rot *= glm::angleAxis(glm::radians(lightRotateSpeed), glm::vec3(1, 0, 0));
-				m_directLight->transform->SetRotation(rot);
+				rotateY -= lightRotateSpeed * deltaTime;
 			}
 			if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-				glm::quat rot = m_directLight->transform->GetRotation();
-				rot *= glm::angleAxis(glm::radians(-lightRotateSpeed), glm::vec3(1, 0, 0));
-				m_directLight->transform->SetRotation(rot);
+				rotateY += lightRotateSpeed * deltaTime;
 			}
 			if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-				glm::quat rot = m_directLight->transform->GetRotation();
-				rot *= glm::angleAxis(glm::radians(lightRotateSpeed), glm::vec3(0, 1, 0));
-				m_directLight->transform->SetRotation(rot);
+				rotateX -= lightRotateSpeed * deltaTime;
 			}
 			if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-				glm::quat rot = m_directLight->transform->GetRotation();
-				rot *= glm::angleAxis(glm::radians(-lightRotateSpeed), glm::vec3(0, 1, 0));
-				m_directLight->transform->SetRotation(rot);
+				rotateX += lightRotateSpeed * deltaTime;
 			}
-			m_lightCube->transform->SetRotation(m_directLight->transform->GetRotation());
-
+			float yawRadius = -glm::radians(rotateX);
+			float pitchRadius = -glm::radians(rotateY);
+			glm::quat lightRot = m_directLight->transform->GetRotation();
+			lightRot = glm::quat(glm::vec3(0, yawRadius, 0)) * lightRot * glm::quat(glm::vec3(pitchRadius, 0, 0));
+			m_directLight->transform->SetRotation(lightRot);
+			m_lightCube->transform->SetRotation(lightRot);
 		}
 	}
 
@@ -302,8 +305,8 @@ namespace test {
 		camera = new Camera3D();
 		camera->scrWidth = m_screen_width;
 		camera->scrHeight = m_screen_height;
-		camera->transform->SetPosition(glm::vec3(0, 20, -20));
-		camera->transform->SetRotation(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
+		camera->transform->SetPosition(glm::vec3(10, 20, 20));
+		camera->transform->SetRotation(glm::quat(glm::vec3(0, glm::radians(30.0f), 0)));
 		camera->nearPlane = 0.1f;
 		camera->farPlane = 1000.0f;
 		m_cameraController = Camera3DController();
@@ -354,7 +357,7 @@ namespace test {
 			glm::vec3 pos = cube->transform->GetPosition();
 			glm::quat rot = cube->transform->GetRotation();
 			glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
 			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
 		}
 
@@ -368,11 +371,11 @@ namespace test {
 		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Screen Cube 
-		material = m_depthMapCube->material;
-		va = m_depthMapCube->va;
-		ib = m_depthMapCube->ib;
-		pos = m_depthMapCube->transform->GetPosition();
-		rot = m_depthMapCube->transform->GetRotation();
+		material = m_depthMapImage->material;
+		va = m_depthMapImage->va;
+		ib = m_depthMapImage->ib;
+		pos = m_depthMapImage->transform->GetPosition();
+		rot = m_depthMapImage->transform->GetRotation();
 		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
 		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 	}
@@ -408,7 +411,7 @@ namespace test {
 			IndexBuffer* ib = cube->ib;
 			glm::vec3 pos = cube->transform->GetPosition();
 			glm::quat rot = cube->transform->GetRotation();
-			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
 			RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
 		}
 	}

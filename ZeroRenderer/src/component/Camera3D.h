@@ -24,8 +24,9 @@ public:
 	CameraType cameraType;
 	float scrWidth;
 	float scrHeight;
-	float orthoSize;
+	float fov;
 	float nearPlane;
 	float farPlane;
+	float orthoSize;
 
 };

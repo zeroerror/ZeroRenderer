@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\3DObject\Cube.cpp" />
+    <ClCompile Include="src\geometry\Rectangle.cpp" />
+    <ClCompile Include="src\geometry\Cube.cpp" />
     <ClCompile Include="src\component\Camera3D.cpp" />
     <ClCompile Include="src\component\Camera3DController.cpp" />
     <ClCompile Include="src\component\DirectLight.cpp" />
@@ -56,7 +57,8 @@
     <ClInclude Include="Dependencies\GLEW\include\GL\wglew.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
-    <ClInclude Include="src\3DObject\Cube.h" />
+    <ClInclude Include="src\geometry\Rectangle.h" />
+    <ClInclude Include="src\geometry\Cube.h" />
     <ClInclude Include="src\component\Camera3D.h" />
     <ClInclude Include="src\component\Camera3DController.h" />
     <ClInclude Include="src\component\DirectLight.h" />
@@ -710,7 +712,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)src\3DObject;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
     </ClCompile>
