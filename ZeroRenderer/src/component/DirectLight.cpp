@@ -4,7 +4,7 @@
 DirectLight::DirectLight() {
     transform = new Transform();
 	nearPlane = 0.1f;
-	farPlane = 100.0f;
+	farPlane = 1000.0f;
 	orthoSize = 10.0f;
     color = glm::vec3(1.0f, 1.0f, 1.0f);
     shadowType = ShadowType::Hard;
@@ -16,7 +16,7 @@ DirectLight::~DirectLight() {
 
 glm::mat4 DirectLight::GetMVPMatrix_Ortho(const glm::vec3& pos) const{
 	glm::quat lightRot = transform->GetRotation();
-	glm::vec3 lightPos = transform->GetForward() * 10.0f;
+	glm::vec3 lightPos = transform->GetForward() * 100.0f;
 
 	glm::mat4 model = glm::translate(glm::mat4(1), pos - lightPos);
 

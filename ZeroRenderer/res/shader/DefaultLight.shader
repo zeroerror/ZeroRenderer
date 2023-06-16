@@ -1,13 +1,13 @@
 #shader vertex
 #version 330 core
 
-layout(location = 0) in vec4 position;
+layout(location = 0) in vec4 relativePosition;
 layout(location = 1) in vec2 texCoord;
 layout(location = 2) in vec3 normal;
 
 out vec2 v_texCoord;
 out vec3 v_normal;
-out vec4 v_worldPosition;
+out vec4 v_relativePosition;
 
 uniform mat4 u_mvp;
 uniform mat4 u_modRotationMatrix;
@@ -17,15 +17,14 @@ uniform vec3 u_lightPosition;
 void main()
 {
     v_texCoord = texCoord;
-    vec4 rotatedPosition = u_modRotationMatrix * position;
+    vec4 rotatedPosition = u_modRotationMatrix * relativePosition;
     vec4 glPos = u_mvp * rotatedPosition;
     gl_Position = glPos;
 
     mat3 u_modRotationMatrix3 = mat3(u_modRotationMatrix);
     v_normal = u_modRotationMatrix3 * normal;
     
-    vec4 worldPosition = rotatedPosition + vec4(u_modPosition, 0.0);
-    v_worldPosition = worldPosition;
+    v_relativePosition = relativePosition;
 }
 
 #shader fragment
@@ -35,7 +34,7 @@ layout(location = 0) out vec4 color;
 
 in vec2 v_texCoord;
 in vec3 v_normal;
-in vec4 v_worldPosition;
+in vec4 v_relativePosition;
 
 uniform sampler2D u_texture;
 uniform vec3 u_lightColor;
@@ -56,7 +55,7 @@ void main()
     outColor.rgb *= diffuse;
 
     // ------ Shadow -------
-    vec4 lightViewPos = (u_lightMVPMatrix * v_worldPosition);
+    vec4 lightViewPos = (u_lightMVPMatrix * v_relativePosition);
     vec3 lightViewMapPos  = lightViewPos.xyz / lightViewPos.w;
     lightViewMapPos  = lightViewMapPos * 0.5f + 0.5f;
     float currentDepth = lightViewMapPos.z ;

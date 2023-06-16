@@ -11,7 +11,7 @@ Camera3D::Camera3D() {
 	transform = new Transform();
 	nearPlane = 0.1f;
 	farPlane = 100.0f;
-	orthoSize = 10.0f;
+	orthoSize = 100.0f;
 	cameraType = CameraType::Perspective;
 }
 

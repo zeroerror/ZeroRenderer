@@ -365,8 +365,7 @@ namespace test {
 		glm::vec3 pos = m_lightCube->transform->GetPosition();
 		glm::quat rot = m_lightCube->transform->GetRotation();
 		glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Screen Cube 
 		material = m_depthMapCube->material;
@@ -375,8 +374,7 @@ namespace test {
 		pos = m_depthMapCube->transform->GetPosition();
 		rot = m_depthMapCube->transform->GetRotation();
 		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		lightMVPMatrix = m_directLight->GetMVPMatrix_Ortho(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 	}
 
 	void PipelineTest::RenderSceneShadowMap() {
