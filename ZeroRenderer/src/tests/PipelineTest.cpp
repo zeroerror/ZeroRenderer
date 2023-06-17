@@ -377,9 +377,7 @@ namespace test {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		/* Create a windowed mode window and its OpenGL context */
-		int screen_width = 1280;
-		int screen_height = 1080;
-		window = glfwCreateWindow(screen_width, screen_height, "Pipeline Test Window", NULL, NULL);
+		window = glfwCreateWindow(m_screen_width, m_screen_height, "Pipeline Test Window", NULL, NULL);
 		if (!window) {
 			GLCall(glfwTerminate());
 			return;
@@ -404,8 +402,8 @@ namespace test {
 		glBindTexture(GL_TEXTURE_2D, m_depthTexture);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowMapWidth, m_shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // GL_CLAMP_TO_BORDER
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); // GL_CLAMP_TO_BORDER
 		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };

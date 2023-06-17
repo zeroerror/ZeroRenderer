@@ -30,6 +30,14 @@ void main()
     v_glPos = glPos;
 }
 
+
+
+
+
+
+
+
+
 #shader fragment
 #version 330 core
 
@@ -51,10 +59,12 @@ uniform float u_farPlane;
 
 void main()
 {
-    vec4 outColor = texture(u_texture, v_texCoord);
+    vec4 textureColor = texture(u_texture, v_texCoord);
+    vec4 outColor = textureColor;
 
     // - Lambert Light Model -
-    float intensity = -min(dot(v_normal, u_lightDirection), 0.0);
+    float dot = dot(v_normal, u_lightDirection);
+    float intensity = -min(dot, 0.0);
     vec3 diffuse = u_lightColor * intensity; 
     outColor.rgb *= diffuse;
 
@@ -62,15 +72,19 @@ void main()
     vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
     vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
     float mapDepth = texture(u_depthMapTexture, depthCoord).r;
-
     float curDepth = light_glPos.z / light_glPos.w;
     curDepth = curDepth * 0.5 + 0.5;
     curDepth = curDepth > 1.0 ? 1.0 : curDepth;
-
-    float bias = 0.0002;
+    float bias = min(0.00002 * (1 + dot), 0.00002);
     float shadow = curDepth < mapDepth + bias ? 0.0 : 1.0;
-
     outColor = vec4(outColor.rgb * (1-shadow), outColor.a);
+
+    // ------ Ambient Light -------
+    vec3 ambientColor = textureColor.xyz;
+    float ambientStrength = 0.3;
+    vec3 ambient = ambientColor * ambientStrength;
+    outColor.rgb += ambient;
 
     color = outColor;
 }
+
