@@ -29,7 +29,7 @@ glm::mat4 DirectLight::GetMVPMatrix_Ortho(const glm::vec3& pos) const{
 
 glm::mat4 DirectLight::GetMVPMatrix_Perspective(const glm::vec3& pos) const{
 	glm::vec3 lightForward = transform->GetForward();
-	glm::vec3 lightPos = -lightForward * 20.0f;
+	glm::vec3 lightPos = -lightForward * 30.0f;
 	glm::mat4 model = glm::translate(glm::mat4(1), pos - lightPos);
 
 	glm::quat lightRot = transform->GetRotation();

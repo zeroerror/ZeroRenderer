@@ -47,8 +47,8 @@ namespace test {
 	void PipelineTest::Init() {
 		m_screen_width = 1920;
 		m_screen_height = 1080;
-		m_shadowMapWidth = 1024;
-		m_shadowMapHeight = 1024;
+		m_shadowMapWidth = 2048;
+		m_shadowMapHeight = 2048;
 
 		LoadAssetsDatabase();
 		InitOpenGL();
@@ -65,7 +65,7 @@ namespace test {
 			glm::vec3 forward = camTrans->GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans->SetPosition(pos);
-		});
+			});
 
 		// ======================== Scene
 		Material* defaultMaterial = new Material();
@@ -96,30 +96,48 @@ namespace test {
 		m_directLight->farPlane = camera->farPlane;
 		m_directLight->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-		// 创建中央光源Cube
+		// Create a central light source cube
 		m_lightCube = Cube::CreateCube(0.2f, 0.2f, 1.0f);
 		m_lightCube->material = lightCubeMaterial;
 
-		// 创建深度贴图2D图片
+		// Create a depth map 2D image
 		m_depthMapImage = Rectangle::CreateRectangle(16.0f, 9.0f);
 		m_depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 10.0f));
 		m_depthMapImage->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
 		m_depthMapImage->material = depthMapMaterial;
 
-		// 创建地面
+		// Create the ground
 		Cube* groundCube = Cube::CreateCube(20.0f, 0.1f, 30.0f);
+		groundCube->transform->SetPosition(glm::vec3(0.0f, -0.05f, 0.0f));
 		groundCube->material = defaultLightMaterial;
 		m_cubes.push_back(groundCube);
 
-		Cube* cube1 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
-		cube1->transform->SetPosition(glm::vec3(-2.0f, 4.0f, 0.0f));
-		cube1->material = defaultLightMaterial;
-		m_cubes.push_back(cube1);
+		// Create walls
+		Cube* wall1 = Cube::CreateCube(1.0f, 5.0f, 10.0f);
+		wall1->transform->SetPosition(glm::vec3(-8.0f, 2.5f, 0.0f));
+		wall1->material = defaultLightMaterial;
+		m_cubes.push_back(wall1);
 
-		Cube* cube2 = Cube::CreateCube(2.0f, 4.0f, 2.0f);
-		cube2->transform->SetPosition(glm::vec3(2.0f, 2.0f, 2.0f));
-		cube2->material = defaultLightMaterial;
-		m_cubes.push_back(cube2);
+		Cube* wall2 = Cube::CreateCube(10.0f, 5.0f, 1.0f);
+		wall2->transform->SetPosition(glm::vec3(0.0f, 2.5f, -8.0f));
+		wall2->material = defaultLightMaterial;
+		m_cubes.push_back(wall2);
+
+		// Create obstacles
+		Cube* obstacle1 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
+		obstacle1->transform->SetPosition(glm::vec3(-4.0f, 1.0f, 4.0f));
+		obstacle1->material = defaultLightMaterial;
+		m_cubes.push_back(obstacle1);
+
+		Cube* obstacle2 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
+		obstacle2->transform->SetPosition(glm::vec3(4.0f, 1.0f, -4.0f));
+		obstacle2->material = defaultLightMaterial;
+		m_cubes.push_back(obstacle2);
+
+		Cube* obstacle3 = Cube::CreateCube(3.0f, 1.0f, 2.0f);
+		obstacle3->transform->SetPosition(glm::vec3(6.0f, 0.5f, 6.0f));
+		obstacle3->material = defaultLightMaterial;
+		m_cubes.push_back(obstacle3);
 	}
 
 	void PipelineTest::OnUpdate(const float& deltaTime) {
@@ -384,7 +402,7 @@ namespace test {
 
 		glGenTextures(1, &m_depthTexture);
 		glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-		
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowMapWidth, m_shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -392,7 +410,7 @@ namespace test {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); // GL_CLAMP_TO_BORDER
 		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-		
+
 		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
 		glDrawBuffer(GL_NONE);
@@ -415,7 +433,7 @@ namespace test {
 		camera->scrWidth = m_screen_width;
 		camera->scrHeight = m_screen_height;
 		camera->transform->SetPosition(glm::vec3(0, 15, -20));
-		camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(0.0f),  glm::radians(0.0f))));
+		camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(0.0f), glm::radians(0.0f))));
 		m_cameraController = Camera3DController();
 		m_cameraController.Inject(camera, window);
 	}
