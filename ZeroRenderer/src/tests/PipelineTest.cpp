@@ -85,8 +85,8 @@ namespace test {
 		// Light 
 		m_directLight = new DirectLight();
 		m_directLight->shadowType = ShadowType::Hard;
-		m_directLight->transform->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-		m_directLight->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(180.0f), 0)));
+		m_directLight->transform->SetPosition(camera->transform->GetPosition());
+		m_directLight->transform->SetRotation(camera->transform->GetRotation());
 		m_directLight->fov = camera->fov;
 		m_directLight->scrWidth = camera->scrWidth;
 		m_directLight->scrHeight = camera->scrHeight;
@@ -305,10 +305,8 @@ namespace test {
 		camera = new Camera3D();
 		camera->scrWidth = m_screen_width;
 		camera->scrHeight = m_screen_height;
-		camera->transform->SetPosition(glm::vec3(10, 20, 20));
-		camera->transform->SetRotation(glm::quat(glm::vec3(0, glm::radians(30.0f), 0)));
-		camera->nearPlane = 0.1f;
-		camera->farPlane = 1000.0f;
+		camera->transform->SetPosition(glm::vec3(0, 15, -20));
+		camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(0.0f),  glm::radians(0.0f))));
 		m_cameraController = Camera3DController();
 		m_cameraController.Inject(camera, window);
 	}

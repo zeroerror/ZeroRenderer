@@ -25,7 +25,7 @@ void Camera3D::Update(const float& dt) {
 	u_Time += dt;
 }
 
-glm::mat4 Camera3D::GetMVPMatrix_Ortho(const glm::vec3& pos) {
+glm::mat4 Camera3D::GetMVPMatrix_Ortho(const glm::vec3& pos) const{
 	glm::vec3 cameraPos = transform->GetPosition();
 	glm::mat4 model = glm::translate(glm::mat4(1), pos - cameraPos);
 
@@ -39,11 +39,13 @@ glm::mat4 Camera3D::GetMVPMatrix_Ortho(const glm::vec3& pos) {
 	return mvp;
 }
 
-glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) {
+glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) const{
+	glm::vec3 cameraForward = transform->GetForward();
 	glm::vec3 cameraPos = transform->GetPosition();
 	glm::mat4 model = glm::translate(glm::mat4(1), pos - cameraPos);
 
 	glm::quat cameraRot = transform->GetRotation();
+	cameraRot = cameraRot * glm::quat(glm::vec3(0, glm::radians(180.0f), 0));
 	glm::mat4 view = glm::toMat4(glm::inverse(cameraRot));
 
 	float fovRadians = glm::radians(fov); 

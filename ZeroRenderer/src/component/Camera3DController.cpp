@@ -21,19 +21,19 @@ void Camera3DController::Update(const float& dt) {
 	//- Camera Move
 	if (glfwGetKey(window, GLFW_KEY_A)) {
 		glm::vec3 right = camTrans->GetRight();
-		camTrans->SetPosition(camTrans->GetPosition() + -right * moveSpeed);
+		camTrans->SetPosition(camTrans->GetPosition() + right * moveSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_D)) {
 		glm::vec3 right = camTrans->GetRight();
-		camTrans->SetPosition(camTrans->GetPosition() + right * moveSpeed);
+		camTrans->SetPosition(camTrans->GetPosition() - right * moveSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_W)) {
 		glm::vec3 forward = camTrans->GetForward();
-		camTrans->SetPosition(camTrans->GetPosition() + -forward * moveSpeed);
+		camTrans->SetPosition(camTrans->GetPosition() + forward * moveSpeed);
 	}
 	if (glfwGetKey(window, GLFW_KEY_S)) {
 		glm::vec3 forward = camTrans->GetForward();
-		camTrans->SetPosition(camTrans->GetPosition() + forward * moveSpeed);
+		camTrans->SetPosition(camTrans->GetPosition() - forward * moveSpeed);
 	}
 
 	double xPos, yPos;
@@ -43,16 +43,16 @@ void Camera3DController::Update(const float& dt) {
 	m_cursorPosY = yPos;
 	m_cursorPosX = xPos;
 	float yawRadius = -glm::radians(cursorOffsetX * rotateSpeed);
-	float pitchRadius = -glm::radians(cursorOffsetY * rotateSpeed);
+	float pitchRadius = glm::radians(cursorOffsetY * rotateSpeed);
 	glm::quat camRot = camTrans->GetRotation();
-	camRot = glm::quat(glm::vec3(0, yawRadius, 0)) * camRot * glm::quat(glm::vec3(pitchRadius, 0, 0));
+	camRot =  glm::quat(glm::vec3(0, yawRadius, 0)) * camRot * glm::quat(glm::vec3(pitchRadius, 0, 0)) ;
 	camTrans->SetRotation(camRot);
 
 	camera->Update(dt);
 
 	glm::vec3 euler = glm::eulerAngles(camRot);
-	//std::cout << "Camera3D Rotation " << euler.x * 57.2958f << " " << euler.y * 57.2958f << " " << euler.z * 57.2958f << std::endl;
-	//std::cout << "Camera3D Position " << glm::to_string(camera->transform.GetPosition()) << std::endl;
+	std::cout << "Camera3D Rotation " << euler.x * 57.2958f << " " << euler.y * 57.2958f << " " << euler.z * 57.2958f << std::endl;
+	std::cout << "Camera3D Position " << glm::to_string(camera->transform->GetPosition()) << std::endl;
 }
 
 void Camera3DController::InitCursorPos() {

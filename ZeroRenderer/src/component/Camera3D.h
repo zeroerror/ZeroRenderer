@@ -15,8 +15,8 @@ public:
 
 	void Update(const float& dt);
 
-	glm::mat4 GetMVPMatrix_Ortho(const glm::vec3& pos);
-	glm::mat4 GetMVPMatrix_Perspective(const glm::vec3& pos);
+	glm::mat4 GetMVPMatrix_Ortho(const glm::vec3& pos) const;
+	glm::mat4 GetMVPMatrix_Perspective(const glm::vec3& pos) const;
 
 
 public:
