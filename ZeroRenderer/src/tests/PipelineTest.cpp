@@ -47,6 +47,8 @@ namespace test {
 	void PipelineTest::Init() {
 		m_screen_width = 1920;
 		m_screen_height = 1080;
+		m_shadowMapWidth = 1024;
+		m_shadowMapHeight = 1024;
 
 		LoadAssetsDatabase();
 		InitOpenGL();
@@ -98,8 +100,8 @@ namespace test {
 		m_lightCube = Cube::CreateCube(0.2f, 0.2f, 1.0f);
 		m_lightCube->material = lightCubeMaterial;
 
-		// 创建光照深度贴图2D图片
-		m_depthMapImage = Rectangle::CreateRectangle(10.0f, 10.0f);
+		// 创建深度贴图2D图片
+		m_depthMapImage = Rectangle::CreateRectangle(16.0f, 9.0f);
 		m_depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 10.0f));
 		m_depthMapImage->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
 		m_depthMapImage->material = depthMapMaterial;
@@ -110,11 +112,11 @@ namespace test {
 		m_cubes.push_back(groundCube);
 
 		Cube* cube1 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
-		cube1->transform->SetPosition(glm::vec3(-2.0f, 1.0f, 0.0f));
+		cube1->transform->SetPosition(glm::vec3(-2.0f, 4.0f, 0.0f));
 		cube1->material = defaultLightMaterial;
 		m_cubes.push_back(cube1);
 
-		Cube* cube2 = Cube::CreateCube(1.0f, 4.0f, 1.0f);
+		Cube* cube2 = Cube::CreateCube(2.0f, 4.0f, 2.0f);
 		cube2->transform->SetPosition(glm::vec3(2.0f, 2.0f, 2.0f));
 		cube2->material = defaultLightMaterial;
 		m_cubes.push_back(cube2);
@@ -217,6 +219,105 @@ namespace test {
 		}
 	}
 
+	void PipelineTest::RenderScene() {
+		for (auto cube : m_cubes) {
+			Material* material = cube->material;
+			VertexArray* va = cube->va;
+			IndexBuffer* ib = cube->ib;
+			glm::vec3 pos = cube->transform->GetPosition();
+			glm::quat rot = cube->transform->GetRotation();
+			glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
+			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
+		}
+
+		// - Light Cube
+		Material* material = m_lightCube->material;
+		VertexArray* va = m_lightCube->va;
+		IndexBuffer* ib = m_lightCube->ib;
+		glm::vec3 pos = m_lightCube->transform->GetPosition();
+		glm::quat rot = m_lightCube->transform->GetRotation();
+		glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+
+		// - Screen Cube 
+		material = m_depthMapImage->material;
+		va = m_depthMapImage->va;
+		ib = m_depthMapImage->ib;
+		pos = m_depthMapImage->transform->GetPosition();
+		rot = m_depthMapImage->transform->GetRotation();
+		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+	}
+
+	void PipelineTest::RenderSceneShadowMap() {
+		glViewport(0, 0, m_shadowMapWidth, m_shadowMapHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, m_depthTexture);
+
+		// Render Scene
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			std::cout << "########################## Framebuffer is not complete!" << std::endl;
+		}
+		else {
+			RenderObjectForDepthMap();
+		}
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, m_screen_width, m_screen_height);
+	}
+
+	void PipelineTest::RenderObjectForDepthMap() {
+		for (auto cube : m_cubes) {
+			Material* material = cube->material;
+			VertexArray* va = cube->va;
+			IndexBuffer* ib = cube->ib;
+			glm::vec3 pos = cube->transform->GetPosition();
+			glm::quat rot = cube->transform->GetRotation();
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
+			RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
+		}
+	}
+
+	void PipelineTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
+		unsigned textureID = m_assetID2textureID[material->diffuseTextureAssetID];
+		Texture* texture = m_textureRepo->GetTexture(textureID);
+		texture->Bind(1);
+
+		unsigned shaderID = m_assetID2shaderID[material->shaderAssetID];
+		Shader* shader = m_shaderRepo->GetShader(shaderID);
+		shader->Bind();
+
+		shader->SetUniform1i("u_texture", 1);
+		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
+		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
+
+		shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+		glm::vec3 lightPos = m_directLight->transform->GetPosition();
+		glm::vec3 lightColor = m_directLight->color;
+		glm::vec3 lightDirection = -m_directLight->GetLightDirection();
+		shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+		shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
+		shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
+
+		shader->SetUniform1i("u_depthMapTexture", 2);
+		shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
+		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+		shader->SetUniform1f("u_farPlane", camera->farPlane);
+
+		va->Bind();
+		ib->Bind();
+		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+	}
+
+	void PipelineTest::Draw() {
+		glfwMakeContextCurrent(window);
+		glfwPollEvents();
+		glfwSwapBuffers(window);
+	}
+
 	void PipelineTest::OnImGuiRender() {
 		ImGui::SetCurrentContext(imguiContext);
 		ImGui_ImplGlfw_NewFrame();
@@ -272,23 +373,31 @@ namespace test {
 		// Enable VSync
 		GLCall(glfwSwapInterval(1));
 
-		// Create framebuffer
-		glGenFramebuffers(1, &m_framebuffer);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
-
-		// Create depth texture
-		glGenTextures(1, &m_depthTexture);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_screen_width, m_screen_height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
-
 		if (glewInit() != GLEW_OK)
 			std::cout << "ERROR" << std::endl;
 
 		std::cout << glGetString(GL_VERSION) << std::endl;
+
+		// ======================= Create Shadow Mapping
+		glGenFramebuffers(1, &m_framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+
+		glGenTextures(1, &m_depthTexture);
+		glBindTexture(GL_TEXTURE_2D, m_depthTexture);
+		
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowMapWidth, m_shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // GL_CLAMP_TO_BORDER
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); // GL_CLAMP_TO_BORDER
+		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	void PipelineTest::InitImGui() {
@@ -346,108 +455,4 @@ namespace test {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-
-	void PipelineTest::RenderScene() {
-		for (auto cube : m_cubes) {
-			Material* material = cube->material;
-			VertexArray* va = cube->va;
-			IndexBuffer* ib = cube->ib;
-			glm::vec3 pos = cube->transform->GetPosition();
-			glm::quat rot = cube->transform->GetRotation();
-			glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
-			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
-		}
-
-		// - Light Cube
-		Material* material = m_lightCube->material;
-		VertexArray* va = m_lightCube->va;
-		IndexBuffer* ib = m_lightCube->ib;
-		glm::vec3 pos = m_lightCube->transform->GetPosition();
-		glm::quat rot = m_lightCube->transform->GetRotation();
-		glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
-
-		// - Screen Cube 
-		material = m_depthMapImage->material;
-		va = m_depthMapImage->va;
-		ib = m_depthMapImage->ib;
-		pos = m_depthMapImage->transform->GetPosition();
-		rot = m_depthMapImage->transform->GetRotation();
-		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
-	}
-
-	void PipelineTest::RenderSceneShadowMap() {
-
-		glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_screen_width, m_screen_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthTexture, 0);
-
-		// Check if framebuffer is complete
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			std::cout << "########################## Framebuffer is not complete!" << std::endl;
-		}
-		else {
-			RenderObjectForDepthMap();
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	}
-
-	void PipelineTest::RenderObjectForDepthMap() {
-		for (auto cube : m_cubes) {
-			Material* material = cube->material;
-			VertexArray* va = cube->va;
-			IndexBuffer* ib = cube->ib;
-			glm::vec3 pos = cube->transform->GetPosition();
-			glm::quat rot = cube->transform->GetRotation();
-			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
-			RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
-		}
-	}
-
-	void PipelineTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
-		unsigned textureID = m_assetID2textureID[material->diffuseTextureAssetID];
-		Texture* texture = m_textureRepo->GetTexture(textureID);
-		texture->Bind(1);
-
-		unsigned shaderID = m_assetID2shaderID[material->shaderAssetID];
-		Shader* shader = m_shaderRepo->GetShader(shaderID);
-		shader->Bind();
-
-		shader->SetUniform1i("u_texture", 1);
-		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
-
-		shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
-		glm::vec3 lightPos = m_directLight->transform->GetPosition();
-		glm::vec3 lightColor = m_directLight->color;
-		glm::vec3 lightDirection = -m_directLight->GetLightDirection();
-		shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
-		shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
-		shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
-
-		shader->SetUniform1i("u_depthMapTexture", 2);
-		shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
-		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
-		shader->SetUniform1f("u_farPlane", camera->farPlane);
-
-		va->Bind();
-		ib->Bind();
-		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
-	}
-
-	void PipelineTest::Draw() {
-		glfwMakeContextCurrent(window);
-		glfwPollEvents();
-		glfwSwapBuffers(window);
-	}
 }

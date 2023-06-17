@@ -41,6 +41,8 @@ namespace test {
 		std::unordered_map<std::string, unsigned int> m_assetPath2shaderID;
 		std::unordered_map<std::string, unsigned int> m_assetPath2textureID;
 
+		int m_shadowMapWidth;
+		int m_shadowMapHeight;
 		int m_screen_width;
 		int m_screen_height;
 
