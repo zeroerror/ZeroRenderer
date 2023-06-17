@@ -64,9 +64,10 @@ void main()
     float mapDepth = texture(u_depthMapTexture, depthCoord).r;
 
     float curDepth = light_glPos.z / light_glPos.w;
-    curDepth = curDepth*0.5 + 0.5;
+    curDepth = curDepth * 0.5 + 0.5;
 
-    float shadow = curDepth <= mapDepth ? 0.0 : 1.0;
+    float bias = 0.0001;
+    float shadow = curDepth <= mapDepth + bias ? 0.0 : 1.0;
 
     outColor = vec4(outColor.rgb * (1-shadow), outColor.a);
 
