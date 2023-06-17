@@ -49,6 +49,14 @@ uniform vec3 u_lightDirection;
 uniform float u_nearPlane;
 uniform float u_farPlane;
 
+float LinearizeDepth(float depth) 
+{
+    //depth->Zn
+    float z = depth * 2.0 - 1.0; // back to NDC 
+    //Zn->Ze
+    return (2.0 * u_nearPlane * 100) / (100 + u_nearPlane - z * (100 - u_nearPlane));    
+}
+
 void main()
 {
     vec4 outColor = texture(u_texture, v_texCoord);
@@ -59,14 +67,16 @@ void main()
     outColor.rgb *= diffuse;
 
     // ------ Shadow -------
-    // vec4 lightViewPos = u_lightMVPMatrix * v_relativePosition;
-    // vec2 lightViewMapPos  = lightViewPos.xy;
-    // float curDepth = lightViewPos.z / lightViewPos.w;
-    // float mapDepth = texture(u_depthMapTexture,lightViewMapPos).r;
-    // float bias = 0.02f;
-    // float shadow = curDepth >= (mapDepth + bias) ? 0 : 1;// 当前深度值小于_DepthMap说明不在阴影中
-    // outColor.rgb *= (1-shadow);
-    // color = vec4(vec3(lightViewPos.z/100), 1.0);
-    
+    vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
+    vec2 depthTexCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
+    float mapDepth = texture(u_depthMapTexture, depthTexCoord).r;
+
+    float curDepth = light_glPos.z / light_glPos.w;
+    curDepth = curDepth*0.5 + 0.5;
+
+    float shadow = curDepth > mapDepth + 0.005 ? 0.5 : 1.0;
+
+    outColor = vec4(outColor.rgb * shadow, outColor.a);
+
     color = outColor;
 }
