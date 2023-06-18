@@ -31,6 +31,7 @@
     <ClCompile Include="src\component\SpotLight.cpp" />
     <ClCompile Include="src\component\DirectLight.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
+    <ClCompile Include="src\tests\AssimpTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -353,6 +354,7 @@
     <ClInclude Include="src\component\SpotLight.h" />
     <ClInclude Include="src\generic\ShadowType.h" />
     <ClInclude Include="src\geometry\Rectangle.h" />
+    <ClInclude Include="src\tests\AssimpTest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

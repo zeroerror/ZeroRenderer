@@ -4,9 +4,10 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <GLDebug.h>
 #include <glm/gtx/quaternion.hpp>
+#include <assimp/Importer.hpp>
 
+#include "GLDebug.h"
 #include "Camera3DController.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"

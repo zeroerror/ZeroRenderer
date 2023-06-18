@@ -1,12 +1,13 @@
-#include "PipelineTest.h"
-#include "GLDebug.h"
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <glm/gtx/quaternion.hpp>
+
+#include "GLDebug.h"
+#include "AssimpTest.h"
+#include "PipelineTest.h"
 
 int main() {
 	const char* glsl_version = "#version 330 core";
@@ -49,6 +50,11 @@ int main() {
 	test::TestMenu* testMenu = new test::TestMenu(curTest);
 	testMenu->RegisterTest("Pipeline Test", []() {
 		std::shared_ptr<test::PipelineTest> test = std::make_shared<test::PipelineTest>();
+		test->Init();
+		return test;
+		});
+	testMenu->RegisterTest("Assimp Test", []() {
+		std::shared_ptr<test::AssimpTest> test = std::make_shared<test::AssimpTest>();
 		test->Init();
 		return test;
 		});

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\360MoveData\Users\Administrator\Desktop\assimp-master\CMakeFiles\767044f3d0de7a02dd3179fa3fcb12b3\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{383E0D61-6262-3C4C-BCAD-E48669DE2F89}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

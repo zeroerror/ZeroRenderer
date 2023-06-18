@@ -38,6 +38,7 @@
     <ClCompile Include="src\model\VertexArray.cpp" />
     <ClCompile Include="src\model\VertexBuffer.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
+    <ClCompile Include="src\tests\AssimpTest.cpp" />
     <ClCompile Include="src\tests\PipelineTest.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="src\model\VertexBuffer.h" />
     <ClInclude Include="src\model\VertexBufferLayout.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
+    <ClInclude Include="src\tests\AssimpTest.h" />
     <ClInclude Include="src\tests\PipelineTest.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
@@ -712,15 +714,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\GLEW\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;Gdi32.lib;Shell32.lib;User32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\Assimp\lib\Debug\Win32;$(SolutionDir)Dependencies\GLEW\lib\Release\Win32;$(SolutionDir)Dependencies\GLFW\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;glew32s.lib;assimp-vc143-mtd.lib;opengl32.lib;Gdi32.lib;Shell32.lib;User32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
