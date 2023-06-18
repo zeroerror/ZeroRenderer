@@ -139,6 +139,8 @@ namespace test {
 		obstacle3->transform->SetPosition(glm::vec3(6.0f, 0.5f, 6.0f));
 		obstacle3->material = defaultLightMaterial;
 		m_cubes.push_back(obstacle3);
+
+		Assimp::Importer imp;
 	}
 
 	void AssimpTest::OnUpdate(const float& deltaTime) {
