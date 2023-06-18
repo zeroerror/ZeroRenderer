@@ -35,8 +35,8 @@ namespace test {
 	PipelineTest::~PipelineTest() {
 		std::cout << "PipelineTest::~PipelineTest()" << std::endl;
 		GLCall(glfwMakeContextCurrent(window));
-		for (int i = 0; i < 10; i++) {
-			delete m_cubes[i];
+		for (auto cube : m_cubes) {
+			delete cube;
 		}
 		delete m_shaderRepo;
 		delete m_textureRepo;
