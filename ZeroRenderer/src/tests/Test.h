@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <ImGui/imgui.h>
 #include <functional>
 #include <vector>
@@ -24,6 +25,9 @@ namespace test {
 
 	class TestMenu:public Test {
 	public:
+		GLFWwindow* window;
+		ImGuiContext* imguiContext;
+
 		TestMenu(std::shared_ptr<Test>& currentTestPointer);
 		~TestMenu();
 

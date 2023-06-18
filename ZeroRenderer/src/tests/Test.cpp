@@ -1,4 +1,6 @@
 #include "Test.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 namespace test {
 
@@ -15,6 +17,8 @@ namespace test {
 		for (auto& test : m_Tests) {
 			if (ImGui::Button(test.first.c_str())) {
 				m_CurrentTest = test.second();
+				glfwMakeContextCurrent(window);
+				ImGui::SetCurrentContext(imguiContext);
 			}
 		}
 	}

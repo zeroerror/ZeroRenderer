@@ -48,6 +48,8 @@ int main() {
 
 	std::shared_ptr<test::Test> curTest = nullptr;
 	test::TestMenu* testMenu = new test::TestMenu(curTest);
+	testMenu->window = window;
+	testMenu->imguiContext = imguiContext;
 	testMenu->RegisterTest("Pipeline Test", []() {
 		std::shared_ptr<test::PipelineTest> test = std::make_shared<test::PipelineTest>();
 		test->Init();
