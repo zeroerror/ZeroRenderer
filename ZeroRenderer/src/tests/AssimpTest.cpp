@@ -5,7 +5,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtx/quaternion.hpp>
+
 #include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 #include "GLDebug.h"
 #include "Camera3DController.h"
@@ -140,7 +143,9 @@ namespace test {
 		obstacle3->material = defaultLightMaterial;
 		m_cubes.push_back(obstacle3);
 
-		Assimp::Importer imp;
+		std::string modelPath = "res/model/phone_booth.fbx";
+		Assimp::Importer importer;
+		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
 	}
 
 	void AssimpTest::OnUpdate(const float& deltaTime) {
