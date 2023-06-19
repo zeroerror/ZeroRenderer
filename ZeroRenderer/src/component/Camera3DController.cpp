@@ -51,8 +51,8 @@ void Camera3DController::Update(const float& dt) {
 	camera->Update(dt);
 
 	glm::vec3 euler = glm::eulerAngles(camRot);
-	std::cout << "Camera3D Rotation " << euler.x * 57.2958f << " " << euler.y * 57.2958f << " " << euler.z * 57.2958f << std::endl;
-	std::cout << "Camera3D Position " << glm::to_string(camera->transform->GetPosition()) << std::endl;
+	// std::cout << "Camera3D Rotation " << euler.x * 57.2958f << " " << euler.y * 57.2958f << " " << euler.z * 57.2958f << std::endl;
+	// std::cout << "Camera3D Position " << glm::to_string(camera->transform->GetPosition()) << std::endl;
 }
 
 void Camera3DController::InitCursorPos() {

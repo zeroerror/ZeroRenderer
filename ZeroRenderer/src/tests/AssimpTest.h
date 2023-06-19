@@ -63,8 +63,9 @@ namespace test {
 		GLuint m_depthTexture;
 		GLuint m_framebuffer;
 		std::vector<Cube*> m_cubes;
-		Model* m_model;
-
+		std::vector<Model*> m_models;
+		unsigned int indiceDrawCount;
+		
 		void LoadAssetsDatabase();
 		void InitOpenGL();
 		void InitImGui();
@@ -74,16 +75,16 @@ namespace test {
 
 		void Repaint();
 		void RenderScene();
-		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot,const glm::mat4& cameraMVPMatrix,const glm::mat4& lightMVPMatrix);
+		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix);
 		void RenderObjectForDepthMap();
 		void RenderSceneShadowMap();
 		void RenderModel(Model* model);
 		void Draw();
 
-		void LoadModel(const std::string& path);
-		void ProcessNode(aiNode* aNode, const aiScene* aScene);
+		void LoadModel(const std::string& path, Model* model);
+		void ProcessNode(aiNode* aNode, const aiScene* aScene, Model* model);
 		Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aScene);
-		
+
 	};
 
 }

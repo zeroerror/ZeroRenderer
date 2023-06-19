@@ -33,9 +33,11 @@ namespace test {
 		m_shaderRepo = new ShaderRepo();
 		m_textureRepo = new TextureRepo();
 
-		m_model = new Model();
+		m_models = std::vector<Model*>();
 
 		m_cameraControllerEnabled = false;
+
+		indiceDrawCount = 100;
 	}
 
 	AssimpTest::~AssimpTest() {
@@ -57,8 +59,8 @@ namespace test {
 	}
 
 	void AssimpTest::Init() {
-		m_screen_width = 860;
-		m_screen_height = 640;
+		m_screen_width = 1920;
+		m_screen_height = 1080;
 		m_shadowMapWidth = 2048;
 		m_shadowMapHeight = 2048;
 
@@ -151,7 +153,17 @@ namespace test {
 		obstacle3->material = defaultLightMaterial;
 		m_cubes.push_back(obstacle3);
 
-		LoadModel("res/model/phone_booth.fbx");
+		// Load Model
+		Model* model = new Model();
+		LoadModel("res/model/phone_booth.fbx", model);
+		glm::quat rot = glm::quat(glm::vec3(glm::radians(90.0f), glm::radians(90.0f), glm::radians(180.0f)));
+		model->transform->SetRotation(rot);
+		model->transform->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
+		m_models.push_back(model);
+
+		// model = new Model();
+		// LoadModel("res/model/character.fbx", model);
+		// m_models.push_back(model);
 	}
 
 	void AssimpTest::OnUpdate(const float& deltaTime) {
@@ -239,10 +251,10 @@ namespace test {
 	void AssimpTest::OnRender() {
 		Repaint();
 
-		if (m_directLight->shadowType != ShadowType::None) {
-			RenderSceneShadowMap();
-			Repaint();
-		}
+		//if (m_directLight->shadowType != ShadowType::None) {
+		//	RenderSceneShadowMap();
+		//	Repaint();
+		//}
 
 		RenderScene();
 
@@ -282,7 +294,9 @@ namespace test {
 		//RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Model
-		RenderModel(m_model);
+		for (auto model : m_models) {
+			RenderModel(model);
+		}
 	}
 
 	void AssimpTest::RenderSceneShadowMap() {
@@ -351,16 +365,16 @@ namespace test {
 		Shader* shader = m_shaderRepo->GetShader(m_assetID2shaderID[1000]);
 		shader->Bind();
 		shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(model->transform->GetPosition()));
+		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(model->transform->GetRotation()));
 		VertexArray* va = model->va;
 		IndexBuffer* ib = model->ib;
 		va->Bind();
 		ib->Bind();
-		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+		GLCall(glDrawElements(GL_TRIANGLES, indiceDrawCount, GL_UNSIGNED_INT, nullptr));
 	}
 
 	void AssimpTest::Draw() {
 		glfwMakeContextCurrent(window);
-		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
@@ -381,9 +395,16 @@ namespace test {
 		ImGui::SliderFloat("Camera Rotate Speed", &m_cameraController.rotateSpeed, 0.0f, 1.0f);
 		ImGui::End();
 
+		ImGui::Begin("Model Menu");
+		int count = indiceDrawCount;
+		ImGui::SliderInt("Indice Draw Count", &count, 0, 2000);
+		indiceDrawCount = count;
+		ImGui::End();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+		glfwPollEvents();
 		Draw();
 	}
 
@@ -432,8 +453,8 @@ namespace test {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowMapWidth, m_shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // GL_CLAMP_TO_BORDER
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); // GL_CLAMP_TO_BORDER
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); 
 		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
@@ -458,8 +479,8 @@ namespace test {
 		camera = new Camera3D();
 		camera->scrWidth = m_screen_width;
 		camera->scrHeight = m_screen_height;
-		camera->transform->SetPosition(glm::vec3(0, 15, -20));
-		camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(0.0f), glm::radians(0.0f))));
+		camera->transform->SetPosition(glm::vec3(0, 0, -5));
+		camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
 		m_cameraController = Camera3DController();
 		m_cameraController.Inject(camera, window);
 	}
@@ -490,7 +511,7 @@ namespace test {
 
 	void AssimpTest::Repaint() {
 		glfwMakeContextCurrent(window);
-		glClearColor(0.8f, 1.0f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
@@ -499,7 +520,7 @@ namespace test {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	void AssimpTest::LoadModel(const std::string& path) {
+	void AssimpTest::LoadModel(const std::string& path, Model* model) {
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -507,19 +528,19 @@ namespace test {
 			return;
 		}
 
-		ProcessNode(scene->mRootNode, scene);
+		ProcessNode(scene->mRootNode, scene, model);
 
-		m_model->BatchMeshes();
+		model->BatchMeshes();
 	}
 
-	void AssimpTest::ProcessNode(aiNode* aNode, const aiScene* aScene) {
+	void AssimpTest::ProcessNode(aiNode* aNode, const aiScene* aScene, Model* model) {
 		for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
 			aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
-			m_model->allMeshes->push_back(ProcessMesh(mesh, aScene));
+			model->allMeshes->push_back(ProcessMesh(mesh, aScene));
 		}
 		for (unsigned int i = 0; i < aNode->mNumChildren; i++) {
 			aiNode* childNode = aNode->mChildren[i];
-			ProcessNode(childNode, aScene);
+			ProcessNode(childNode, aScene, model);
 		}
 	}
 
@@ -527,21 +548,25 @@ namespace test {
 		Mesh* mesh = new Mesh();
 		std::vector<Vertex*>* vertices = mesh->vertices;
 
+		aiVector3D* aTexCoords = aMesh->mTextureCoords[0];
+
 		for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
 			aiVector3D aPosition = aMesh->mVertices[i];
 			aiVector3D aNormal = aMesh->mNormals[i];
+			aiVector3D texCoord;
+			if (aTexCoords != nullptr) {
+				texCoord = aTexCoords[i];
+			}
+
 			Vertex* vertex = new Vertex();
 			vertex->SetPosition(aPosition.x, aPosition.y, aPosition.z);
 			vertex->SetNormal(aNormal.x, aNormal.y, aNormal.z);
-
-			aiVector3D* aTexCoords = aMesh->mTextureCoords[0];
-			if (aTexCoords != nullptr) {
-				vertex->SetTexCoords(aTexCoords->x, aTexCoords->y);
-			}
-
-			glm::vec3 p = vertex->position;
-			std::cout << "Vertex Position [" << i << "]================ " << p.x << ", " << p.y << ", " << p.z << std::endl;
+			vertex->SetTexCoords(texCoord.x, texCoord.y);
 			vertices->push_back(vertex);
+
+			//std::cout << "Vertex: Position" << aPosition.x << ", " << aPosition.y << ", " << aPosition.z << std::endl;
+			//std::cout << "Vertex: Normal" << aNormal.x << ", " << aNormal.y << ", " << aNormal.z << std::endl;
+			//std::cout << "Vertex: TexCoord" << texCoord.x << ", " << texCoord.y << std::endl;
 		}
 
 		std::vector<unsigned int>* indices = mesh->indices;
@@ -549,7 +574,6 @@ namespace test {
 			aiFace face = aMesh->mFaces[i];
 			for (unsigned int j = 0; j < face.mNumIndices; j++) {
 				indices->push_back(face.mIndices[j]);
-				std::cout << "Vertex Indices " << face.mIndices[j] << std::endl;
 			}
 		}
 

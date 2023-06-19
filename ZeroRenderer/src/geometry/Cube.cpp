@@ -61,7 +61,7 @@ void Cube::Ctor(float width, float height, float depth) {
 		halfWidth, -halfHeight, halfDepth, 1.0f, 0.0f, normal_rdf.x,normal_rdf.y,normal_rdf.z,
 		halfWidth, halfHeight, halfDepth, 1.0f, 1.0f, normal_ruf.x,normal_ruf.y,normal_ruf.z,
 		-halfWidth, halfHeight, halfDepth, 0.0f, 1.0f, normal_luf.x,normal_luf.y,normal_luf.z
-				   }, 64 * sizeof(float));
+				   }, 64);
 
 	this->m_vbLayout = VertexBufferLayout();
 	this->m_vbLayout.Push<float>(3);

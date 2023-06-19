@@ -7,7 +7,7 @@ private:
 public:
 	VertexBuffer();
 	~VertexBuffer();
-	void Ctor(const void* data, unsigned int size);
+	void Ctor(const void* data, unsigned int count);
 
 	void Bind() const;
 	void UnBind() const;
