@@ -16,7 +16,6 @@ void Cube::Ctor(float width, float height, float depth) {
 	this->depth = depth;
 
 	this->va = new VertexArray();
-	this->va->Ctor();
 
 	this->vb = new VertexBuffer();
 	float halfWidth = width / 2.0f;
@@ -77,8 +76,9 @@ void Cube::Ctor(float width, float height, float depth) {
 
 Cube::~Cube() {
 	std::cout << "Cube::~Cube()" << std::endl;
-	delete vb;
+	delete transform;
 	delete va;
+	delete vb;
 	delete ib;
 }
 

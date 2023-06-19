@@ -15,7 +15,6 @@ void Rectangle::Ctor(float width, float height) {
 	this->height = height;
 
 	this->va = new VertexArray();
-	this->va->Ctor();
 
 	this->vb = new VertexBuffer();
 	float halfWidth = width / 2.0f;

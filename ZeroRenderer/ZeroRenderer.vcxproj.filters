@@ -18,12 +18,12 @@
     <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
-    <ClCompile Include="src\model\IndexBuffer.cpp" />
-    <ClCompile Include="src\model\VertexArray.cpp" />
-    <ClCompile Include="src\model\VertexBuffer.cpp" />
-    <ClCompile Include="src\materials\Material.cpp" />
-    <ClCompile Include="src\materials\Shader.cpp" />
-    <ClCompile Include="src\materials\Texture.cpp" />
+    <ClCompile Include="src\renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\renderer\VertexArray.cpp" />
+    <ClCompile Include="src\renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\material\Material.cpp" />
+    <ClCompile Include="src\material\Shader.cpp" />
+    <ClCompile Include="src\material\Texture.cpp" />
     <ClCompile Include="src\debug\GLDebug.cpp" />
     <ClCompile Include="src\tests\PipelineTest.cpp" />
     <ClCompile Include="src\repo\ShaderRepo.cpp" />
@@ -32,6 +32,9 @@
     <ClCompile Include="src\component\DirectLight.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\tests\AssimpTest.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
+    <ClCompile Include="src\renderer\Vertex.cpp" />
+    <ClCompile Include="src\model\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -341,13 +344,13 @@
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
-    <ClInclude Include="src\model\IndexBuffer.h" />
-    <ClInclude Include="src\model\VertexArray.h" />
-    <ClInclude Include="src\model\VertexBuffer.h" />
-    <ClInclude Include="src\model\VertexBufferLayout.h" />
-    <ClInclude Include="src\materials\Material.h" />
-    <ClInclude Include="src\materials\Shader.h" />
-    <ClInclude Include="src\materials\Texture.h" />
+    <ClInclude Include="src\renderer\IndexBuffer.h" />
+    <ClInclude Include="src\renderer\VertexArray.h" />
+    <ClInclude Include="src\renderer\VertexBuffer.h" />
+    <ClInclude Include="src\renderer\VertexBufferLayout.h" />
+    <ClInclude Include="src\material\Material.h" />
+    <ClInclude Include="src\material\Shader.h" />
+    <ClInclude Include="src\material\Texture.h" />
     <ClInclude Include="src\debug\GLDebug.h" />
     <ClInclude Include="src\repo\ShaderRepo.h" />
     <ClInclude Include="src\repo\TextureRepo.h" />
@@ -355,6 +358,9 @@
     <ClInclude Include="src\generic\ShadowType.h" />
     <ClInclude Include="src\geometry\Rectangle.h" />
     <ClInclude Include="src\tests\AssimpTest.h" />
+    <ClInclude Include="src\mesh\Mesh.h" />
+    <ClInclude Include="src\renderer\Vertex.h" />
+    <ClInclude Include="src\model\Model.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

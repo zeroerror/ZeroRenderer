@@ -33,24 +33,32 @@ namespace test {
 		m_shaderRepo = new ShaderRepo();
 		m_textureRepo = new TextureRepo();
 
+		m_model = new Model();
+
 		m_cameraControllerEnabled = false;
 	}
 
 	AssimpTest::~AssimpTest() {
 		std::cout << "AssimpTest::~AssimpTest()" << std::endl;
 		GLCall(glfwMakeContextCurrent(window));
+
 		for (auto cube : m_cubes) {
 			delete cube;
 		}
+
+		delete m_lightCube;
+		delete m_depthMapImage;
 		delete m_shaderRepo;
 		delete m_textureRepo;
+		delete m_directLight;
+
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwDestroyWindow(window);
 	}
 
 	void AssimpTest::Init() {
-		m_screen_width = 1920;
-		m_screen_height = 1080;
+		m_screen_width = 860;
+		m_screen_height = 640;
 		m_shadowMapWidth = 2048;
 		m_shadowMapHeight = 2048;
 
@@ -69,7 +77,7 @@ namespace test {
 			glm::vec3 forward = camTrans->GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans->SetPosition(pos);
-			});
+		});
 
 		// ======================== Scene
 		Material* defaultMaterial = new Material();
@@ -143,9 +151,7 @@ namespace test {
 		obstacle3->material = defaultLightMaterial;
 		m_cubes.push_back(obstacle3);
 
-		std::string modelPath = "res/model/phone_booth.fbx";
-		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
+		LoadModel("res/model/phone_booth.fbx");
 	}
 
 	void AssimpTest::OnUpdate(const float& deltaTime) {
@@ -246,34 +252,37 @@ namespace test {
 	}
 
 	void AssimpTest::RenderScene() {
-		for (auto cube : m_cubes) {
-			Material* material = cube->material;
-			VertexArray* va = cube->va;
-			IndexBuffer* ib = cube->ib;
-			glm::vec3 pos = cube->transform->GetPosition();
-			glm::quat rot = cube->transform->GetRotation();
-			glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
-			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
-		}
+		// for (auto cube : m_cubes) {
+		// 	Material* material = cube->material;
+		// 	VertexArray* va = cube->va;
+		// 	IndexBuffer* ib = cube->ib;
+		// 	glm::vec3 pos = cube->transform->GetPosition();
+		// 	glm::quat rot = cube->transform->GetRotation();
+		// 	glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		// 	glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
+		// 	RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
+		// }
 
-		// - Light Cube
-		Material* material = m_lightCube->material;
-		VertexArray* va = m_lightCube->va;
-		IndexBuffer* ib = m_lightCube->ib;
-		glm::vec3 pos = m_lightCube->transform->GetPosition();
-		glm::quat rot = m_lightCube->transform->GetRotation();
-		glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+		//// - Light Cube
+		//Material* material = m_lightCube->material;
+		//VertexArray* va = m_lightCube->va;
+		//IndexBuffer* ib = m_lightCube->ib;
+		//glm::vec3 pos = m_lightCube->transform->GetPosition();
+		//glm::quat rot = m_lightCube->transform->GetRotation();
+		//glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		//RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
-		// - Screen Cube 
-		material = m_depthMapImage->material;
-		va = m_depthMapImage->va;
-		ib = m_depthMapImage->ib;
-		pos = m_depthMapImage->transform->GetPosition();
-		rot = m_depthMapImage->transform->GetRotation();
-		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+		//// - Screen Cube 
+		//material = m_depthMapImage->material;
+		//va = m_depthMapImage->va;
+		//ib = m_depthMapImage->ib;
+		//pos = m_depthMapImage->transform->GetPosition();
+		//rot = m_depthMapImage->transform->GetRotation();
+		//cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		//RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+
+		// - Model
+		RenderModel(m_model);
 	}
 
 	void AssimpTest::RenderSceneShadowMap() {
@@ -333,6 +342,17 @@ namespace test {
 		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
 		shader->SetUniform1f("u_farPlane", camera->farPlane);
 
+		va->Bind();
+		ib->Bind();
+		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+	}
+
+	void AssimpTest::RenderModel(Model* model) {
+		Shader* shader = m_shaderRepo->GetShader(m_assetID2shaderID[1000]);
+		shader->Bind();
+		shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(model->transform->GetPosition()));
+		VertexArray* va = model->va;
+		IndexBuffer* ib = model->ib;
 		va->Bind();
 		ib->Bind();
 		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
@@ -477,6 +497,63 @@ namespace test {
 		glDepthFunc(GL_LESS);
 		glDepthMask(GL_TRUE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	void AssimpTest::LoadModel(const std::string& path) {
+		Assimp::Importer importer;
+		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+			std::cout << "#################################ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+			return;
+		}
+
+		ProcessNode(scene->mRootNode, scene);
+
+		m_model->BatchMeshes();
+	}
+
+	void AssimpTest::ProcessNode(aiNode* aNode, const aiScene* aScene) {
+		for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
+			aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
+			m_model->allMeshes->push_back(ProcessMesh(mesh, aScene));
+		}
+		for (unsigned int i = 0; i < aNode->mNumChildren; i++) {
+			aiNode* childNode = aNode->mChildren[i];
+			ProcessNode(childNode, aScene);
+		}
+	}
+
+	Mesh* AssimpTest::ProcessMesh(aiMesh* aMesh, const aiScene* aScene) {
+		Mesh* mesh = new Mesh();
+		std::vector<Vertex*>* vertices = mesh->vertices;
+
+		for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
+			aiVector3D aPosition = aMesh->mVertices[i];
+			aiVector3D aNormal = aMesh->mNormals[i];
+			Vertex* vertex = new Vertex();
+			vertex->SetPosition(aPosition.x, aPosition.y, aPosition.z);
+			vertex->SetNormal(aNormal.x, aNormal.y, aNormal.z);
+
+			aiVector3D* aTexCoords = aMesh->mTextureCoords[0];
+			if (aTexCoords != nullptr) {
+				vertex->SetTexCoords(aTexCoords->x, aTexCoords->y);
+			}
+
+			glm::vec3 p = vertex->position;
+			std::cout << "Vertex Position [" << i << "]================ " << p.x << ", " << p.y << ", " << p.z << std::endl;
+			vertices->push_back(vertex);
+		}
+
+		std::vector<unsigned int>* indices = mesh->indices;
+		for (unsigned int i = 0; i < aMesh->mNumFaces; i++) {
+			aiFace face = aMesh->mFaces[i];
+			for (unsigned int j = 0; j < face.mNumIndices; j++) {
+				indices->push_back(face.mIndices[j]);
+				std::cout << "Vertex Indices " << face.mIndices[j] << std::endl;
+			}
+		}
+
+		return mesh;
 	}
 
 }

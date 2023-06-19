@@ -1,4 +1,4 @@
-﻿glew32s.lib(glew.obj) : warning LNK4099: 未找到 PDB“vc120.pdb”(使用“glew32s.lib(glew.obj)”或在“D:\Works\ZeroRenderer\ZeroRenderer\x64\Debug\vc120.pdb”中寻找)；正在链接对象，如同没有调试信息一样
-LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-  ZeroRenderer.vcxproj -> D:\Works\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe
+﻿  AssimpTest.cpp
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(459,22): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(460,23): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+  ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe

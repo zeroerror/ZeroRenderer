@@ -4,16 +4,14 @@
 #include <iostream>
 
 VertexArray::VertexArray()
-	:m_RendererID(0) {}
+	:m_RendererID(0) {
+	GLCall(glGenVertexArrays(1, &m_RendererID));
+	GLCall(glBindVertexArray(m_RendererID));
+}
 
 VertexArray::~VertexArray() {
 	std::cout << "VertexArray::~VertexArray() " << m_RendererID << std::endl;
 	GLCall(glDeleteVertexArrays(1, &m_RendererID));
-}
-
-void VertexArray::Ctor() {
-	GLCall(glGenVertexArrays(1, &m_RendererID));
-	GLCall(glBindVertexArray(m_RendererID));
 }
 
 void VertexArray::AddBuffer(const VertexBuffer* vb, const VertexBufferLayout& layout) {

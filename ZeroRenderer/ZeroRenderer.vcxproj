@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\model\Model.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\geometry\Cube.cpp" />
     <ClCompile Include="src\component\Camera3D.cpp" />
@@ -29,14 +31,15 @@
     <ClCompile Include="src\debug\GLDebug.cpp" />
     <ClCompile Include="src\gameObject\GameObject.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\renderer\Vertex.cpp" />
     <ClCompile Include="src\repo\ShaderRepo.cpp" />
     <ClCompile Include="src\repo\TextureRepo.cpp" />
-    <ClCompile Include="src\materials\Material.cpp" />
-    <ClCompile Include="src\materials\Shader.cpp" />
-    <ClCompile Include="src\materials\Texture.cpp" />
-    <ClCompile Include="src\model\IndexBuffer.cpp" />
-    <ClCompile Include="src\model\VertexArray.cpp" />
-    <ClCompile Include="src\model\VertexBuffer.cpp" />
+    <ClCompile Include="src\material\Material.cpp" />
+    <ClCompile Include="src\material\Shader.cpp" />
+    <ClCompile Include="src\material\Texture.cpp" />
+    <ClCompile Include="src\renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\renderer\VertexArray.cpp" />
+    <ClCompile Include="src\renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\tests\AssimpTest.cpp" />
     <ClCompile Include="src\tests\PipelineTest.cpp" />
@@ -58,6 +61,8 @@
     <ClInclude Include="Dependencies\GLEW\include\GL\wglew.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
+    <ClInclude Include="src\model\Model.h" />
+    <ClInclude Include="src\mesh\Mesh.h" />
     <ClInclude Include="src\geometry\Rectangle.h" />
     <ClInclude Include="src\geometry\Cube.h" />
     <ClInclude Include="src\component\Camera3D.h" />
@@ -68,15 +73,16 @@
     <ClInclude Include="src\debug\GLDebug.h" />
     <ClInclude Include="src\gameObject\GameObject.h" />
     <ClInclude Include="src\generic\ShadowType.h" />
+    <ClInclude Include="src\renderer\Vertex.h" />
     <ClInclude Include="src\repo\ShaderRepo.h" />
     <ClInclude Include="src\repo\TextureRepo.h" />
-    <ClInclude Include="src\materials\Material.h" />
-    <ClInclude Include="src\materials\Shader.h" />
-    <ClInclude Include="src\materials\Texture.h" />
-    <ClInclude Include="src\model\IndexBuffer.h" />
-    <ClInclude Include="src\model\VertexArray.h" />
-    <ClInclude Include="src\model\VertexBuffer.h" />
-    <ClInclude Include="src\model\VertexBufferLayout.h" />
+    <ClInclude Include="src\material\Material.h" />
+    <ClInclude Include="src\material\Shader.h" />
+    <ClInclude Include="src\material\Texture.h" />
+    <ClInclude Include="src\renderer\IndexBuffer.h" />
+    <ClInclude Include="src\renderer\VertexArray.h" />
+    <ClInclude Include="src\renderer\VertexBuffer.h" />
+    <ClInclude Include="src\renderer\VertexBufferLayout.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\tests\AssimpTest.h" />
     <ClInclude Include="src\tests\PipelineTest.h" />
@@ -755,7 +761,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\materials;$(SolutionDir)src\model;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\model;$(SolutionDir)src\mesh;$(SolutionDir)src\material;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
     </ClCompile>

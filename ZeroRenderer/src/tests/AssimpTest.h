@@ -4,6 +4,10 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include "Test.h"
 #include "Camera3D.h"
 #include "Camera3DController.h"
@@ -13,7 +17,9 @@
 #include "TextureRepo.h"
 #include "Material.h"
 #include "SpotLight.h"
-#include <DirectLight.h>
+#include "DirectLight.h"
+#include "Mesh.h"
+#include "Model.h"
 
 namespace test {
 
@@ -46,17 +52,18 @@ namespace test {
 		int m_screen_width;
 		int m_screen_height;
 
-		Camera3DController m_cameraController;
-		bool m_cameraControllerEnabled;
-
-		std::vector<Cube*> m_cubes;
 		Cube* m_lightCube;
 		Rectangle* m_depthMapImage;
 		ShaderRepo* m_shaderRepo;
 		TextureRepo* m_textureRepo;
 		DirectLight* m_directLight;
+
+		Camera3DController m_cameraController;
+		bool m_cameraControllerEnabled;
 		GLuint m_depthTexture;
 		GLuint m_framebuffer;
+		std::vector<Cube*> m_cubes;
+		Model* m_model;
 
 		void LoadAssetsDatabase();
 		void InitOpenGL();
@@ -70,8 +77,13 @@ namespace test {
 		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot,const glm::mat4& cameraMVPMatrix,const glm::mat4& lightMVPMatrix);
 		void RenderObjectForDepthMap();
 		void RenderSceneShadowMap();
+		void RenderModel(Model* model);
 		void Draw();
 
+		void LoadModel(const std::string& path);
+		void ProcessNode(aiNode* aNode, const aiScene* aScene);
+		Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aScene);
+		
 	};
 
 }

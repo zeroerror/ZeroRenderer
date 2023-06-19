@@ -1,1 +1,2 @@
 D:\Works\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe
+C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe
