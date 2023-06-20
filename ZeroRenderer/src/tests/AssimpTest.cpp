@@ -155,15 +155,10 @@ namespace test {
 
 		// Load Model
 		Model* model = new Model();
-		LoadModel("res/model/phone_booth.fbx", model);
-		glm::quat rot = glm::quat(glm::vec3(glm::radians(90.0f), glm::radians(90.0f), glm::radians(180.0f)));
-		model->transform->SetRotation(rot);
-		model->transform->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
+		LoadModel("res/model/nanosuit/nanosuit.obj", model);
+		model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		m_models.push_back(model);
-
-		// model = new Model();
-		// LoadModel("res/model/character.fbx", model);
-		// m_models.push_back(model);
 	}
 
 	void AssimpTest::OnUpdate(const float& deltaTime) {
@@ -368,9 +363,57 @@ namespace test {
 		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(model->transform->GetRotation()));
 		VertexArray* va = model->va;
 		IndexBuffer* ib = model->ib;
+
 		va->Bind();
 		ib->Bind();
-		GLCall(glDrawElements(GL_TRIANGLES, indiceDrawCount, GL_UNSIGNED_INT, nullptr));
+
+		unsigned int idCount = ib->GetCount();
+		idCount = idCount > indiceDrawCount ? indiceDrawCount : idCount;
+		GLCall(glDrawElements(GL_TRIANGLES, idCount, GL_UNSIGNED_INT, nullptr));
+	}
+
+	void AssimpTest::RenderModelMesh(Model* model) {
+		Shader* shader = m_shaderRepo->GetShader(m_assetID2shaderID[1000]);
+		shader->Bind();
+		shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(model->transform->GetPosition()));
+		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(model->transform->GetRotation()));
+
+		std::vector<float> vertexData;
+		std::vector<unsigned int> indiceArray;
+		unsigned int vertexCount = 0;
+		unsigned int indiceCount = 0;
+		std::vector<Mesh*>* allMeshes = model->allMeshes;
+		for (auto mesh : *allMeshes) {
+			std::vector<Vertex*>* vertices = mesh->vertices;
+			for (auto vertex : *vertices) {
+				glm::vec3 position = vertex->position;
+				glm::vec2 texCoords = vertex->texCoords;
+				glm::vec3 normal = vertex->normal;
+				vertexData.push_back(position.x);
+				vertexData.push_back(position.y);
+				vertexData.push_back(position.z);
+				vertexCount++;
+			}
+			std::vector<unsigned int>* indices = mesh->indices;
+			for (auto indice : *indices) {
+				indiceArray.push_back(indice);
+				indiceCount++;
+			}
+
+			VertexArray va = VertexArray();
+			VertexBuffer vb = VertexBuffer();
+			VertexBufferLayout vbLayout = VertexBufferLayout();
+			IndexBuffer ib = IndexBuffer();
+			va.Bind();
+			vb.Ctor(vertexData.data(), vertexCount);
+			vbLayout.Push<float>(3);
+			va.AddBuffer(&vb, vbLayout);
+			ib.Ctor(indiceArray.data(), indiceCount);
+
+			unsigned int idCount = ib.GetCount();
+			idCount = idCount > indiceDrawCount ? indiceDrawCount : idCount;
+			GLCall(glDrawElements(GL_TRIANGLES, idCount, GL_UNSIGNED_INT, nullptr));
+		}
 	}
 
 	void AssimpTest::Draw() {
@@ -397,7 +440,7 @@ namespace test {
 
 		ImGui::Begin("Model Menu");
 		int count = indiceDrawCount;
-		ImGui::SliderInt("Indice Draw Count", &count, 0, 2000);
+		ImGui::SliderInt("Indice Draw Count", &count, 0, 100000);
 		indiceDrawCount = count;
 		ImGui::End();
 
@@ -453,8 +496,8 @@ namespace test {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_shadowMapWidth, m_shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER); 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
@@ -479,7 +522,7 @@ namespace test {
 		camera = new Camera3D();
 		camera->scrWidth = m_screen_width;
 		camera->scrHeight = m_screen_height;
-		camera->transform->SetPosition(glm::vec3(0, 0, -5));
+		camera->transform->SetPosition(glm::vec3(0, 10, -10));
 		camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
 		m_cameraController = Camera3DController();
 		m_cameraController.Inject(camera, window);
@@ -553,9 +596,9 @@ namespace test {
 		for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
 			aiVector3D aPosition = aMesh->mVertices[i];
 			aiVector3D aNormal = aMesh->mNormals[i];
-			aiVector3D texCoord;
+			aiVector2D texCoord;
 			if (aTexCoords != nullptr) {
-				texCoord = aTexCoords[i];
+				texCoord = aTexCoords[0][i];
 			}
 
 			Vertex* vertex = new Vertex();

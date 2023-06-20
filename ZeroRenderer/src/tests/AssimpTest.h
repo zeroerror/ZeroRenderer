@@ -79,6 +79,7 @@ namespace test {
 		void RenderObjectForDepthMap();
 		void RenderSceneShadowMap();
 		void RenderModel(Model* model);
+		void RenderModelMesh(Model* model);
 		void Draw();
 
 		void LoadModel(const std::string& path, Model* model);

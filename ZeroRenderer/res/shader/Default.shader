@@ -24,5 +24,5 @@ layout(location = 0) out vec4 color;
 in vec2 v_texCoord;
 
 void main() {
-	color = vec4(v_texCoord,1, 1);
+	color = vec4(0.8,0.8,1, 1);
 }

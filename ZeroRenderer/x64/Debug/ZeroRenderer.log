@@ -1,6 +1,4 @@
-﻿  Model.cpp
-  AssimpTest.cpp
-C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(480,22): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(481,23): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
-  正在生成代码...
+﻿  AssimpTest.cpp
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(523,22): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(524,23): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
   ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe

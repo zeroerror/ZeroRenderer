@@ -9,8 +9,6 @@ Model::Model() {
 
 	vbLayout = VertexBufferLayout();
 	vbLayout.Push<float>(3);
-	vbLayout.Push<float>(2);
-	vbLayout.Push<float>(3);
 }
 
 Model::~Model() {
@@ -39,11 +37,6 @@ void Model::BatchMeshes() {
 			vertexData.push_back(position.x);
 			vertexData.push_back(position.y);
 			vertexData.push_back(position.z);
-			vertexData.push_back(texCoords.x);
-			vertexData.push_back(texCoords.y);
-			vertexData.push_back(normal.x);
-			vertexData.push_back(normal.y);
-			vertexData.push_back(normal.z);
 			vertexCount++;
 		}
 
