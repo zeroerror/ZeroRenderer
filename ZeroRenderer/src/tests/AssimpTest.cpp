@@ -153,10 +153,22 @@ namespace test {
 		obstacle3->material = defaultLightMaterial;
 		m_cubes.push_back(obstacle3);
 
-		// Load Model
+		// ========================== Load Model
 		Model* model = new Model();
 		LoadModel("res/model/nanosuit/nanosuit.obj", model);
-		model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		model->transform->SetPosition(glm::vec3(10.0f, 0.0f, 20.0f));
+		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+		m_models.push_back(model);
+
+		model = new Model();
+		LoadModel("res/model/nanosuit/nanosuit.obj", model);
+		model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
+		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+		m_models.push_back(model);
+
+		model = new Model();
+		LoadModel("res/model/nanosuit/nanosuit.obj", model);
+		model->transform->SetPosition(glm::vec3(-10.0f, 0.0f, 20.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		m_models.push_back(model);
 	}
@@ -440,7 +452,7 @@ namespace test {
 
 		ImGui::Begin("Model Menu");
 		int count = indiceDrawCount;
-		ImGui::SliderInt("Indice Draw Count", &count, 0, 100000);
+		ImGui::SliderInt("Indice Draw Count", &count, 0, 1000'000);
 		indiceDrawCount = count;
 		ImGui::End();
 
@@ -554,7 +566,7 @@ namespace test {
 
 	void AssimpTest::Repaint() {
 		glfwMakeContextCurrent(window);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
@@ -565,7 +577,7 @@ namespace test {
 
 	void AssimpTest::LoadModel(const std::string& path, Model* model) {
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			std::cout << "#################################ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 			return;
@@ -606,10 +618,6 @@ namespace test {
 			vertex->SetNormal(aNormal.x, aNormal.y, aNormal.z);
 			vertex->SetTexCoords(texCoord.x, texCoord.y);
 			vertices->push_back(vertex);
-
-			//std::cout << "Vertex: Position" << aPosition.x << ", " << aPosition.y << ", " << aPosition.z << std::endl;
-			//std::cout << "Vertex: Normal" << aNormal.x << ", " << aNormal.y << ", " << aNormal.z << std::endl;
-			//std::cout << "Vertex: TexCoord" << texCoord.x << ", " << texCoord.y << std::endl;
 		}
 
 		std::vector<unsigned int>* indices = mesh->indices;

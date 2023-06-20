@@ -3,7 +3,7 @@
 
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec2 texCoord;
-layout(location = 1) in vec3 normal;
+layout(location = 2) in vec3 normal;
 
 uniform mat4 u_mvp;
 uniform mat4 u_modRotationMatrix;
@@ -24,5 +24,5 @@ layout(location = 0) out vec4 color;
 in vec2 v_texCoord;
 
 void main() {
-	color = vec4(0.8,0.8,1, 1);
+	color = vec4(v_texCoord,0, 1);
 }

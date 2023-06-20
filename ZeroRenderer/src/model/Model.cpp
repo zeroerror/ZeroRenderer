@@ -9,6 +9,7 @@ Model::Model() {
 
 	vbLayout = VertexBufferLayout();
 	vbLayout.Push<float>(3);
+	vbLayout.Push<float>(2);
 }
 
 Model::~Model() {
@@ -23,10 +24,8 @@ Model::~Model() {
 
 void Model::BatchMeshes() {
 	std::vector<float> vertexData;
-	unsigned int vertexCount = 0;
-
 	std::vector<unsigned int> indiceArray;
-	unsigned int indiceCount = 0;
+	unsigned int vertexCount=0;
 
 	for (auto mesh : *allMeshes) {
 		std::vector<Vertex*>* vertices = mesh->vertices;
@@ -37,19 +36,21 @@ void Model::BatchMeshes() {
 			vertexData.push_back(position.x);
 			vertexData.push_back(position.y);
 			vertexData.push_back(position.z);
-			vertexCount++;
+			vertexData.push_back(texCoords.x);
+			vertexData.push_back(texCoords.y);
 		}
-
 		std::vector<unsigned int>* indices = mesh->indices;
 		for (auto indice : *indices) {
-			indiceArray.push_back(indice);
-			indiceCount++;
+			indiceArray.push_back(indice+vertexCount);
 		}
+
+		vertexCount += vertices->size();
 	}
 
 	va->Bind();
-	vb->Ctor(vertexData.data(), vertexCount);
+	vb->Ctor(vertexData.data(), vertexData.size());
 	va->AddBuffer(vb, vbLayout);
-	ib->Ctor(indiceArray.data(), indiceCount);
-	std::cout << "Model BatchMeshes: vertexCount: " << vertexCount << " indiceCount: " << indiceCount << std::endl;
+	ib->Ctor(indiceArray.data(), indiceArray.size());
+
+	std::cout << "Model BatchMeshes: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << std::endl;
 }
