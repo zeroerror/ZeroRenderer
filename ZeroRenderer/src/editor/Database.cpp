@@ -9,15 +9,39 @@
 
 std::unordered_map<std::string, std::string>* Database::m_assetPath2GUID;
 std::unordered_map<std::string, std::string>* Database::m_guid2AssetPath;
+// ------------------------------- Temp Asset
+Material* Database::defaultMaterial;
+Material* Database::defaultLightMaterial;
+Material* Database::lightCubeMaterial;
+Material* Database::depthMapMaterial;
 
 void Database::LoadDatabase() {
     std::cout << "######################################### LoadDatabase ######################################### " << std::endl;    
     m_assetPath2GUID = new std::unordered_map<std::string, std::string>();
     m_guid2AssetPath = new std::unordered_map<std::string, std::string>();
 
+	LoadMaterials();
     LoadAssetTextures();
     LoadAssetShaders();
     LoadAssetModels();
+}
+
+void Database::LoadMaterials(){
+	defaultMaterial = new Material();
+	defaultMaterial->SetDiffuseTexture(1000);
+	defaultMaterial->SetShader(1000);
+
+	defaultLightMaterial = new Material();
+	defaultLightMaterial->SetDiffuseTexture(1000);
+	defaultLightMaterial->SetShader(2000);
+
+	lightCubeMaterial = new Material();
+	lightCubeMaterial->SetDiffuseTexture(2000);
+	lightCubeMaterial->SetShader(1000);
+
+	depthMapMaterial = new Material();
+	depthMapMaterial->SetDiffuseTexture(1000);
+	depthMapMaterial->SetShader(3000);
 }
 
 void Database::LoadAssetModels() {

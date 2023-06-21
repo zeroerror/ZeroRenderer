@@ -35,6 +35,8 @@
     <ClCompile Include="src\renderer\Vertex.cpp" />
     <ClCompile Include="src\model\Model.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
+    <ClCompile Include="src\editor\SceneManager.cpp" />
+    <ClCompile Include="src\editor\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -361,6 +363,8 @@
     <ClInclude Include="src\renderer\Vertex.h" />
     <ClInclude Include="src\model\Model.h" />
     <ClInclude Include="src\editor\Database.h" />
+    <ClInclude Include="src\editor\SceneManager.h" />
+    <ClInclude Include="src\editor\Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

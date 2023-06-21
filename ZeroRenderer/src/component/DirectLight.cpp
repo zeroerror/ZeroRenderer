@@ -4,7 +4,6 @@
 DirectLight::DirectLight() {
     transform = new Transform();
     color = glm::vec3(1.0f, 1.0f, 1.0f);
-    shadowType = ShadowType::Hard;
 }
 
 DirectLight::~DirectLight() {

@@ -20,14 +20,40 @@
 #include "DirectLight.h"
 #include "Mesh.h"
 #include "Model.h"
+#include "Scene.h"
 
 namespace test {
 
 	class AssimpTest:public Test {
 	public:
+		// ---- Scene
+		Scene* scene;
+		std::vector<Cube*>* cubes;
+		std::vector<Model*>* models;
+		Rectangle* depthMapImage;
+		Cube* lightCube;
 		Camera3D* camera;
+		DirectLight* directLight;
+
 		GLFWwindow* window;
 		ImGuiContext* imguiContext;
+
+		std::unordered_map<unsigned int, unsigned int> assetID2shaderID;
+		std::unordered_map<unsigned int, unsigned int> assetID2textureID;
+		std::unordered_map<std::string, unsigned int> assetPath2shaderID;
+		std::unordered_map<std::string, unsigned int> assetPath2textureID;
+
+		int shadowMapWidth;
+		int shadowMapHeight;
+
+		ShaderRepo* shaderRepo;
+		TextureRepo* textureRepo;
+
+		Camera3DController cameraController;
+		bool cameraControllerEnabled;
+		GLuint depthTexture;
+		GLuint framebuffer;
+
 		const float moveSpeed = 0.1f;
 		const float rotateSpeed = 0.1f;
 
@@ -38,35 +64,7 @@ namespace test {
 		void OnUpdate(const float& deltaTime) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
-
-	private:
-		std::unordered_map<std::string, unsigned int> m_assetPath2AssetID;
-		std::unordered_map<unsigned int, std::string> m_assetID2AssetPath;
-		std::unordered_map<unsigned int, unsigned int> m_assetID2shaderID;
-		std::unordered_map<unsigned int, unsigned int> m_assetID2textureID;
-		std::unordered_map<std::string, unsigned int> m_assetPath2shaderID;
-		std::unordered_map<std::string, unsigned int> m_assetPath2textureID;
-
-		int m_shadowMapWidth;
-		int m_shadowMapHeight;
-		int m_screen_width;
-		int m_screen_height;
-
-		Cube* m_lightCube;
-		Rectangle* m_depthMapImage;
-		ShaderRepo* m_shaderRepo;
-		TextureRepo* m_textureRepo;
-		DirectLight* m_directLight;
-
-		Camera3DController m_cameraController;
-		bool m_cameraControllerEnabled;
-		GLuint m_depthTexture;
-		GLuint m_framebuffer;
-		std::vector<Cube*> m_cubes;
-		std::vector<Model*> m_models;
-		unsigned int indiceDrawCount;
 		
-		void LoadAssetsDatabase();
 		void InitOpenGL();
 		void InitImGui();
 		void LoadCamera();

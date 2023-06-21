@@ -18,6 +18,9 @@ Camera3D::Camera3D() {
 	fov = 45.0f;
 	orthoSize = 20.0f;
 	cameraType = CameraType::Perspective;
+
+	scrWidth = 1920;
+	scrHeight = 1080;
 }
 
 Camera3D::~Camera3D() {
