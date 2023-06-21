@@ -1,5 +1,4 @@
-﻿  Model.cpp
-C:\ZeroRenderer\ZeroRenderer\src\model\Model.cpp(47,32): warning C4267: “+=”: 从“size_t”转换到“unsigned int”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\model\Model.cpp(51,47): warning C4267: “参数”: 从“size_t”转换到“unsigned int”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\model\Model.cpp(53,49): warning C4267: “参数”: 从“size_t”转换到“unsigned int”，可能丢失数据
+﻿  AssimpTest.cpp
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(507,22): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(508,23): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
   ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe

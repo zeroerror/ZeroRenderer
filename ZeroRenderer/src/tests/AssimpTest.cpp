@@ -37,7 +37,7 @@ namespace test {
 
 		m_cameraControllerEnabled = false;
 
-		indiceDrawCount = 100;
+		indiceDrawCount = 100000;
 	}
 
 	AssimpTest::~AssimpTest() {
@@ -155,21 +155,24 @@ namespace test {
 
 		// ========================== Load Model
 		Model* model = new Model();
-		LoadModel("res/model/nanosuit/nanosuit.obj", model);
+		model->LoadModel("res/model/nanosuit/nanosuit.obj");
 		model->transform->SetPosition(glm::vec3(10.0f, 0.0f, 20.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+		model->material = defaultLightMaterial;
 		m_models.push_back(model);
 
 		model = new Model();
-		LoadModel("res/model/nanosuit/nanosuit.obj", model);
+		model->LoadModel("res/model/nanosuit/nanosuit.obj");
 		model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+		model->material = defaultLightMaterial;
 		m_models.push_back(model);
 
 		model = new Model();
-		LoadModel("res/model/nanosuit/nanosuit.obj", model);
+		model->LoadModel("res/model/nanosuit/nanosuit.obj");
 		model->transform->SetPosition(glm::vec3(-10.0f, 0.0f, 20.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+		model->material = defaultLightMaterial;
 		m_models.push_back(model);
 	}
 
@@ -258,10 +261,10 @@ namespace test {
 	void AssimpTest::OnRender() {
 		Repaint();
 
-		//if (m_directLight->shadowType != ShadowType::None) {
-		//	RenderSceneShadowMap();
-		//	Repaint();
-		//}
+		if (m_directLight->shadowType != ShadowType::None) {
+			RenderSceneShadowMap();
+			Repaint();
+		}
 
 		RenderScene();
 
@@ -271,38 +274,42 @@ namespace test {
 	}
 
 	void AssimpTest::RenderScene() {
-		// for (auto cube : m_cubes) {
-		// 	Material* material = cube->material;
-		// 	VertexArray* va = cube->va;
-		// 	IndexBuffer* ib = cube->ib;
-		// 	glm::vec3 pos = cube->transform->GetPosition();
-		// 	glm::quat rot = cube->transform->GetRotation();
-		// 	glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		// 	glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
-		// 	RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
-		// }
+		for (auto cube : m_cubes) {
+			Material* material = cube->material;
+			VertexArray* va = cube->va;
+			IndexBuffer* ib = cube->ib;
+			glm::vec3 pos = cube->transform->GetPosition();
+			glm::quat rot = cube->transform->GetRotation();
+			glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
+			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
+		}
 
-		//// - Light Cube
-		//Material* material = m_lightCube->material;
-		//VertexArray* va = m_lightCube->va;
-		//IndexBuffer* ib = m_lightCube->ib;
-		//glm::vec3 pos = m_lightCube->transform->GetPosition();
-		//glm::quat rot = m_lightCube->transform->GetRotation();
-		//glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		//RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+		// - Light Cube
+		Material* material = m_lightCube->material;
+		VertexArray* va = m_lightCube->va;
+		IndexBuffer* ib = m_lightCube->ib;
+		glm::vec3 pos = m_lightCube->transform->GetPosition();
+		glm::quat rot = m_lightCube->transform->GetRotation();
+		glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
-		//// - Screen Cube 
-		//material = m_depthMapImage->material;
-		//va = m_depthMapImage->va;
-		//ib = m_depthMapImage->ib;
-		//pos = m_depthMapImage->transform->GetPosition();
-		//rot = m_depthMapImage->transform->GetRotation();
-		//cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
-		//RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+		// - Screen Cube 
+		material = m_depthMapImage->material;
+		va = m_depthMapImage->va;
+		ib = m_depthMapImage->ib;
+		pos = m_depthMapImage->transform->GetPosition();
+		rot = m_depthMapImage->transform->GetRotation();
+		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Model
+		Shader* shader = m_shaderRepo->GetShader(m_assetID2shaderID[1000]);
+		shader->Bind();
 		for (auto model : m_models) {
-			RenderModel(model);
+			shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(model->transform->GetPosition()));
+			shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(model->transform->GetRotation()));
+			model->RenderModel();
 		}
 	}
 
@@ -313,7 +320,6 @@ namespace test {
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, m_depthTexture);
 
-		// Render Scene
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 			std::cout << "########################## Framebuffer is not complete!" << std::endl;
 		}
@@ -335,6 +341,32 @@ namespace test {
 			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
 			RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
 		}
+
+		// - Model
+		for (auto model : m_models) {
+			glm::vec3 pos = model->transform->GetPosition();
+			glm::quat rot= model->transform->GetRotation();
+			glm::mat4 lightMVPMatrix = m_directLight->GetMVPMatrix_Perspective(pos);
+			unsigned shaderID = m_assetID2shaderID[model->material->shaderAssetID];
+			Shader* shader = m_shaderRepo->GetShader(shaderID);
+			shader->Bind();
+			shader->SetUniform1i("u_texture", 1);
+			shader->SetUniformMat4f("u_mvp", lightMVPMatrix);
+			shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
+			shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+
+			glm::vec3 lightPos = m_directLight->transform->GetPosition();
+			glm::vec3 lightColor = m_directLight->color;
+			glm::vec3 lightDirection = -m_directLight->GetLightDirection();
+			shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+			shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
+			shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
+			shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
+			shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+			shader->SetUniform1f("u_farPlane", camera->farPlane);
+
+			model->RenderModel();
+		}
 	}
 
 	void AssimpTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
@@ -349,8 +381,8 @@ namespace test {
 		shader->SetUniform1i("u_texture", 1);
 		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
 		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
-
 		shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+
 		glm::vec3 lightPos = m_directLight->transform->GetPosition();
 		glm::vec3 lightColor = m_directLight->color;
 		glm::vec3 lightDirection = -m_directLight->GetLightDirection();
@@ -366,66 +398,6 @@ namespace test {
 		va->Bind();
 		ib->Bind();
 		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
-	}
-
-	void AssimpTest::RenderModel(Model* model) {
-		Shader* shader = m_shaderRepo->GetShader(m_assetID2shaderID[1000]);
-		shader->Bind();
-		shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(model->transform->GetPosition()));
-		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(model->transform->GetRotation()));
-		VertexArray* va = model->va;
-		IndexBuffer* ib = model->ib;
-
-		va->Bind();
-		ib->Bind();
-
-		unsigned int idCount = ib->GetCount();
-		idCount = idCount > indiceDrawCount ? indiceDrawCount : idCount;
-		GLCall(glDrawElements(GL_TRIANGLES, idCount, GL_UNSIGNED_INT, nullptr));
-	}
-
-	void AssimpTest::RenderModelMesh(Model* model) {
-		Shader* shader = m_shaderRepo->GetShader(m_assetID2shaderID[1000]);
-		shader->Bind();
-		shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(model->transform->GetPosition()));
-		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(model->transform->GetRotation()));
-
-		std::vector<float> vertexData;
-		std::vector<unsigned int> indiceArray;
-		unsigned int vertexCount = 0;
-		unsigned int indiceCount = 0;
-		std::vector<Mesh*>* allMeshes = model->allMeshes;
-		for (auto mesh : *allMeshes) {
-			std::vector<Vertex*>* vertices = mesh->vertices;
-			for (auto vertex : *vertices) {
-				glm::vec3 position = vertex->position;
-				glm::vec2 texCoords = vertex->texCoords;
-				glm::vec3 normal = vertex->normal;
-				vertexData.push_back(position.x);
-				vertexData.push_back(position.y);
-				vertexData.push_back(position.z);
-				vertexCount++;
-			}
-			std::vector<unsigned int>* indices = mesh->indices;
-			for (auto indice : *indices) {
-				indiceArray.push_back(indice);
-				indiceCount++;
-			}
-
-			VertexArray va = VertexArray();
-			VertexBuffer vb = VertexBuffer();
-			VertexBufferLayout vbLayout = VertexBufferLayout();
-			IndexBuffer ib = IndexBuffer();
-			va.Bind();
-			vb.Ctor(vertexData.data(), vertexCount);
-			vbLayout.Push<float>(3);
-			va.AddBuffer(&vb, vbLayout);
-			ib.Ctor(indiceArray.data(), indiceCount);
-
-			unsigned int idCount = ib.GetCount();
-			idCount = idCount > indiceDrawCount ? indiceDrawCount : idCount;
-			GLCall(glDrawElements(GL_TRIANGLES, idCount, GL_UNSIGNED_INT, nullptr));
-		}
 	}
 
 	void AssimpTest::Draw() {
@@ -452,7 +424,7 @@ namespace test {
 
 		ImGui::Begin("Model Menu");
 		int count = indiceDrawCount;
-		ImGui::SliderInt("Indice Draw Count", &count, 0, 1000'000);
+		ImGui::SliderInt("Indice Draw Count", &count, 0, 10'0000);
 		indiceDrawCount = count;
 		ImGui::End();
 
@@ -573,62 +545,6 @@ namespace test {
 		glDepthFunc(GL_LESS);
 		glDepthMask(GL_TRUE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	void AssimpTest::LoadModel(const std::string& path, Model* model) {
-		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-			std::cout << "#################################ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
-			return;
-		}
-
-		ProcessNode(scene->mRootNode, scene, model);
-
-		model->BatchMeshes();
-	}
-
-	void AssimpTest::ProcessNode(aiNode* aNode, const aiScene* aScene, Model* model) {
-		for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
-			aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
-			model->allMeshes->push_back(ProcessMesh(mesh, aScene));
-		}
-		for (unsigned int i = 0; i < aNode->mNumChildren; i++) {
-			aiNode* childNode = aNode->mChildren[i];
-			ProcessNode(childNode, aScene, model);
-		}
-	}
-
-	Mesh* AssimpTest::ProcessMesh(aiMesh* aMesh, const aiScene* aScene) {
-		Mesh* mesh = new Mesh();
-		std::vector<Vertex*>* vertices = mesh->vertices;
-
-		aiVector3D* aTexCoords = aMesh->mTextureCoords[0];
-
-		for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
-			aiVector3D aPosition = aMesh->mVertices[i];
-			aiVector3D aNormal = aMesh->mNormals[i];
-			aiVector2D texCoord;
-			if (aTexCoords != nullptr) {
-				texCoord = aTexCoords[0][i];
-			}
-
-			Vertex* vertex = new Vertex();
-			vertex->SetPosition(aPosition.x, aPosition.y, aPosition.z);
-			vertex->SetNormal(aNormal.x, aNormal.y, aNormal.z);
-			vertex->SetTexCoords(texCoord.x, texCoord.y);
-			vertices->push_back(vertex);
-		}
-
-		std::vector<unsigned int>* indices = mesh->indices;
-		for (unsigned int i = 0; i < aMesh->mNumFaces; i++) {
-			aiFace face = aMesh->mFaces[i];
-			for (unsigned int j = 0; j < face.mNumIndices; j++) {
-				indices->push_back(face.mIndices[j]);
-			}
-		}
-
-		return mesh;
 	}
 
 }

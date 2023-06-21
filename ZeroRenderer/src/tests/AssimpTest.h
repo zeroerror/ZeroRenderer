@@ -78,14 +78,7 @@ namespace test {
 		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix);
 		void RenderObjectForDepthMap();
 		void RenderSceneShadowMap();
-		void RenderModel(Model* model);
-		void RenderModelMesh(Model* model);
 		void Draw();
-
-		void LoadModel(const std::string& path, Model* model);
-		void ProcessNode(aiNode* aNode, const aiScene* aScene, Model* model);
-		Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aScene);
-
 	};
 
 }

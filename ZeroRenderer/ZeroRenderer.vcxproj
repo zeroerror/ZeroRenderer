@@ -40,7 +40,6 @@
     <ClCompile Include="src\renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\renderer\VertexBuffer.cpp" />
-    <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\tests\AssimpTest.cpp" />
     <ClCompile Include="src\tests\PipelineTest.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
@@ -83,7 +82,6 @@
     <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\renderer\VertexBuffer.h" />
     <ClInclude Include="src\renderer\VertexBufferLayout.h" />
-    <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\tests\AssimpTest.h" />
     <ClInclude Include="src\tests\PipelineTest.h" />
     <ClInclude Include="src\tests\Test.h" />

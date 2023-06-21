@@ -17,7 +17,6 @@
     <ClCompile Include="src\vendor\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
-    <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\renderer\VertexBuffer.cpp" />
@@ -343,7 +342,6 @@
     <ClInclude Include="Dependencies\GLEW\include\GL\wglew.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
-    <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\IndexBuffer.h" />
     <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\renderer\VertexBuffer.h" />

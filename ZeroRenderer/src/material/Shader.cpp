@@ -14,7 +14,11 @@
 #include <string.h>
 
 #include "Shader.h"
-#include "Renderer.h"
+ #include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Texture.h"
+#include "Shader.h"
+#include "Material.h"
 #include "GLDebug.h"
 
 Shader::Shader(const std::string& filePath) {

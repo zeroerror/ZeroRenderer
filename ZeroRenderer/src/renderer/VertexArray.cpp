@@ -1,4 +1,8 @@
-#include "Renderer.h"
+ #include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Texture.h"
+#include "Shader.h"
+#include "Material.h"
 #include "VertexArray.h"
 #include "GLDebug.h"
 #include <iostream>

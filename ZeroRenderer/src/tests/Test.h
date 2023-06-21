@@ -6,7 +6,11 @@
 #include <functional>
 #include <vector>
 
-#include "Renderer.h"
+#include "VertexArray.h"
+#include "IndexBuffer.h"
+#include "Texture.h"
+#include "Shader.h"
+#include "Material.h"
 
 namespace test {
 
