@@ -17,6 +17,7 @@
 #include "SpotLight.h"
 #include "ShadowType.h"
 #include "CameraType.h"
+#include "Database.h"
 
 namespace test {
 
@@ -80,6 +81,9 @@ namespace test {
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans->SetPosition(pos);
 		});
+
+		// ======================== Database
+		Database::LoadDatabase();
 
 		// ======================== Scene
 		Material* defaultMaterial = new Material();
@@ -155,21 +159,21 @@ namespace test {
 
 		// ========================== Load Model
 		Model* model = new Model();
-		model->LoadModel("res/model/nanosuit/nanosuit.obj");
+		model->LoadModel("asset/model/nanosuit/nanosuit.obj");
 		model->transform->SetPosition(glm::vec3(10.0f, 0.0f, 20.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		model->material = defaultLightMaterial;
 		m_models.push_back(model);
 
 		model = new Model();
-		model->LoadModel("res/model/nanosuit/nanosuit.obj");
+		model->LoadModel("asset/model/nanosuit/nanosuit.obj");
 		model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		model->material = defaultLightMaterial;
 		m_models.push_back(model);
 
 		model = new Model();
-		model->LoadModel("res/model/nanosuit/nanosuit.obj");
+		model->LoadModel("asset/model/nanosuit/nanosuit.obj");
 		model->transform->SetPosition(glm::vec3(-10.0f, 0.0f, 20.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		model->material = defaultLightMaterial;
@@ -436,11 +440,11 @@ namespace test {
 	}
 
 	void AssimpTest::LoadAssetsDatabase() {
-		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("Res/Textures/jerry.png", 1000));
-		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("Res/Textures/room.png", 2000));
+		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("asset/Textuasset/jerry.png", 1000));
+		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("asset/Textuasset/room.png", 2000));
 
-		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(1000, "Res/Textures/jerry.png"));
-		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(2000, "Res/Textures/room.png"));
+		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(1000, "asset/Textuasset/jerry.png"));
+		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(2000, "asset/Textuasset/room.png"));
 	}
 
 	void AssimpTest::InitOpenGL() {
@@ -513,27 +517,27 @@ namespace test {
 	}
 
 	void AssimpTest::LoadShaders() {
-		unsigned int shaderID = m_shaderRepo->LoadShader("Res/Shader/Default.shader");
+		unsigned int shaderID = m_shaderRepo->LoadShader("asset/shader/Default.shader");
 		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(1000, shaderID));
-		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("Res/Shader/Default.shader", shaderID));
+		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/Default.shader", shaderID));
 
-		shaderID = m_shaderRepo->LoadShader("Res/Shader/DefaultLight.shader");
+		shaderID = m_shaderRepo->LoadShader("asset/shader/DefaultLight.shader");
 		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(2000, shaderID));
-		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("Res/Shader/DefaultLight.shader", shaderID));
+		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/DefaultLight.shader", shaderID));
 
-		shaderID = m_shaderRepo->LoadShader("Res/Shader/DepthMap.shader");
+		shaderID = m_shaderRepo->LoadShader("asset/shader/DepthMap.shader");
 		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(3000, shaderID));
-		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("Res/Shader/DepthMap.shader", shaderID));
+		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/DepthMap.shader", shaderID));
 	}
 
 	void AssimpTest::LoadTextures() {
-		unsigned int textureID = m_textureRepo->LoadTexture("Res/Textures/jerry.png");
+		unsigned int textureID = m_textureRepo->LoadTexture("asset/Textuasset/jerry.png");
 		m_assetID2textureID.insert(std::pair<unsigned int, unsigned int>(1000, textureID));
-		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("Res/Textures/jerry.png", textureID));
+		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("asset/Textuasset/jerry.png", textureID));
 
-		textureID = m_textureRepo->LoadTexture("Res/Textures/room.png");
+		textureID = m_textureRepo->LoadTexture("asset/Textuasset/room.png");
 		m_assetID2textureID.insert(std::pair<unsigned int, unsigned int>(2000, textureID));
-		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("Res/Textures/room.png", textureID));
+		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("asset/Textuasset/room.png", textureID));
 	}
 
 	void AssimpTest::Repaint() {
