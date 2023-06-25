@@ -8,7 +8,7 @@ public:
 	Material();
 	~Material();
 
-	unsigned int diffuseTextureAssetID;
+	unsigned int diffuseTextureGUID;
 	glm::vec4 diffuseColor;
 	float specularIntensity;
 	float shininess;

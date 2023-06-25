@@ -31,13 +31,6 @@ void main()
 }
 
 
-
-
-
-
-
-
-
 #shader fragment
 #version 330 core
 
@@ -49,9 +42,9 @@ in vec4 v_relativePosition;
 in vec4 v_glPos;
 
 uniform sampler2D u_texture;
-uniform vec3 u_lightColor;
-
 uniform sampler2D u_depthMapTexture;
+
+uniform vec3 u_lightColor;
 uniform mat4 u_lightMVPMatrix;
 uniform vec3 u_lightDirection;
 uniform float u_nearPlane;

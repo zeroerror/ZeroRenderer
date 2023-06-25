@@ -18,15 +18,6 @@
 namespace test {
 
 	PipelineTest::PipelineTest() {
-		m_assetPath2AssetID = std::unordered_map<std::string, unsigned int>();
-		m_assetID2AssetPath = std::unordered_map<unsigned int, std::string>();
-
-		m_assetID2shaderID = std::unordered_map<unsigned int, unsigned int>();
-		m_assetID2textureID = std::unordered_map<unsigned int, unsigned int>();
-
-		m_assetPath2shaderID = std::unordered_map<std::string, unsigned int>();
-		m_assetPath2textureID = std::unordered_map<std::string, unsigned int>();
-
 		m_shaderRepo = new ShaderRepo();
 		m_textureRepo = new TextureRepo();
 
@@ -66,7 +57,7 @@ namespace test {
 			glm::vec3 forward = camTrans->GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
 			camTrans->SetPosition(pos);
-			});
+		});
 
 		// ======================== Scene
 		Material* defaultMaterial = new Material();
@@ -301,12 +292,12 @@ namespace test {
 	}
 
 	void PipelineTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
-		unsigned textureID = m_assetID2textureID[material->diffuseTextureAssetID];
-		Texture* texture = m_textureRepo->GetTexture(textureID);
+		std::string textureGUID;
+		Texture* texture = m_textureRepo->GetTextureByGUID(textureGUID);
 		texture->Bind(1);
 
-		unsigned shaderID = m_assetID2shaderID[material->shaderAssetID];
-		Shader* shader = m_shaderRepo->GetShader(shaderID);
+		std::string shaderID;
+		Shader* shader = m_shaderRepo->GetShaderByGUID(shaderID);
 		shader->Bind();
 
 		shader->SetUniform1i("u_texture", 1);
@@ -361,11 +352,6 @@ namespace test {
 	}
 
 	void PipelineTest::LoadAssetsDatabase() {
-		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("asset/texture/jerry.png", 1000));
-		m_assetPath2AssetID.insert(std::pair<std::string, unsigned int>("asset/texture/room.png", 2000));
-
-		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(1000, "asset/texture/jerry.png"));
-		m_assetID2AssetPath.insert(std::pair<unsigned int, std::string>(2000, "asset/texture/room.png"));
 	}
 
 	void PipelineTest::InitOpenGL() {
@@ -438,27 +424,13 @@ namespace test {
 	}
 
 	void PipelineTest::LoadShaders() {
-		unsigned int shaderID = m_shaderRepo->LoadShader("asset/shader/Default.shader");
-		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(1000, shaderID));
-		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/Default.shader", shaderID));
-
-		shaderID = m_shaderRepo->LoadShader("asset/shader/DefaultLight.shader");
-		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(2000, shaderID));
-		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/DefaultLight.shader", shaderID));
-
-		shaderID = m_shaderRepo->LoadShader("asset/shader/DepthMap.shader");
-		m_assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(3000, shaderID));
-		m_assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/DepthMap.shader", shaderID));
+		m_shaderRepo->LoadShader("asset/shader/defaultLight.shader");
+		m_shaderRepo->LoadShader("asset/shader/depthMap.shader");
 	}
 
 	void PipelineTest::LoadTextures() {
-		unsigned int textureID = m_textureRepo->LoadTexture("asset/texture/jerry.png");
-		m_assetID2textureID.insert(std::pair<unsigned int, unsigned int>(1000, textureID));
-		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("asset/texture/jerry.png", textureID));
-
-		textureID = m_textureRepo->LoadTexture("asset/texture/room.png");
-		m_assetID2textureID.insert(std::pair<unsigned int, unsigned int>(2000, textureID));
-		m_assetPath2textureID.insert(std::pair<std::string, unsigned int>("asset/texture/room.png", textureID));
+		m_textureRepo->LoadTexture("asset/texture/jerry.png");
+		m_textureRepo->LoadTexture("asset/texture/room.png");
 	}
 
 	void PipelineTest::Repaint() {

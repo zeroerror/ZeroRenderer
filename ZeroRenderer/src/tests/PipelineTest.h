@@ -13,7 +13,8 @@
 #include "TextureRepo.h"
 #include "Material.h"
 #include "SpotLight.h"
-#include <DirectLight.h>
+#include "DirectLight.h"
+#include "MaterialRepo.h"
 
 namespace test {
 
@@ -34,13 +35,6 @@ namespace test {
 		void OnImGuiRender() override;
 
 	private:
-		std::unordered_map<std::string, unsigned int> m_assetPath2AssetID;
-		std::unordered_map<unsigned int, std::string> m_assetID2AssetPath;
-		std::unordered_map<unsigned int, unsigned int> m_assetID2shaderID;
-		std::unordered_map<unsigned int, unsigned int> m_assetID2textureID;
-		std::unordered_map<std::string, unsigned int> m_assetPath2shaderID;
-		std::unordered_map<std::string, unsigned int> m_assetPath2textureID;
-
 		int m_shadowMapWidth;
 		int m_shadowMapHeight;
 		int m_screen_width;
@@ -52,11 +46,13 @@ namespace test {
 		std::vector<Cube*> m_cubes;
 		Cube* m_lightCube;
 		Rectangle* m_depthMapImage;
-		ShaderRepo* m_shaderRepo;
-		TextureRepo* m_textureRepo;
 		DirectLight* m_directLight;
 		GLuint m_depthTexture;
 		GLuint m_framebuffer;
+
+		ShaderRepo* m_shaderRepo;
+		TextureRepo* m_textureRepo;
+		MaterialRepo* m_materialRepo;
 
 		void LoadAssetsDatabase();
 		void InitOpenGL();

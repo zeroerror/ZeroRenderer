@@ -38,11 +38,6 @@ namespace test {
 		GLFWwindow* window;
 		ImGuiContext* imguiContext;
 
-		std::unordered_map<unsigned int, unsigned int> assetID2shaderID;
-		std::unordered_map<unsigned int, unsigned int> assetID2textureID;
-		std::unordered_map<std::string, unsigned int> assetPath2shaderID;
-		std::unordered_map<std::string, unsigned int> assetPath2textureID;
-
 		int shadowMapWidth;
 		int shadowMapHeight;
 

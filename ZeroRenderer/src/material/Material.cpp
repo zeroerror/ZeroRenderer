@@ -6,7 +6,7 @@
 #include "Texture.h"
 
 Material::Material() {
-	diffuseTextureAssetID = 0;
+	diffuseTextureGUID = 0;
 	diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); 
 	specularIntensity = 0.5f;
 	shininess = 32.0f;
@@ -19,7 +19,7 @@ Material::~Material() {
 }
 
 void Material::SetDiffuseTexture(unsigned int diffuseTextureID) {
-	this->diffuseTextureAssetID = diffuseTextureID;
+	this->diffuseTextureGUID = diffuseTextureID;
 }
 
 void Material::SetDiffuseColor(const glm::vec4& diffuseColor) {

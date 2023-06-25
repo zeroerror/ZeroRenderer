@@ -8,11 +8,11 @@ public:
 	ShaderRepo();
 	~ShaderRepo();
 
-	unsigned int LoadShader(const char* path);
-	Shader* GetShader(const unsigned int& shaderID);
+	std::string LoadShader(const char* path);
+	Shader* GetShaderByGUID(const std::string& guid);
 
 private:
-	std::unordered_map<unsigned int, Shader*> allShaders;
+	std::unordered_map<std::string, Shader*> allShaders;
 
 };
 

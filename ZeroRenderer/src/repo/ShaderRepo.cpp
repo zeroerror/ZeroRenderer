@@ -1,8 +1,10 @@
 #include "ShaderRepo.h"
 #include <iostream>
 
+#include "Database.h"
+
 ShaderRepo::ShaderRepo() {
-    allShaders = std::unordered_map<unsigned int, Shader*>();
+	allShaders = std::unordered_map<std::string, Shader*>();
 }
 
 ShaderRepo::~ShaderRepo() {
@@ -12,13 +14,20 @@ ShaderRepo::~ShaderRepo() {
 	}
 }
 
-unsigned int ShaderRepo::LoadShader(const char* path) {
+std::string ShaderRepo::LoadShader(const char* path) {
 	Shader* shader = new Shader(path);
-	unsigned int shaderID = shader->GetID();
-	allShaders.insert(std::pair<unsigned int, Shader*>(shaderID, shader));
-	return shaderID;
+	std::string guid = Database::GetGUIDFromAssetPath(path);
+	allShaders.insert(std::pair<std::string, Shader*>(guid, shader));
+	std::cout << "ShaderRepo::LoadShader **** path - " << path << " GUID - " << guid << std::endl;
+	return guid;
 }
 
-Shader* ShaderRepo::GetShader(const unsigned int& shaderID) {
-	return allShaders[shaderID];
+Shader* ShaderRepo::GetShaderByGUID(const std::string& guid) {
+	std::unordered_map<std::string, Shader*>::iterator it = allShaders.find(guid);
+	if (it != allShaders.end()) {
+		return allShaders.at(guid);
+	}
+
+	std::cout << " ################ GetShaderByGUID: " << guid << " not found" << std::endl;
+	return nullptr;
 }

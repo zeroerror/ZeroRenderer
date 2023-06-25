@@ -37,6 +37,7 @@
     <ClCompile Include="src\editor\Database.cpp" />
     <ClCompile Include="src\editor\SceneManager.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
+    <ClCompile Include="src\repo\MaterialRepo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -365,6 +366,7 @@
     <ClInclude Include="src\editor\Database.h" />
     <ClInclude Include="src\editor\SceneManager.h" />
     <ClInclude Include="src\editor\Scene.h" />
+    <ClInclude Include="src\repo\MaterialRepo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

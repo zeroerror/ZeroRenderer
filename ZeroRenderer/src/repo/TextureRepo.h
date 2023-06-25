@@ -8,11 +8,11 @@ public:
 	TextureRepo();
 	~TextureRepo();
 
-	unsigned int LoadTexture(const char* path);
-	Texture* GetTexture(unsigned int textureID);
+	std::string LoadTexture(const char* path);
+	Texture* GetTextureByGUID(const std::string& guid);
 
 private:
-	std::unordered_map<unsigned int, Texture*> allTextures;
+	std::unordered_map<std::string, Texture*> allTextures;
 
 };
 

@@ -23,12 +23,6 @@
 namespace test {
 
 	AssimpTest::AssimpTest() {
-		assetID2shaderID = std::unordered_map<unsigned int, unsigned int>();
-		assetID2textureID = std::unordered_map<unsigned int, unsigned int>();
-
-		assetPath2shaderID = std::unordered_map<std::string, unsigned int>();
-		assetPath2textureID = std::unordered_map<std::string, unsigned int>();
-
 		shaderRepo = new ShaderRepo();
 		textureRepo = new TextureRepo();
 
@@ -216,14 +210,15 @@ namespace test {
 		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Model
-		Shader* shader = shaderRepo->GetShader(assetID2shaderID[2000]);
-		shader->Bind();
 		glm::vec3 lightPos = directLight->transform->GetPosition();
 		glm::vec3 lightColor = directLight->color;
 		glm::vec3 lightDirection = -directLight->GetLightDirection();
 
 		for (auto model : *models) {
 			// ------ Shader
+			std::string shaderGUID = Database::GetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
+			Shader* shader = shaderRepo->GetShaderByGUID(shaderGUID);
+			shader->Bind();
 			pos = model->transform->GetPosition();
 			rot = model->transform->GetRotation();
 			shader->SetUniform1i("u_texture", 1);
@@ -276,8 +271,9 @@ namespace test {
 			glm::vec3 pos = model->transform->GetPosition();
 			glm::quat rot = model->transform->GetRotation();
 			glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
-			unsigned shaderID = assetID2shaderID[model->material->shaderAssetID];
-			Shader* shader = shaderRepo->GetShader(shaderID);
+
+			std::string shaderGUID = Database::GetGUIDFromAssetPath("asset/shader/Default.shader");
+			Shader* shader = shaderRepo->GetShaderByGUID(shaderGUID);
 			shader->Bind();
 			shader->SetUniform1i("u_texture", 1);
 			shader->SetUniformMat4f("u_mvp", lightMVPMatrix);
@@ -299,12 +295,12 @@ namespace test {
 	}
 
 	void AssimpTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
-		unsigned textureID = assetID2textureID[material->diffuseTextureAssetID];
-		Texture* texture = textureRepo->GetTexture(textureID);
+		std::string textureGUID = Database::GetGUIDFromAssetPath("asset/texture/jerry.png");
+		Texture* texture = textureRepo->GetTextureByGUID(textureGUID);
 		texture->Bind(1);
 
-		unsigned shaderID = assetID2shaderID[material->shaderAssetID];
-		Shader* shader = shaderRepo->GetShader(shaderID);
+		std::string shaderGUID = Database::GetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
+		Shader* shader = shaderRepo->GetShaderByGUID(shaderGUID);
 		shader->Bind();
 
 		shader->SetUniform1i("u_texture", 1);
@@ -421,27 +417,14 @@ namespace test {
 	}
 
 	void AssimpTest::LoadShadersToRuntime() {
-		unsigned int shaderID = shaderRepo->LoadShader("asset/shader/Default.shader");
-		assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(1000, shaderID));
-		assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/Default.shader", shaderID));
-
-		shaderID = shaderRepo->LoadShader("asset/shader/DefaultLight.shader");
-		assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(2000, shaderID));
-		assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/DefaultLight.shader", shaderID));
-
-		shaderID = shaderRepo->LoadShader("asset/shader/DepthMap.shader");
-		assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(3000, shaderID));
-		assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/DepthMap.shader", shaderID));
+		shaderRepo->LoadShader("asset/shader/Default.shader");
+		shaderRepo->LoadShader("asset/shader/DefaultLight.shader");
+		shaderRepo->LoadShader("asset/shader/DepthMap.shader");
 	}
 
 	void AssimpTest::LoadTexturesToRuntime() {
-		unsigned int textureID = textureRepo->LoadTexture("asset/Textuasset/jerry.png");
-		assetID2textureID.insert(std::pair<unsigned int, unsigned int>(1000, textureID));
-		assetPath2textureID.insert(std::pair<std::string, unsigned int>("asset/Textuasset/jerry.png", textureID));
-
-		textureID = textureRepo->LoadTexture("asset/Textuasset/room.png");
-		assetID2textureID.insert(std::pair<unsigned int, unsigned int>(2000, textureID));
-		assetPath2textureID.insert(std::pair<std::string, unsigned int>("asset/Textuasset/room.png", textureID));
+		textureRepo->LoadTexture("asset/texture/jerry.png");
+		textureRepo->LoadTexture("asset/texture/room.png");
 	}
 
 	void AssimpTest::Repaint() {
