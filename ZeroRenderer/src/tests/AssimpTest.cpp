@@ -47,26 +47,28 @@ namespace test {
 	}
 
 	void AssimpTest::Init() {
-		InitOpenGL();
-		InitImGui();
-		LoadCamera();
-		LoadShaders();
-		LoadTextures();
+		shadowMapWidth = 2048;
+		shadowMapHeight = 2048;	
 
 		// ======================== Database
 		Database::LoadDatabase();
+
+		InitOpenGL();
+		InitImGui();
+		LoadShaders();
+		LoadTextures();
 
 		// ======================== Scene
 		SceneManager::LoadScene();
 		scene = SceneManager::scene;
 		cubes = scene->cubes;
 		models = scene->models;
-		depthMapImage = scene->depthMapImage;
-		lightCube = scene->lightCube;
-		camera = scene->camera;
 		directLight = scene->directLight;
-		shadowMapWidth = 2048;
-		shadowMapHeight = 2048;		
+		lightCube = scene->lightCube;
+		depthMapImage = scene->depthMapImage;
+		camera = scene->camera;
+		cameraController = Camera3DController();
+		cameraController.Inject(camera, window);
 
 		// ======================== 
 		glfwSetWindowUserPointer(window, this);
@@ -373,7 +375,7 @@ namespace test {
 		glGenTextures(1, &depthTexture);
 		glBindTexture(GL_TEXTURE_2D, depthTexture);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	 	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));	
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -381,8 +383,8 @@ namespace test {
 		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer));
+		GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0));
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -396,11 +398,6 @@ namespace test {
 		ImGui::StyleColorsLight();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
-	}
-
-	void AssimpTest::LoadCamera() {
-		cameraController = Camera3DController();
-		cameraController.Inject(camera, window);
 	}
 
 	void AssimpTest::LoadShaders() {
