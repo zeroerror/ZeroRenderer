@@ -14,6 +14,7 @@
 #include "SpotLight.h"
 #include "ShadowType.h"
 #include "CameraType.h"
+#include "Database.h"
 
 namespace test {
 
@@ -60,21 +61,10 @@ namespace test {
 		});
 
 		// ======================== Scene
-		Material* defaultMaterial = new Material();
-		defaultMaterial->SetDiffuseTexture(1000);
-		defaultMaterial->SetShader(1000);
-
-		Material* defaultLightMaterial = new Material();
-		defaultLightMaterial->SetDiffuseTexture(1000);
-		defaultLightMaterial->SetShader(2000);
-
-		Material* lightCubeMaterial = new Material();
-		lightCubeMaterial->SetDiffuseTexture(2000);
-		lightCubeMaterial->SetShader(1000);
-
-		Material* depthMapMaterial = new Material();
-		depthMapMaterial->SetDiffuseTexture(1000);
-		depthMapMaterial->SetShader(3000);
+		Material* defaultMaterial = Database::defaultLightMaterial;
+		Material* defaultLightMaterial = Database::defaultLightMaterial;
+		Material* lightCubeMaterial = Database::lightCubeMaterial;
+		Material* depthMapMaterial = Database::depthMapMaterial;
 
 		// Light 
 		m_directLight = new DirectLight();

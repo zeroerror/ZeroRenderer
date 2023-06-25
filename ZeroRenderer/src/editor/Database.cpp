@@ -23,27 +23,27 @@ void Database::LoadDatabase() {
 
 	LoadAssetTextures();
 	LoadAssetShaders();
+	LoadMaterials();	// TODO - Meta instead of runtime Material
 	LoadAssetModels();
-	LoadMaterials();//todo remove
 	std::cout << "  ######################################### Database Load Completed ######################################### " << std::endl;
 }
 
 void Database::LoadMaterials() {
 	defaultMaterial = new Material();
-	defaultMaterial->SetDiffuseTexture(1000);
-	defaultMaterial->SetShader(1000);
+	defaultMaterial->diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/default.png");
+	defaultMaterial->shaderGUID = GetGUIDFromAssetPath("asset/shader/Default.shader");
 
 	defaultLightMaterial = new Material();
-	defaultLightMaterial->SetDiffuseTexture(1000);
-	defaultLightMaterial->SetShader(2000);
+	defaultLightMaterial->diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/default.png");
+	defaultLightMaterial->shaderGUID = GetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
 
 	lightCubeMaterial = new Material();
-	lightCubeMaterial->SetDiffuseTexture(2000);
-	lightCubeMaterial->SetShader(1000);
+	lightCubeMaterial->diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/jerry.png");
+	lightCubeMaterial->shaderGUID = GetGUIDFromAssetPath("asset/shader/Default.shader");
 
 	depthMapMaterial = new Material();
-	depthMapMaterial->SetDiffuseTexture(1000);
-	depthMapMaterial->SetShader(3000);
+	depthMapMaterial->diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/default.png");
+	depthMapMaterial->shaderGUID = GetGUIDFromAssetPath("asset/shader/DepthMap.shader");
 }
 
 void Database::LoadAssetModels() {
@@ -107,6 +107,7 @@ void Database::ProcessMaterialTextures(aiMaterial* aMat, aiTextureType aTextureT
 }
 
 void Database::LoadAssetTextures() {
+	LoadAssetTexture("asset/texture/default.png");
 	LoadAssetTexture("asset/texture/jerry.png");
 	LoadAssetTexture("asset/texture/room.png");
 }

@@ -295,11 +295,11 @@ namespace test {
 	}
 
 	void AssimpTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
-		std::string textureGUID = Database::GetGUIDFromAssetPath("asset/texture/jerry.png");
+		std::string textureGUID = material->diffuseTextureGUID;
 		Texture* texture = textureRepo->GetTextureByGUID(textureGUID);
 		texture->Bind(1);
 
-		std::string shaderGUID = Database::GetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
+		std::string shaderGUID = material->shaderGUID;
 		Shader* shader = shaderRepo->GetShaderByGUID(shaderGUID);
 		shader->Bind();
 
@@ -423,9 +423,9 @@ namespace test {
 	}
 
 	void AssimpTest::LoadTexturesToRuntime() {
+		textureRepo->LoadTexture("asset/texture/default.png");
 		textureRepo->LoadTexture("asset/texture/jerry.png");
 		textureRepo->LoadTexture("asset/texture/room.png");
-		textureRepo->LoadTexture("asset/model/nanosuit/arm_dif.png");
 	}
 
 	void AssimpTest::Repaint() {
