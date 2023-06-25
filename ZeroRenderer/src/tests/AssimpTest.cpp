@@ -245,7 +245,7 @@ namespace test {
 		glBindTexture(GL_TEXTURE_2D, depthTexture);
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			std::cout << "########################## Framebuffer is not complete!" << std::endl;
+			std::cout << "  ########################## Framebuffer is not complete!" << std::endl;
 		}
 		else {
 			RenderObjectForDepthMap();
@@ -425,6 +425,7 @@ namespace test {
 	void AssimpTest::LoadTexturesToRuntime() {
 		textureRepo->LoadTexture("asset/texture/jerry.png");
 		textureRepo->LoadTexture("asset/texture/room.png");
+		textureRepo->LoadTexture("asset/model/nanosuit/arm_dif.png");
 	}
 
 	void AssimpTest::Repaint() {

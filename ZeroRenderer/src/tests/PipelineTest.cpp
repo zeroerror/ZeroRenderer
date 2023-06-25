@@ -269,7 +269,7 @@ namespace test {
 
 		// Render Scene
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			std::cout << "########################## Framebuffer is not complete!" << std::endl;
+			std::cout << "  ########################## Framebuffer is not complete!" << std::endl;
 		}
 		else {
 			RenderObjectForDepthMap();

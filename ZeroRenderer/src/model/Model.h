@@ -18,8 +18,8 @@ public:
 	~Model();
 
 	void LoadModel(const std::string& path);
-	void ProcessNode(aiNode* aNode, const aiScene* aScene);
-	Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aScene);
+	void ProcessNode(aiNode* aiNode, const aiScene* aiScene);
+	Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aiScene);
 	void BatchMeshes();
 	void RenderModel();
 	void RenderModelMesh();

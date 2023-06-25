@@ -28,6 +28,6 @@ Material* MaterialRepo::GetMaterialByGUID(const std::string& guid) {
 		return allMaterials.at(guid);
 	}
 
-	std::cout << "################ GetMaterialByGUID: " << guid << " not found" << std::endl;
+	std::cout << "  ################ GetMaterialByGUID: " << guid << " not found" << std::endl;
 	return nullptr;
 }

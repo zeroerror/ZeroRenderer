@@ -6,6 +6,7 @@
 #include <sstream>
 #include <random>
 #include <chrono>
+#include <assimp/postprocess.h>
 
 std::unordered_map<std::string, std::string> Database::m_assetPath2GUID;
 std::unordered_map<std::string, std::string> Database::m_guid2AssetPath;
@@ -16,14 +17,15 @@ Material* Database::lightCubeMaterial;
 Material* Database::depthMapMaterial;
 
 void Database::LoadDatabase() {
-	std::cout << "######################################### LoadDatabase ######################################### " << std::endl;
+	std::cout << "  ######################################### Database Load Start ######################################### " << std::endl;
 	m_assetPath2GUID = std::unordered_map<std::string, std::string>();
 	m_guid2AssetPath = std::unordered_map<std::string, std::string>();
 
-	LoadMaterials();
 	LoadAssetTextures();
 	LoadAssetShaders();
 	LoadAssetModels();
+	LoadMaterials();//todo remove
+	std::cout << "  ######################################### Database Load Completed ######################################### " << std::endl;
 }
 
 void Database::LoadMaterials() {
@@ -45,53 +47,109 @@ void Database::LoadMaterials() {
 }
 
 void Database::LoadAssetModels() {
-	std::string modelPath1 = "asset/model/nanosuit/nanosuit.obj";
+	LoadAssetModel("asset/model/nanosuit/nanosuit.obj");
+}
 
-	std::string guid1 = GenerateGUIDFromPath(modelPath1);
+void Database::LoadAssetModel(const std::string& assetPath) {
+	std::string guid;
+	if (!GenerateGUIDFromPath(assetPath, guid)) {
+		return;
+	}
 
-	m_assetPath2GUID.insert(std::pair<std::string, std::string>(modelPath1, guid1));
+	m_assetPath2GUID.insert(std::pair<std::string, std::string>(assetPath, guid));
 
-	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid1, modelPath1));
+	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid, assetPath));
+
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(assetPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		std::cout << "  *********************************** Database::LoadAssetModel " << importer.GetErrorString() << std::endl;
+		return;
+	}
+
+	size_t pos = assetPath.find_last_of("/");
+	if (pos != std::string::npos) {
+		std::string dir = assetPath.substr(0, pos + 1);
+		ProcessNode(scene->mRootNode, scene, dir);
+	}
+}
+
+void Database::ProcessNode(aiNode* aNode, const aiScene* aScene, const std::string& dir) {
+	for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
+		aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
+		ProcessMesh(mesh, aScene, dir);
+	}
+	for (unsigned int i = 0; i < aNode->mNumChildren; i++) {
+		aiNode* childNode = aNode->mChildren[i];
+		ProcessNode(childNode, aScene, dir);
+	}
+}
+
+void Database::ProcessMesh(aiMesh* aMesh, const aiScene* aScene, const  std::string& dir) {
+	if (aMesh->mMaterialIndex < 0) {
+		return;
+	}
+
+	aiMaterial* aiMaterial = aScene->mMaterials[aMesh->mMaterialIndex];
+	const std::string typeName = "texture_diffuse";
+	ProcessMaterialTextures(aiMaterial, aiTextureType_DIFFUSE, typeName, dir);
+}
+
+void Database::ProcessMaterialTextures(aiMaterial* aMat, aiTextureType aTextureType, const std::string& typeName, const std::string& dir) {
+	// TODO - Save to meta data
+	unsigned int textureCount = aMat->GetTextureCount(aTextureType);
+	for (unsigned int i = 0; i < textureCount; i++) {
+		aiString str;
+		aMat->GetTexture(aTextureType, i, &str);
+		std::string texPath = dir + str.C_Str();
+		Database::LoadAssetTexture(texPath);
+	}
 }
 
 void Database::LoadAssetTextures() {
-	std::string texturePath1 = "asset/texture/jerry.png";
-	std::string texturePath2 = "asset/texture/room.png";
+	LoadAssetTexture("asset/texture/jerry.png");
+	LoadAssetTexture("asset/texture/room.png");
+}
 
-	std::string guid1 = GenerateGUIDFromPath(texturePath1);
-	std::string guid2 = GenerateGUIDFromPath(texturePath2);
+void Database::LoadAssetTexture(const std::string& assetPath) {
+	std::string guid;
+	if (!GenerateGUIDFromPath(assetPath, guid)) {
+		return;
+	}
 
-	m_assetPath2GUID.insert(std::pair<std::string, std::string>(texturePath1, guid1));
-	m_assetPath2GUID.insert(std::pair<std::string, std::string>(texturePath2, guid2));
-
-	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid1, texturePath1));
-	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid2, texturePath2));
+	m_assetPath2GUID.insert(std::pair<std::string, std::string>(assetPath, guid));
+	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid, assetPath));
+	std::cout << "Database::LoadAssetTexture: path - " << assetPath << " guid - " << guid << std::endl;
 }
 
 void Database::LoadAssetShaders() {
-	std::string shaderPath1 = "asset/shader/Default.shader";
-	std::string shaderPath2 = "asset/shader/DefaultLight.shader";
-	std::string shaderPath3 = "asset/shader/DepthMap.shader";
-
-	std::string guid1 = GenerateGUIDFromPath(shaderPath1);
-	std::string guid2 = GenerateGUIDFromPath(shaderPath2);
-	std::string guid3 = GenerateGUIDFromPath(shaderPath3);
-
-	m_assetPath2GUID.insert(std::pair<std::string, std::string>(shaderPath1, guid1));
-	m_assetPath2GUID.insert(std::pair<std::string, std::string>(shaderPath2, guid2));
-	m_assetPath2GUID.insert(std::pair<std::string, std::string>(shaderPath3, guid3));
-
-	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid1, shaderPath1));
-	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid2, shaderPath2));
-	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid3, shaderPath3));
+	LoadAssetShader("asset/shader/Default.shader");
+	LoadAssetShader("asset/shader/DefaultLight.shader");
+	LoadAssetShader("asset/shader/DepthMap.shader");
 }
 
-std::string Database::GenerateGUIDFromPath(const std::string& path) {
+void Database::LoadAssetShader(const std::string& assetPath) {
+	std::string guid;
+	if (!GenerateGUIDFromPath(assetPath, guid)) {
+		return;
+	}
+
+	m_assetPath2GUID.insert(std::pair<std::string, std::string>(assetPath, guid));
+	m_guid2AssetPath.insert(std::pair<std::string, std::string>(guid, assetPath));
+	std::cout << "Database::LoadAssetShader: path - " << assetPath << " guid - " << guid << std::endl;
+}
+
+bool Database::GenerateGUIDFromPath(const std::string& assetPath, std::string& guid) {
+	std::unordered_map<std::string, std::string>::iterator it = m_assetPath2GUID.find(assetPath);
+	if (it != m_assetPath2GUID.end()) {
+		return false;
+	}
+
 	std::hash<std::string> hasher;
 	std::stringstream ss;
 
 	// 生成路径的哈希值
-	std::size_t pathHash = hasher(path);
+	std::size_t pathHash = hasher(assetPath);
 	ss << std::hex << pathHash;
 
 	// 生成时间戳
@@ -106,9 +164,9 @@ std::string Database::GenerateGUIDFromPath(const std::string& path) {
 	std::uniform_int_distribution<unsigned long long> dis(0, 0xFFFFFFFFFFFFFFFF);
 	ss << std::hex << dis(gen);
 
-	std::string guid = ss.str();
-	std::cout << "GenerateGUIDFromPath: Path - " << path << " GUID - " << guid << std::endl;
-	return guid;
+	guid = ss.str();
+	//std::cout << "GenerateGUIDFromPath: path - " << path << " guid - " << guid << std::endl;
+	return true;
 }
 
 std::string Database::GetAssetPathFromGUID(const std::string& guid) {
@@ -117,7 +175,7 @@ std::string Database::GetAssetPathFromGUID(const std::string& guid) {
 		return it->second;
 	}
 
-	std::cout << "################ GetAssetPathFromGUID: " << guid << " not found" << std::endl;
+	std::cout << "  *********************************** GetAssetPathFromGUID: " << guid << " not found" << std::endl;
 	return "";
 }
 
@@ -127,7 +185,7 @@ std::string Database::GetGUIDFromAssetPath(const std::string& path) {
 		return it->second;
 	}
 
-	std::cout << "################ GetGUIDFromAssetPath: " << path << " not found" << std::endl;
+	std::cout << "  *********************************** GetGUIDFromAssetPath: " << path << " not found" << std::endl;
 	return "";
 }
 

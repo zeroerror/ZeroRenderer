@@ -27,7 +27,7 @@ void Model::LoadModel(const std::string& path) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "#################################ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+		std::cout << "  #################################ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 		return;
 	}
 
@@ -46,15 +46,15 @@ void Model::ProcessNode(aiNode* aNode, const aiScene* aScene) {
 	}
 }
 
-Mesh* Model::ProcessMesh(aiMesh* aMesh, const aiScene* aScene) {
+Mesh* Model::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene) {
 	Mesh* mesh = new Mesh();
 	std::vector<Vertex*>* vertices = mesh->vertices;
 
-	aiVector3D* aTexCoords = aMesh->mTextureCoords[0];
+	aiVector3D* aTexCoords = aiMesh->mTextureCoords[0];
 
-	for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
-		aiVector3D aPosition = aMesh->mVertices[i];
-		aiVector3D aNormal = aMesh->mNormals[i];
+	for (unsigned int i = 0; i < aiMesh->mNumVertices; i++) {
+		aiVector3D aPosition = aiMesh->mVertices[i];
+		aiVector3D aNormal = aiMesh->mNormals[i];
 		aiVector2D texCoord;
 		if (aTexCoords != nullptr) {
 			texCoord = aTexCoords[0][i];
@@ -68,8 +68,8 @@ Mesh* Model::ProcessMesh(aiMesh* aMesh, const aiScene* aScene) {
 	}
 
 	std::vector<unsigned int>* indices = mesh->indices;
-	for (unsigned int i = 0; i < aMesh->mNumFaces; i++) {
-		aiFace face = aMesh->mFaces[i];
+	for (unsigned int i = 0; i < aiMesh->mNumFaces; i++) {
+		aiFace face = aiMesh->mFaces[i];
 		for (unsigned int j = 0; j < face.mNumIndices; j++) {
 			indices->push_back(face.mIndices[j]);
 		}

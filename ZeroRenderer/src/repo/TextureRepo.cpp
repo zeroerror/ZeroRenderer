@@ -26,6 +26,6 @@ Texture* TextureRepo::GetTextureByGUID(const std::string& guid) {
 		return allTextures.at(guid);
 	}
 
-	std::cout << "################ GetTextureByGUID: " << guid << " not found" << std::endl;
+	std::cout << "  ################ GetTextureByGUID: " << guid << " not found" << std::endl;
 	return nullptr;
 }
