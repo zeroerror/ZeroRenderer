@@ -67,8 +67,10 @@ namespace test {
 		
 		void InitOpenGL();
 		void InitImGui();
-		void LoadShaders();
-		void LoadTextures();
+		void InitShadowMaping();
+
+		void LoadShadersToRuntime();
+		void LoadTexturesToRuntime();
 
 		void Repaint();
 		void RenderScene();

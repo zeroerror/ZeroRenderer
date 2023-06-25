@@ -22,7 +22,7 @@ void SceneManager::LoadScene() {
 	scene->directLight = new DirectLight();
 	scene->directLight->scrWidth = scrWidth;
 	scene->directLight->scrHeight = scrHeight;
-	// scene->directLight->shadowType = ShadowType::Hard;
+	scene->directLight->shadowType = ShadowType::Hard;
 	scene->directLight->transform->SetPosition(scene->camera->transform->GetPosition());
 	scene->directLight->transform->SetRotation(scene->camera->transform->GetRotation());
 	scene->directLight->fov = scene->camera->fov;

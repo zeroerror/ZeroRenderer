@@ -47,16 +47,15 @@ namespace test {
 	}
 
 	void AssimpTest::Init() {
-		shadowMapWidth = 2048;
-		shadowMapHeight = 2048;	
-
 		// ======================== Database
 		Database::LoadDatabase();
 
+		// ======================== GL
 		InitOpenGL();
 		InitImGui();
-		LoadShaders();
-		LoadTextures();
+		InitShadowMaping();
+		LoadShadersToRuntime();
+		LoadTexturesToRuntime();
 
 		// ======================== Scene
 		SceneManager::LoadScene();
@@ -64,13 +63,14 @@ namespace test {
 		cubes = scene->cubes;
 		models = scene->models;
 		directLight = scene->directLight;
+		directLight->shadowType = ShadowType::Hard;
 		lightCube = scene->lightCube;
 		depthMapImage = scene->depthMapImage;
 		camera = scene->camera;
 		cameraController = Camera3DController();
 		cameraController.Inject(camera, window);
 
-		// ======================== 
+		// ======================== Device Input - Mouse
 		glfwSetWindowUserPointer(window, this);
 		glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
 			AssimpTest* camera3DCubeTest = static_cast<AssimpTest*>(glfwGetWindowUserPointer(window));
@@ -216,11 +216,28 @@ namespace test {
 		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Model
-		Shader* shader = shaderRepo->GetShader(assetID2shaderID[1000]);
+		Shader* shader = shaderRepo->GetShader(assetID2shaderID[2000]);
 		shader->Bind();
+		glm::vec3 lightPos = directLight->transform->GetPosition();
+		glm::vec3 lightColor = directLight->color;
+		glm::vec3 lightDirection = -directLight->GetLightDirection();
+
 		for (auto model : *models) {
-			shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(model->transform->GetPosition()));
-			shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(model->transform->GetRotation()));
+			// ------ Shader
+			pos = model->transform->GetPosition();
+			rot = model->transform->GetRotation();
+			shader->SetUniform1i("u_texture", 1);
+			shader->SetUniform1i("u_depthMapTexture", 2);
+			shader->SetUniformMat4f("u_mvp", camera->GetMVPMatrix_Perspective(pos));
+			shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
+			shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+			shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+			shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
+			shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
+			shader->SetUniformMat4f("u_lightMVPMatrix", directLight->GetMVPMatrix_Perspective(pos));
+			shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+			shader->SetUniform1f("u_farPlane", camera->farPlane);
+
 			model->RenderModel();
 		}
 	}
@@ -367,15 +384,18 @@ namespace test {
 			std::cout << "ERROR" << std::endl;
 
 		std::cout << glGetString(GL_VERSION) << std::endl;
+	}
 
-		// ======================= Create Shadow Mapping
+	void AssimpTest::InitShadowMaping() {
+		shadowMapWidth = 2048;
+		shadowMapHeight = 2048;
 		glGenFramebuffers(1, &framebuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 		glGenTextures(1, &depthTexture);
 		glBindTexture(GL_TEXTURE_2D, depthTexture);
 
-	 	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));	
+		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -400,7 +420,7 @@ namespace test {
 		ImGui_ImplOpenGL3_Init();
 	}
 
-	void AssimpTest::LoadShaders() {
+	void AssimpTest::LoadShadersToRuntime() {
 		unsigned int shaderID = shaderRepo->LoadShader("asset/shader/Default.shader");
 		assetID2shaderID.insert(std::pair<unsigned int, unsigned int>(1000, shaderID));
 		assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/Default.shader", shaderID));
@@ -414,7 +434,7 @@ namespace test {
 		assetPath2shaderID.insert(std::pair<std::string, unsigned int>("asset/shader/DepthMap.shader", shaderID));
 	}
 
-	void AssimpTest::LoadTextures() {
+	void AssimpTest::LoadTexturesToRuntime() {
 		unsigned int textureID = textureRepo->LoadTexture("asset/Textuasset/jerry.png");
 		assetID2textureID.insert(std::pair<unsigned int, unsigned int>(1000, textureID));
 		assetPath2textureID.insert(std::pair<std::string, unsigned int>("asset/Textuasset/jerry.png", textureID));

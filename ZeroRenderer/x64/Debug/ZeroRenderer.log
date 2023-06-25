@@ -1,4 +1,4 @@
 ﻿  AssimpTest.cpp
-C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(244,58): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(244,33): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(260,58): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
+C:\ZeroRenderer\ZeroRenderer\src\tests\AssimpTest.cpp(260,33): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
   ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe
