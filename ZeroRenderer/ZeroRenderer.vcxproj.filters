@@ -40,6 +40,7 @@
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\MaterialMetadata.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
+    <ClCompile Include="src\editor\TextureMetadata.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -371,6 +372,7 @@
     <ClInclude Include="src\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\MaterialMetadata.h" />
     <ClInclude Include="src\editor\FileHelper.h" />
+    <ClInclude Include="src\editor\TextureMetadata.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

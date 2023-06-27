@@ -166,7 +166,7 @@ bool Database::GenerateGUIDFromPath(const std::string& assetPath, std::string& g
 	ss << std::hex << dis(gen);
 
 	guid = ss.str();
-	//std::cout << "GenerateGUIDFromPath: path - " << path << " guid - " << guid << std::endl;
+	std::cout << "GenerateGUIDFromPath: assetPath - " << assetPath << " guid - " << guid << std::endl;
 	return true;
 }
 

@@ -27,7 +27,7 @@ void FileHelper::ReadCharsFrom(const std::string& path, unsigned char* chars) {
 	is.close();
 }
 
-void FileHelper::WriteCharsTo(const std::string& path, const unsigned char* chars, const FileOperation& fileOperation) {
+void FileHelper::WriteCharsTo(const std::string& path, const unsigned char* chars) {
 	std::ofstream os(path);
 	if (!os.good()) {
 		std::cout << " ****************** FileHelper::WriteCharsTo | file create failed! " <<std::endl;

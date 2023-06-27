@@ -15,7 +15,7 @@ private:
 	unsigned int m_programID;
 	unsigned int m_vsID;
 	unsigned int m_fsID;
-	std::string m_FilePath;
+	std::string path;
 	std::unordered_map<std::string, int> m_UniformLocationCache;
 
 public:
