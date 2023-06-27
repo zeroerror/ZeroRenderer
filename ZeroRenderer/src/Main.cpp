@@ -8,6 +8,8 @@
 #include "GLDebug.h"
 #include "AssimpTest.h"
 #include "PipelineTest.h"
+#include "FileHelper.h"
+#include "MaterialMetadata.h"
 
 int main() {
 	const char* glsl_version = "#version 330 core";
