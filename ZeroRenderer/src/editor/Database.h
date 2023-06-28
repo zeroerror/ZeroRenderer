@@ -6,33 +6,32 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
+#include "Mat.h"
+
 #include <string>
+#include "ObjMetadata.h"
 
 using namespace std;
 
 class Database {
 
 public:
-	static Material* defaultMaterial;
-	static Material* defaultLightMaterial;
-	static Material* lightCubeMaterial;
-	static Material* depthMapMaterial;
+	static void ImportAssets();
+	static void ImportAssets(const string& path);
+	static void ImportModel(const string& path);
+	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMetadata& objMeta);
+	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir, ObjMetadata& objMeta);
+	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir,Mat& matMeta);
 
-	static void LoadDatabase();
-	static void LoadDatabase(const string& path);
 	static void ClearInvalidMeta();
 	static void ClearInvalidMeta(const string& path);
-	static void LoadMaterials();
-	static void LoadAssetModels();
-	static void LoadAssetModel(const string& path);
-	static void ProcessNode(aiNode* aiNode, const aiScene* aiScene, const string& dir);
-	static void ProcessMesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir);
-	static void ProcessMaterialTextures(aiMaterial* aMat, aiTextureType aTextureType, const string& typeName, const string& dir);
 
 	static bool GenerateGUIDFromPath(const string& assetPath, string& guid);
-
 	static string GetGUIDFromAssetPath(const string& assetPath);
 	static string GetAssetPathFromGUID(const string& guid);
+
+	static void LoadMaterialByGUID(const string& guid, Material& mat);
+	static void LoadMaterialByAssetPath(const string& path, Material& mat);
 
 private:
 	static std::unordered_map<string, string> m_assetPath2GUID;

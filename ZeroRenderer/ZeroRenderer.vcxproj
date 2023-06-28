@@ -20,7 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\editor\FileHelper.cpp" />
+    <ClCompile Include="src\editor\generic\Mat.cpp" />
     <ClCompile Include="src\editor\MaterialMetadata.cpp" />
+    <ClCompile Include="src\editor\ObjMetadata.cpp" />
     <ClCompile Include="src\editor\TextureMetadata.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
@@ -63,7 +65,9 @@
   <ItemGroup>
     <ClInclude Include="src\editor\FileHelper.h" />
     <ClInclude Include="src\editor\generic\FileSuffix.h" />
+    <ClInclude Include="src\editor\generic\Mat.h" />
     <ClInclude Include="src\editor\MaterialMetadata.h" />
+    <ClInclude Include="src\editor\ObjMetadata.h" />
     <ClInclude Include="src\editor\TextureMetadata.h" />
     <ClInclude Include="src\generic\CameraType.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />

@@ -42,14 +42,12 @@ namespace test {
 
 	void AssimpTest::Init() {
 		// ======================== Database
-		Database::LoadDatabase();
+		Database::ImportAssets();
 
 		// ======================== GL
 		InitOpenGL();
 		InitImGui();
 		InitShadowMaping();
-		LoadShadersToRuntime();
-		LoadTexturesToRuntime();
 
 		// ======================== Scene
 		SceneManager::LoadScene();
@@ -217,7 +215,8 @@ namespace test {
 		for (auto model : *models) {
 			// ------ Shader
 			std::string shaderGUID = Database::GetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
-			Shader* shader = shaderRepo->GetShaderByGUID(shaderGUID);
+			Shader* shader;
+			shaderRepo->LoadShaderByGUID(shaderGUID, shader);
 			shader->Bind();
 			pos = model->transform->GetPosition();
 			rot = model->transform->GetRotation();
@@ -273,7 +272,8 @@ namespace test {
 			glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
 
 			std::string shaderGUID = Database::GetGUIDFromAssetPath("asset/shader/Default.shader");
-			Shader* shader = shaderRepo->GetShaderByGUID(shaderGUID);
+			Shader* shader;
+			shaderRepo->LoadShaderByGUID(shaderGUID, shader);
 			shader->Bind();
 			shader->SetUniform1i("u_texture", 1);
 			shader->SetUniformMat4f("u_mvp", lightMVPMatrix);
@@ -295,30 +295,41 @@ namespace test {
 	}
 
 	void AssimpTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
-		std::string textureGUID = material->diffuseTextureGUID;
-		Texture* texture = textureRepo->GetTextureByGUID(textureGUID);
-		texture->Bind(1);
+		if (material == nullptr) {
+			std::cout << "  ########################## Material is null!\n" << std::endl;
+		}
+		else {
+			std::string textureGUID = material->diffuseTextureGUID;
+			Texture* texture = nullptr;
+			textureRepo->LoadTextureByGUID(textureGUID, texture);
+			if (texture == nullptr) {
+				std::cout << "  ########################## TextureRepo - Texture is null!\n" << std::endl;
+			}
+			else {
+				texture->Bind(1);
 
-		std::string shaderGUID = material->shaderGUID;
-		Shader* shader = shaderRepo->GetShaderByGUID(shaderGUID);
-		shader->Bind();
+				std::string shaderGUID = material->shaderGUID;
+				Shader* shader;
+				shaderRepo->LoadShaderByGUID(shaderGUID, shader);
+				shader->Bind();
+				shader->SetUniform1i("u_texture", 1);
+				shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
+				shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
+				shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
 
-		shader->SetUniform1i("u_texture", 1);
-		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
-		shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+				glm::vec3 lightPos = directLight->transform->GetPosition();
+				glm::vec3 lightColor = directLight->color;
+				glm::vec3 lightDirection = -directLight->GetLightDirection();
+				shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+				shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
+				shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
 
-		glm::vec3 lightPos = directLight->transform->GetPosition();
-		glm::vec3 lightColor = directLight->color;
-		glm::vec3 lightDirection = -directLight->GetLightDirection();
-		shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
-		shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
-		shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
-
-		shader->SetUniform1i("u_depthMapTexture", 2);
-		shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
-		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
-		shader->SetUniform1f("u_farPlane", camera->farPlane);
+				shader->SetUniform1i("u_depthMapTexture", 2);
+				shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
+				shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+				shader->SetUniform1f("u_farPlane", camera->farPlane);
+			}
+		}
 
 		va->Bind();
 		ib->Bind();
@@ -414,18 +425,6 @@ namespace test {
 		ImGui::StyleColorsLight();
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init();
-	}
-
-	void AssimpTest::LoadShadersToRuntime() {
-		shaderRepo->LoadShader("asset/shader/Default.shader");
-		shaderRepo->LoadShader("asset/shader/DefaultLight.shader");
-		shaderRepo->LoadShader("asset/shader/DepthMap.shader");
-	}
-
-	void AssimpTest::LoadTexturesToRuntime() {
-		textureRepo->LoadTexture("asset/texture/default.png");
-		textureRepo->LoadTexture("asset/texture/jerry.png");
-		textureRepo->LoadTexture("asset/texture/room.png");
 	}
 
 	void AssimpTest::Repaint() {

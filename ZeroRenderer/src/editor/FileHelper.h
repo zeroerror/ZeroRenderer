@@ -11,6 +11,7 @@ public:
 	static void WriteCharsTo(const string& path, const unsigned char* chars);
 	static void DeleteFile(const string& filePath);
 	static bool PathEquals(const string& path1, const string& path2);
+	static void NormalizePath(string &path);
 
 };
 

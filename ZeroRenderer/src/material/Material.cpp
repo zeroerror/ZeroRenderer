@@ -4,6 +4,7 @@
 #include <glm/ext/vector_float4.hpp>
 
 #include "Texture.h"
+#include "FileHelper.h"
 
 Material::Material() {
 	diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); 
@@ -14,17 +15,5 @@ Material::Material() {
 
 Material::~Material() {
 	std::cout << "Material::~Material() " << std::endl;
-}
-
-void Material::SetDiffuseColor(const glm::vec4& diffuseColor) {
-	this->diffuseColor = diffuseColor;
-}
-
-void Material::SetSpecularIntensity(float specularIntensity) {
-	this->specularIntensity = specularIntensity;
-}
-
-void Material::SetShininess(float shininess) {
-	this->shininess = shininess;
 }
 

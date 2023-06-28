@@ -8,7 +8,7 @@ bool FileHelper::FileExist(const string& path) {
 }
 
 void FileHelper::CreateFile(const string& path) {
-	if(FileExist(path)) {
+	if (FileExist(path)) {
 		return;
 	}
 }
@@ -30,7 +30,7 @@ void FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
 void FileHelper::WriteCharsTo(const string& path, const unsigned char* chars) {
 	std::ofstream os(path);
 	if (!os.good()) {
-		std::cout << " ****************** FileHelper::WriteCharsTo | file create failed! " <<std::endl;
+		std::cout << " ****************** FileHelper::WriteCharsTo | file create failed! " << std::endl;
 		return;
 	}
 
@@ -59,15 +59,15 @@ bool FileHelper::PathEquals(const std::string& path1, const std::string& path2) 
 
 	string::size_type p1Len = path1.length();
 	string::size_type p2Len = path2.length();
-	if(p1Len != p2Len) {
+	if (p1Len != p2Len) {
 		return false;
 	}
 
 	while (p1 < p1Len && p2 < p2Len) {
 		char c1 = path1[p1];
 		char c2 = path2[p2];
-		if(c1 == '\\') c1 = '/';
-		if(c2 == '\\') c2 = '/';
+		if (c1 == '\\') c1 = '/';
+		if (c2 == '\\') c2 = '/';
 		if (c1 != c2) {
 			return false;
 		}
@@ -77,4 +77,13 @@ bool FileHelper::PathEquals(const std::string& path1, const std::string& path2) 
 	}
 
 	return true;
+}
+
+void FileHelper::NormalizePath(string& path) {
+	string::size_type len = path.length();
+	for (char& c : path) {
+		if (c == '\\') {
+			c = '/';
+		}
+	}
 }

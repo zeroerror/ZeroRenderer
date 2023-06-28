@@ -32,10 +32,14 @@ void SceneManager::LoadScene() {
 	scene->directLight->farPlane = scene->camera->farPlane;
 	scene->directLight->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
-	Material* defaultMaterial = Database::defaultMaterial;
-	Material* defaultLightMaterial = Database::defaultLightMaterial;
-	Material* lightCubeMaterial = Database::lightCubeMaterial;
-	Material* depthMapMaterial = Database::depthMapMaterial;
+	Material* defaultMaterial = new Material();
+	Database::LoadMaterialByAssetPath("asset/material/default.mat", *defaultMaterial);
+	Material* defaultLightMaterial = new Material();
+	Database::LoadMaterialByAssetPath("asset/material/defaultLight.mat", *defaultLightMaterial);
+	Material* lightCubeMaterial = new Material();
+	Database::LoadMaterialByAssetPath("asset/material/lightCube.mat", *lightCubeMaterial);
+	Material* depthMapMaterial = new Material();
+	Database::LoadMaterialByAssetPath("asset/material/depthMap.mat", *depthMapMaterial);
 
 	// Create a central light source cube
 	scene->lightCube = Cube::CreateCube(0.2f, 0.2f, 1.0f);

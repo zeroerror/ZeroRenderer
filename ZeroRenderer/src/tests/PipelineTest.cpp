@@ -47,8 +47,6 @@ namespace test {
 		InitOpenGL();
 		InitImGui();
 		LoadCamera();
-		LoadShaders();
-		LoadTextures();
 
 		glfwSetWindowUserPointer(window, this);
 		glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
@@ -61,10 +59,14 @@ namespace test {
 		});
 
 		// ======================== Scene
-		Material* defaultMaterial = Database::defaultLightMaterial;
-		Material* defaultLightMaterial = Database::defaultLightMaterial;
-		Material* lightCubeMaterial = Database::lightCubeMaterial;
-		Material* depthMapMaterial = Database::depthMapMaterial;
+		Material* defaultMaterial = new Material();
+		Database::LoadMaterialByAssetPath("asset/material/default.mat", *defaultMaterial);
+		Material* defaultLightMaterial = new Material();
+		Database::LoadMaterialByAssetPath("asset/material/defaultLight.mat", *defaultLightMaterial);
+		Material* lightCubeMaterial = new Material();
+		Database::LoadMaterialByAssetPath("asset/material/lightCube.mat", *lightCubeMaterial);
+		Material* depthMapMaterial = new Material();
+		Database::LoadMaterialByAssetPath("asset/material/depthMap.mat", *depthMapMaterial);
 
 		// Light 
 		m_directLight = new DirectLight();
@@ -283,11 +285,13 @@ namespace test {
 
 	void PipelineTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
 		std::string textureGUID;
-		Texture* texture = m_textureRepo->GetTextureByGUID(textureGUID);
+		Texture* texture = nullptr;
+		m_textureRepo->LoadTextureByGUID(textureGUID, texture);
 		texture->Bind(1);
 
 		std::string shaderID;
-		Shader* shader = m_shaderRepo->GetShaderByGUID(shaderID);
+		Shader* shader;
+		m_shaderRepo->LoadShaderByGUID(shaderID, shader);
 		shader->Bind();
 
 		shader->SetUniform1i("u_texture", 1);
@@ -341,8 +345,7 @@ namespace test {
 		Draw();
 	}
 
-	void PipelineTest::LoadAssetsDatabase() {
-	}
+	void PipelineTest::LoadAssetsDatabase() {}
 
 	void PipelineTest::InitOpenGL() {
 		/* Initialize the library */
@@ -411,16 +414,6 @@ namespace test {
 		camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(30.0f), glm::radians(0.0f), glm::radians(0.0f))));
 		m_cameraController = Camera3DController();
 		m_cameraController.Inject(camera, window);
-	}
-
-	void PipelineTest::LoadShaders() {
-		m_shaderRepo->LoadShader("asset/shader/defaultLight.shader");
-		m_shaderRepo->LoadShader("asset/shader/depthMap.shader");
-	}
-
-	void PipelineTest::LoadTextures() {
-		m_textureRepo->LoadTexture("asset/texture/jerry.png");
-		m_textureRepo->LoadTexture("asset/texture/room.png");
 	}
 
 	void PipelineTest::Repaint() {

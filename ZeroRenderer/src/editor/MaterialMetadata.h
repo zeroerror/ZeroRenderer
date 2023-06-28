@@ -14,12 +14,6 @@ public:
 
 	std::string guid;
 
-	std::string shaderGUID;
-	std::string diffuseTextureGUID;
-	glm::vec4 diffuseColor;
-	float specularIntensity;
-	float shininess;
-
 	void SerializeTo(const std::string& path);
 	void DeserializeFrom(const std::string& path);
 
