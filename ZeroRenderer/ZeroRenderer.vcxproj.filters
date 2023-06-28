@@ -373,6 +373,8 @@
     <ClInclude Include="src\editor\MaterialMetadata.h" />
     <ClInclude Include="src\editor\FileHelper.h" />
     <ClInclude Include="src\editor\TextureMetadata.h" />
+    <ClInclude Include="src\editor\generic\FileSuffix.h" />
+    <ClInclude Include="src\generic\CameraType.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

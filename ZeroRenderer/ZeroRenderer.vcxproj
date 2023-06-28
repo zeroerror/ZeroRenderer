@@ -62,8 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\editor\FileHelper.h" />
+    <ClInclude Include="src\editor\generic\FileSuffix.h" />
     <ClInclude Include="src\editor\MaterialMetadata.h" />
     <ClInclude Include="src\editor\TextureMetadata.h" />
+    <ClInclude Include="src\generic\CameraType.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\Scene.h" />
     <ClInclude Include="src\editor\SceneManager.h" />
@@ -773,9 +775,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\editor;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\model;$(SolutionDir)src\mesh;$(SolutionDir)src\material;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\editor;$(SolutionDir)src\editor\generic;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\model;$(SolutionDir)src\mesh;$(SolutionDir)src\material;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

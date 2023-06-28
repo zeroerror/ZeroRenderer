@@ -2,18 +2,18 @@
 #include <fstream>
 #include <iostream>
 
-bool FileHelper::FileExist(const std::string& path) {
+bool FileHelper::FileExist(const string& path) {
 	std::ifstream is(path);
 	return is.good();
 }
 
-void FileHelper::CreateFile(const std::string& path) {
+void FileHelper::CreateFile(const string& path) {
 	if(FileExist(path)) {
 		return;
 	}
 }
 
-void FileHelper::ReadCharsFrom(const std::string& path, unsigned char* chars) {
+void FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
 	std::ifstream is(path);
 	if (!is.good()) {
 		return;
@@ -27,7 +27,7 @@ void FileHelper::ReadCharsFrom(const std::string& path, unsigned char* chars) {
 	is.close();
 }
 
-void FileHelper::WriteCharsTo(const std::string& path, const unsigned char* chars) {
+void FileHelper::WriteCharsTo(const string& path, const unsigned char* chars) {
 	std::ofstream os(path);
 	if (!os.good()) {
 		std::cout << " ****************** FileHelper::WriteCharsTo | file create failed! " <<std::endl;
@@ -41,4 +41,14 @@ void FileHelper::WriteCharsTo(const std::string& path, const unsigned char* char
 		c = chars[++index];
 	}
 	os.close();
+}
+
+
+void FileHelper::DeleteFile(const string& filePath) {
+	if (!FileExist(filePath)) {
+		return;
+	}
+
+	std::remove(filePath.c_str());
+	std::cout << "Delete File: " << filePath << std::endl;
 }

@@ -1,13 +1,15 @@
 #pragma once
 #include <string>
+using namespace std;
 
 class FileHelper {
 
 public:
-	static bool FileExist(const std::string& path);
-	static void CreateFile(const std::string& path);
-	static void ReadCharsFrom(const std::string& path, unsigned char* chars);
-	static void WriteCharsTo(const std::string& path, const unsigned char* chars);
+	static bool FileExist(const string& path);
+	static void CreateFile(const string& path);
+	static void ReadCharsFrom(const string& path, unsigned char* chars);
+	static void WriteCharsTo(const string& path, const unsigned char* chars);
+	static void DeleteFile(const string& filePath);
 
 };
 
