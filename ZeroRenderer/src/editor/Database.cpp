@@ -23,13 +23,11 @@ Material* Database::lightCubeMaterial;
 Material* Database::depthMapMaterial;
 
 void Database::LoadDatabase() {
-	LoadDatabase("asset");
-
 	std::cout << "  ######################################### Database Load Start ######################################### " << std::endl;
 	m_assetPath2GUID = std::unordered_map<string, string>();
 	m_guid2AssetPath = std::unordered_map<string, string>();
 
-	LoadAssetTextures();
+	LoadDatabase("asset");
 	LoadAssetShaders();
 	LoadMaterials();	// TODO - Meta instead of runtime Material
 	LoadAssetModels();
@@ -51,9 +49,16 @@ void Database::LoadDatabase(const string& dir) {
 			if (extensionStr == FileSuffix::SUFFIX_PNG) {
 				string tarPath = dir + "\\" + fileNameStr + ".meta";
 				std::cout << "File -------- " << fileNameStr << " TextureMetadata SerializeTo" << tarPath << std::endl;
+
+				string guid;
+				if (!GenerateGUIDFromPath(tarPath, guid)) {
+					return;
+				}
 				TextureMetadata texMeta = TextureMetadata();
-				GenerateGUIDFromPath(pathStr, texMeta.guid);
+				texMeta.guid = guid;
 				texMeta.SerializeTo(tarPath);
+				m_assetPath2GUID.insert(std::pair<string, string>(tarPath, guid));
+				m_guid2AssetPath.insert(std::pair<string, string>(guid, tarPath));
 			}
 		}
 	}
@@ -148,31 +153,13 @@ void Database::ProcessMesh(aiMesh* aMesh, const aiScene* aScene, const  string& 
 }
 
 void Database::ProcessMaterialTextures(aiMaterial* aMat, aiTextureType aTextureType, const string& typeName, const string& dir) {
-	// TODO - Save to meta data
 	unsigned int textureCount = aMat->GetTextureCount(aTextureType);
 	for (unsigned int i = 0; i < textureCount; i++) {
 		aiString str;
 		aMat->GetTexture(aTextureType, i, &str);
 		string texPath = dir + str.C_Str();
-		Database::LoadAssetTexture(texPath);
+		// TODO - Save to meta data
 	}
-}
-
-void Database::LoadAssetTextures() {
-	LoadAssetTexture("asset/texture/default.png");
-	LoadAssetTexture("asset/texture/jerry.png");
-	LoadAssetTexture("asset/texture/room.png");
-}
-
-void Database::LoadAssetTexture(const string& assetPath) {
-	string guid;
-	if (!GenerateGUIDFromPath(assetPath, guid)) {
-		return;
-	}
-
-	m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
-	m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
-	std::cout << "Database::LoadAssetTexture: path - " << assetPath << " guid - " << guid << std::endl;
 }
 
 void Database::LoadAssetShaders() {

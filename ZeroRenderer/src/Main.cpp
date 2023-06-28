@@ -13,21 +13,6 @@
 #include "TextureMetadata.h"
 
 int main() {
-	//MaterialMetadata mm = MaterialMetadata();
-	//mm.shaderGUID = "1";
-	//mm.diffuseTextureGUID = "1";
-	//mm.diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//mm.specularIntensity = 1.0f;
-	//mm.shininess = 32.0f; 
-	//mm.SerializeTo("asset/1.mat.meta");
-
-	//TextureMetadata tm = TextureMetadata();
-	//tm.width = 2024;
-	//tm.height = 2024;
-	//tm.SerializeTo("asset/1.png.meta");
-	//Database::ClearInvalidMeta("asset");
-	Database::LoadDatabase("asset");
-
 	const char* glsl_version = "#version 330 core";
 	GLFWwindow* window;
 	ImGuiContext* imguiContext;
