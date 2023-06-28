@@ -10,6 +10,7 @@ public:
 	static void ReadCharsFrom(const string& path, unsigned char* chars);
 	static void WriteCharsTo(const string& path, const unsigned char* chars);
 	static void DeleteFile(const string& filePath);
+	static bool PathEquals(const string& path1, const string& path2);
 
 };
 

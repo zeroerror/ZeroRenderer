@@ -29,8 +29,6 @@ public:
 	static void ProcessMesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir);
 	static void ProcessMaterialTextures(aiMaterial* aMat, aiTextureType aTextureType, const string& typeName, const string& dir);
 
-	static void LoadAssetShaders();
-	static void LoadAssetShader(const string& assetPath);
 	static bool GenerateGUIDFromPath(const string& assetPath, string& guid);
 
 	static string GetGUIDFromAssetPath(const string& assetPath);

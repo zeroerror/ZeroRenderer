@@ -28,7 +28,6 @@ void Database::LoadDatabase() {
 	m_guid2AssetPath = std::unordered_map<string, string>();
 
 	LoadDatabase("asset");
-	LoadAssetShaders();
 	LoadMaterials();	// TODO - Meta instead of runtime Material
 	LoadAssetModels();
 	std::cout << "  ######################################### Database Load Completed ######################################### " << std::endl;
@@ -44,21 +43,35 @@ void Database::LoadDatabase(const string& dir) {
 			LoadDatabase(pathStr);
 		}
 		else {
-			string fileNameStr = path.filename().string();
+			string assetPath = path.string();
 			string extensionStr = path.extension().string();
 			if (extensionStr == FileSuffix::SUFFIX_PNG) {
-				string tarPath = dir + "\\" + fileNameStr + ".meta";
-				std::cout << "File -------- " << fileNameStr << " TextureMetadata SerializeTo" << tarPath << std::endl;
+				string metaPath = assetPath + ".meta";
+				std::cout  << "Generate texture meta - " << metaPath << std::endl;
 
 				string guid;
-				if (!GenerateGUIDFromPath(tarPath, guid)) {
+				if (!GenerateGUIDFromPath(assetPath, guid)) {
 					return;
 				}
 				TextureMetadata texMeta = TextureMetadata();
 				texMeta.guid = guid;
-				texMeta.SerializeTo(tarPath);
-				m_assetPath2GUID.insert(std::pair<string, string>(tarPath, guid));
-				m_guid2AssetPath.insert(std::pair<string, string>(guid, tarPath));
+				texMeta.SerializeTo(metaPath);
+				m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
+				m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
+			}
+			else if (extensionStr == FileSuffix::SUFFIX_SHADER) {
+				string metaPath = assetPath + ".meta";
+				std::cout << "Generate shader meta - " << metaPath << std::endl;
+
+				string guid;
+				if (!GenerateGUIDFromPath(assetPath, guid)) {
+					return;
+				}
+				TextureMetadata texMeta = TextureMetadata();
+				texMeta.guid = guid;
+				texMeta.SerializeTo(metaPath);
+				m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
+				m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
 			}
 		}
 	}
@@ -162,23 +175,6 @@ void Database::ProcessMaterialTextures(aiMaterial* aMat, aiTextureType aTextureT
 	}
 }
 
-void Database::LoadAssetShaders() {
-	LoadAssetShader("asset/shader/Default.shader");
-	LoadAssetShader("asset/shader/DefaultLight.shader");
-	LoadAssetShader("asset/shader/DepthMap.shader");
-}
-
-void Database::LoadAssetShader(const string& assetPath) {
-	string guid;
-	if (!GenerateGUIDFromPath(assetPath, guid)) {
-		return;
-	}
-
-	m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
-	m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
-	std::cout << "Database::LoadAssetShader: path - " << assetPath << " guid - " << guid << std::endl;
-}
-
 bool Database::GenerateGUIDFromPath(const string& assetPath, string& guid) {
 	std::unordered_map<string, string>::iterator it = m_assetPath2GUID.find(assetPath);
 	if (it != m_assetPath2GUID.end()) {
@@ -220,9 +216,12 @@ string Database::GetAssetPathFromGUID(const string& guid) {
 }
 
 string Database::GetGUIDFromAssetPath(const string& path) {
-	std::unordered_map<string, string>::iterator it = m_assetPath2GUID.find(path);
-	if (it != m_assetPath2GUID.end()) {
-		return it->second;
+	std::unordered_map<string, string>::iterator it;
+	for (it = m_assetPath2GUID.begin(); it != m_assetPath2GUID.end(); it++) {
+		string assetPath = it->first;
+		if(FileHelper::PathEquals(assetPath, path)) {
+			return it->second;
+		}
 	}
 
 	std::cout << "  *********************************** GetGUIDFromAssetPath: " << path << " not found" << std::endl;

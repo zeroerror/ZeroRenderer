@@ -52,3 +52,29 @@ void FileHelper::DeleteFile(const string& filePath) {
 	std::remove(filePath.c_str());
 	std::cout << "Delete File: " << filePath << std::endl;
 }
+
+bool FileHelper::PathEquals(const std::string& path1, const std::string& path2) {
+	string::size_type p1 = 0;
+	string::size_type p2 = 0;
+
+	string::size_type p1Len = path1.length();
+	string::size_type p2Len = path2.length();
+	if(p1Len != p2Len) {
+		return false;
+	}
+
+	while (p1 < p1Len && p2 < p2Len) {
+		char c1 = path1[p1];
+		char c2 = path2[p2];
+		if(c1 == '\\') c1 = '/';
+		if(c2 == '\\') c2 = '/';
+		if (c1 != c2) {
+			return false;
+		}
+
+		p1++;
+		p2++;
+	}
+
+	return true;
+}

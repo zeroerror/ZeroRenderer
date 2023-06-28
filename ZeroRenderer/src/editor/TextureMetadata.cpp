@@ -4,7 +4,6 @@
 #include "Database.h"
 
 void TextureMetadata::SerializeTo(const std::string& path) {
-	Database::GenerateGUIDFromPath(path, guid);
 	std::stringstream ss;
 	ss << "guid: " << guid << std::endl;
 	ss << "width: " << width << std::endl;
