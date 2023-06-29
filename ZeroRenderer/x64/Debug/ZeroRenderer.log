@@ -1,4 +1,2 @@
-﻿  PipelineTest.cpp
-C:\ZeroRenderer\ZeroRenderer\src\tests\PipelineTest.cpp(411,22): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\tests\PipelineTest.cpp(412,23): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+﻿  ShaderRepo.cpp
   ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe

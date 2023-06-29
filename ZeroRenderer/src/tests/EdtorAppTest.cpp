@@ -1,4 +1,4 @@
-#include "EditorAppTest.h"
+#include "EdtorAppTest.h"
 
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
@@ -23,18 +23,16 @@
 namespace test {
 
 	EdtorAppTest::EdtorAppTest() {
-		shaderRepo = new ShaderRepo();
-		textureRepo = new TextureRepo();
 		editorContext = new EditorContext();
+		editorRendererDomain = new EditorRendererDomain();
+		editorRendererDomain->Inject(editorContext);
+
 		cameraControllerEnabled = false;
 	}
 
 	EdtorAppTest::~EdtorAppTest() {
 		std::cout << "EditorAppTest::~EditorAppTest()" << std::endl;
 		GLCall(glfwMakeContextCurrent(window));
-
-		delete shaderRepo;
-		delete textureRepo;
 
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		glfwDestroyWindow(window);
@@ -51,6 +49,7 @@ namespace test {
 
 		// ======================== Scene
 		SceneManager::LoadScene();
+		// ======================== TO BE REMOVE ========================
 		scene = SceneManager::scene;
 		cubes = scene->cubes;
 		models = scene->models;
@@ -58,9 +57,12 @@ namespace test {
 		directLight->shadowType = ShadowType::Hard;
 		lightCube = scene->lightCube;
 		depthMapImage = scene->depthMapImage;
-		camera = scene->camera;
+		sceneCamera = scene->camera;
 		cameraController = Camera3DController();
-		cameraController.Inject(camera, window);
+		cameraController.Inject(sceneCamera, window);
+		shaderRepo = editorContext->GetShaderRepo();
+		textureRepo = editorContext->GetTextureRepo();
+		// ======================== TO BE REMOVE ========================
 
 		// ======================== Device Input - Mouse
 		glfwSetWindowUserPointer(window, this);
@@ -184,7 +186,7 @@ namespace test {
 			IndexBuffer* ib = cube->ib;
 			glm::vec3 pos = cube->transform->GetPosition();
 			glm::quat rot = cube->transform->GetRotation();
-			glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+			glm::mat4 cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
 			glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
 			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
 		}
@@ -195,7 +197,7 @@ namespace test {
 		IndexBuffer* ib = lightCube->ib;
 		glm::vec3 pos = lightCube->transform->GetPosition();
 		glm::quat rot = lightCube->transform->GetRotation();
-		glm::mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		glm::mat4 cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
 		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Screen Cube 
@@ -204,7 +206,7 @@ namespace test {
 		ib = depthMapImage->ib;
 		pos = depthMapImage->transform->GetPosition();
 		rot = depthMapImage->transform->GetRotation();
-		cameraMVPMatrix = camera->GetMVPMatrix_Perspective(pos);
+		cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
 		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
 		// - Model
@@ -213,9 +215,7 @@ namespace test {
 		glm::vec3 lightDirection = -directLight->GetLightDirection();
 
 		for (auto model : *models) {
-			// ------ Shader
-			editorContext.
-			model->Render();
+			editorRendererDomain->RenderModel(model, sceneCamera, directLight);
 		}
 	}
 
@@ -264,11 +264,7 @@ namespace test {
 		else {
 			std::string textureGUID = material->diffuseTextureGUID;
 			Texture* texture = nullptr;
-			textureRepo->LoadTextureByGUID(textureGUID, texture);
-			if (texture == nullptr) {
-				std::cout << "  ########################## TextureRepo - Texture is null!\n" << std::endl;
-			}
-			else {
+			if (textureRepo->TryLoadTextureByGUID(textureGUID, texture)) {
 				texture->Bind(1);
 
 				std::string shaderGUID = material->shaderGUID;
@@ -289,8 +285,8 @@ namespace test {
 
 					shader->SetUniform1i("u_depthMapTexture", 2);
 					shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
-					shader->SetUniform1f("u_nearPlane", camera->nearPlane);
-					shader->SetUniform1f("u_farPlane", camera->farPlane);
+					shader->SetUniform1f("u_nearPlane", sceneCamera->nearPlane);
+					shader->SetUniform1f("u_farPlane", sceneCamera->farPlane);
 				}
 			}
 		}

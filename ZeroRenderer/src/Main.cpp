@@ -6,7 +6,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "GLDebug.h"
-#include "AssimpTest.h"
+#include "EdtorAppTest.h"
 #include "PipelineTest.h"
 #include "FileHelper.h"
 #include "MaterialMetadata.h"
@@ -58,8 +58,8 @@ int main() {
 		test->Init();
 		return test;
 		});
-	testMenu->RegisterTest("Assimp Test", []() {
-		std::shared_ptr<test::AssimpTest> test = std::make_shared<test::AssimpTest>();
+	testMenu->RegisterTest("EdtorAppTest", []() {
+		std::shared_ptr<test::EdtorAppTest> test = std::make_shared<test::EdtorAppTest>();
 		test->Init();
 		return test;
 		});

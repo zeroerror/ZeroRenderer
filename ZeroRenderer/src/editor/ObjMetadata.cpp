@@ -39,7 +39,7 @@ void ObjMetadata::DeserializeFrom(const std::string& path) {
 	std::string str(reinterpret_cast<char*>(res));
 	std::stringstream ss(str);
 	std::string line;
-	while (std::getline(ss, line)) {
+	while (getline(ss, line)) {
 		std::istringstream iss(line);
 		std::string key;
 		if (!(iss >> key)) {
@@ -48,5 +48,26 @@ void ObjMetadata::DeserializeFrom(const std::string& path) {
 		if (key == "guid:") {
 			iss >> guid;
 		}
+		else if (key == "materials:") {
+			while (std::getline(ss, line)) {
+				std::istringstream iss2(line);
+				string materialGUID;
+				if (!(iss2 >> materialGUID) || materialGUID == "}") {
+					break;
+				}
+				materialGUIDs.push_back(materialGUID);
+			}
+		}
+		else if (key == "meshNames:") {
+			while (std::getline(ss, line)) {
+				std::istringstream iss2(line);
+				string meshName;
+				if (!(iss2 >> meshName) || meshName == "}") {
+					break;
+				}
+				meshNames.push_back(meshName);
+			}
+		}
 	}
 }
+

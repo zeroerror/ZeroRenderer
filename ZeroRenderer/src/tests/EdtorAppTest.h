@@ -21,18 +21,21 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "Scene.h"
+#include "EditorContext.h"
+#include "EditorRendererDomain.h"
 
 namespace test {
 
-	class AssimpTest:public Test {
+	class EdtorAppTest:public Test {
 	public:
 		// ---- Scene
 		Scene* scene;
+		// ---- Scene(TO BE REMOVE)
 		std::vector<Cube*>* cubes;
 		std::vector<Model*>* models;
 		Rectangle* depthMapImage;
 		Cube* lightCube;
-		Camera3D* camera;
+		Camera3D* sceneCamera;
 		DirectLight* directLight;
 
 		GLFWwindow* window;
@@ -40,9 +43,6 @@ namespace test {
 
 		int shadowMapWidth;
 		int shadowMapHeight;
-
-		ShaderRepo* shaderRepo;
-		TextureRepo* textureRepo;
 
 		Camera3DController cameraController;
 		bool cameraControllerEnabled;
@@ -52,8 +52,15 @@ namespace test {
 		const float moveSpeed = 0.1f;
 		const float rotateSpeed = 0.1f;
 
-		AssimpTest();
-		~AssimpTest();
+		// ---- Editor
+		EditorContext* editorContext;
+		EditorRendererDomain* editorRendererDomain;
+		// ---- Editor(TO BE REMOVE)
+		ShaderRepo* shaderRepo;
+		TextureRepo* textureRepo;
+
+		EdtorAppTest();
+		~EdtorAppTest();
 
 		void Init();
 		void OnUpdate(const float& deltaTime) override;

@@ -33,13 +33,13 @@ void SceneManager::LoadScene() {
 	scene->directLight->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	Material* defaultMaterial = new Material();
-	Database::LoadMaterialByAssetPath("asset/material/default.mat", *defaultMaterial);
+	Database::TryLoadMaterialByAssetPath("asset/material/default.mat", defaultMaterial);
 	Material* defaultLightMaterial = new Material();
-	Database::LoadMaterialByAssetPath("asset/material/defaultLight.mat", *defaultLightMaterial);
+	Database::TryLoadMaterialByAssetPath("asset/material/defaultLight.mat", defaultLightMaterial);
 	Material* lightCubeMaterial = new Material();
-	Database::LoadMaterialByAssetPath("asset/material/lightCube.mat", *lightCubeMaterial);
+	Database::TryLoadMaterialByAssetPath("asset/material/lightCube.mat", lightCubeMaterial);
 	Material* depthMapMaterial = new Material();
-	Database::LoadMaterialByAssetPath("asset/material/depthMap.mat", *depthMapMaterial);
+	Database::TryLoadMaterialByAssetPath("asset/material/depthMap.mat", depthMapMaterial);
 
 	// Create a central light source cube
 	scene->lightCube = Cube::CreateCube(0.2f, 0.2f, 1.0f);
@@ -87,22 +87,7 @@ void SceneManager::LoadScene() {
 	// ========================== Load Model
 	Model* model = new Model();
 	model->LoadModel("asset/model/nanosuit/nanosuit.obj");
-	model->transform->SetPosition(glm::vec3(10.0f, 0.0f, 20.0f));
-	model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
-	model->material = defaultLightMaterial;
-	scene->models->push_back(model);
-
-	model = new Model();
-	model->LoadModel("asset/model/nanosuit/nanosuit.obj");
 	model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
 	model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
-	model->material = defaultLightMaterial;
-	scene->models->push_back(model);
-
-	model = new Model();
-	model->LoadModel("asset/model/nanosuit/nanosuit.obj");
-	model->transform->SetPosition(glm::vec3(-10.0f, 0.0f, 20.0f));
-	model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
-	model->material = defaultLightMaterial;
 	scene->models->push_back(model);
 }

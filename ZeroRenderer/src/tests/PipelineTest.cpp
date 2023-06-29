@@ -60,13 +60,13 @@ namespace test {
 
 		// ======================== Scene
 		Material* defaultMaterial = new Material();
-		Database::LoadMaterialByAssetPath("asset/material/default.mat", *defaultMaterial);
+		Database::TryLoadMaterialByAssetPath("asset/material/default.mat", defaultMaterial);
 		Material* defaultLightMaterial = new Material();
-		Database::LoadMaterialByAssetPath("asset/material/defaultLight.mat", *defaultLightMaterial);
+		Database::TryLoadMaterialByAssetPath("asset/material/defaultLight.mat", defaultLightMaterial);
 		Material* lightCubeMaterial = new Material();
-		Database::LoadMaterialByAssetPath("asset/material/lightCube.mat", *lightCubeMaterial);
+		Database::TryLoadMaterialByAssetPath("asset/material/lightCube.mat", lightCubeMaterial);
 		Material* depthMapMaterial = new Material();
-		Database::LoadMaterialByAssetPath("asset/material/depthMap.mat", *depthMapMaterial);
+		Database::TryLoadMaterialByAssetPath("asset/material/depthMap.mat", depthMapMaterial);
 
 		// Light 
 		m_directLight = new DirectLight();
@@ -286,30 +286,29 @@ namespace test {
 	void PipelineTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
 		std::string textureGUID;
 		Texture* texture = nullptr;
-		m_textureRepo->LoadTextureByGUID(textureGUID, texture);
-		texture->Bind(1);
+		if (m_textureRepo->TryLoadTextureByGUID(textureGUID, texture)) {
+			texture->Bind(1);
+		}
 
 		std::string shaderID;
 		Shader* shader;
-		m_shaderRepo->LoadShaderByGUID(shaderID, shader);
-		shader->Bind();
-
-		shader->SetUniform1i("u_texture", 1);
-		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
-
-		shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
-		glm::vec3 lightPos = m_directLight->transform->GetPosition();
-		glm::vec3 lightColor = m_directLight->color;
-		glm::vec3 lightDirection = -m_directLight->GetLightDirection();
-		shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
-		shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
-		shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
-
-		shader->SetUniform1i("u_depthMapTexture", 2);
-		shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
-		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
-		shader->SetUniform1f("u_farPlane", camera->farPlane);
+		if (m_shaderRepo->TryLoadShaderByGUID(shaderID, shader)) {
+			shader->Bind();
+			shader->SetUniform1i("u_texture", 1);
+			shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
+			shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
+			shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+			glm::vec3 lightPos = m_directLight->transform->GetPosition();
+			glm::vec3 lightColor = m_directLight->color;
+			glm::vec3 lightDirection = -m_directLight->GetLightDirection();
+			shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+			shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
+			shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
+			shader->SetUniform1i("u_depthMapTexture", 2);
+			shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
+			shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+			shader->SetUniform1f("u_farPlane", camera->farPlane);
+		}
 
 		va->Bind();
 		ib->Bind();

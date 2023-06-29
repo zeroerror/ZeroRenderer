@@ -17,47 +17,44 @@ ShaderRepo::~ShaderRepo() {
 	}
 }
 
-void ShaderRepo::LoadShaderByPath(const string& path, Shader*& shader) {
-	string guid = Database::GetGUIDFromAssetPath(path);
-	if (guid == "") {
-		std::cout << "############## ShaderRepo::LoadShaderByPath -  path doesn't exist : " << path << std::endl;
-		return;
+bool ShaderRepo::TryLoadShaderByAssetPath(const string& path, Shader*& shader) {
+	string guid;
+	if (!Database::TryGetGUIDFromAssetPath(path, guid)) {
+		std::cout << "############## ShaderRepo::TryLoadShaderByPath -  path doesn't exist : " << path << std::endl;
+		return false;
 	}
 
-	if (!TryGetShaderByGUID(guid, shader)) {
-		shader = new Shader(path);
-	}
-
-	allShaders_sortedByGUID.insert(std::pair<std::string, Shader*>(guid, shader));
-	allShaders_sortedByPath.insert(std::pair<std::string, Shader*>(path, shader));
+	shader = new Shader(path);
+	allShaders_sortedByGUID.insert(std::pair<string, Shader*>(guid, shader));
+	allShaders_sortedByPath.insert(std::pair<string, Shader*>(path, shader));
 	std::cout << "ShaderRepo::LoadShader. Path - " << path << " GUID - " << guid << std::endl;
-	return;
+	return true;
 }
 
-void ShaderRepo::LoadShaderByGUID(const string& guid, Shader*& shader) {
-	string path = Database::GetAssetPathFromGUID(guid);
-	if (path == "") {
+bool ShaderRepo::TryLoadShaderByGUID(const string& guid, Shader*& shader) {
+	string path;
+	if (!Database::TryGetAssetPathFromGUID(guid, path)) {
 		std::cout << "############## ShaderRepo::LoadShaderByGUID -  guid doesn't exist : " << guid << std::endl;
-		return;
+		return false;
 	}
 
-	if (!TryGetShaderByGUID(guid, shader)) {
-		shader = new Shader(path);
-	}
-
-	allShaders_sortedByGUID.insert(std::pair<std::string, Shader*>(guid, shader));
-	allShaders_sortedByPath.insert(std::pair<std::string, Shader*>(path, shader));
-	std::cout << "ShaderRepo::LoadShader. Path - " << path << " GUID - " << guid << std::endl;
-	return;
-}
-
-bool ShaderRepo::TryGetShaderByGUID(const std::string& guid, Shader*& shader) {
-	std::unordered_map<std::string, Shader*>::iterator it = allShaders_sortedByGUID.find(guid);
-	if (it != allShaders_sortedByGUID.end()) {
-		shader = it->second;
+	if (_TryGetShaderByGUID(guid, shader)) {
 		return true;
 	}
 
-	std::cout << "  ################ GetShaderByGUID: " << guid << " not found" << std::endl;
-	return false;
+	shader = new Shader(path);
+	allShaders_sortedByGUID.insert(std::pair<std::string, Shader*>(guid, shader));
+	allShaders_sortedByPath.insert(std::pair<std::string, Shader*>(path, shader));
+	std::cout << "ShaderRepo::LoadShader. Path - " << path << " GUID - " << guid << std::endl;
+	return true;
+}
+
+bool ShaderRepo::_TryGetShaderByGUID(const std::string& guid, Shader*& shader) {
+	std::unordered_map<std::string, Shader*>::iterator it = allShaders_sortedByGUID.find(guid);
+	if (it == allShaders_sortedByGUID.end()) {
+		return false;
+	}
+
+	shader = it->second;
+	return true;
 }

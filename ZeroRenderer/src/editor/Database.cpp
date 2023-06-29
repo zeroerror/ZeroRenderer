@@ -25,29 +25,29 @@ void Database::ImportAssets() {
 	m_guid2AssetPath = std::unordered_map<string, string>();
 	ImportAssets("asset");
 	//Mat mat = Mat();
-	//mat.shaderGUID = GetGUIDFromAssetPath("asset/shader/Defalut.shader");
-	//mat.diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/default.png");
+	//mat.shaderGUID = TryGetGUIDFromAssetPath("asset/shader/Defalut.shader");
+	//mat.diffuseTextureGUID = TryGetGUIDFromAssetPath("asset/texture/default.png");
 	//mat.diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//mat.specularIntensity = 0.0f;
 	//mat.shininess = 0.0f;
 	//mat.SerializeTo("asset/material/default.mat");
 	//mat = Mat();
-	//mat.shaderGUID = GetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
-	//mat.diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/default.png");
+	//mat.shaderGUID = TryGetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
+	//mat.diffuseTextureGUID = TryGetGUIDFromAssetPath("asset/texture/default.png");
 	//mat.diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//mat.specularIntensity = 0.0f;
 	//mat.shininess = 0.0f;
 	//mat.SerializeTo("asset/material/defaultLight.mat");
 	//mat = Mat();
-	//mat.shaderGUID = GetGUIDFromAssetPath("asset/shader/DepthMap.shader");
-	//mat.diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/default.png");
+	//mat.shaderGUID = TryGetGUIDFromAssetPath("asset/shader/DepthMap.shader");
+	//mat.diffuseTextureGUID = TryGetGUIDFromAssetPath("asset/texture/default.png");
 	//mat.diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//mat.specularIntensity = 0.0f;
 	//mat.shininess = 0.0f;
 	//mat.SerializeTo("asset/material/depthMap.mat");
 	//mat = Mat();
-	//mat.shaderGUID = GetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
-	//mat.diffuseTextureGUID = GetGUIDFromAssetPath("asset/texture/default.png");
+	//mat.shaderGUID = TryGetGUIDFromAssetPath("asset/shader/DefaultLight.shader");
+	//mat.diffuseTextureGUID = TryGetGUIDFromAssetPath("asset/texture/default.png");
 	//mat.diffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	//mat.specularIntensity = 0.0f;
 	//mat.shininess = 0.0f;
@@ -68,7 +68,7 @@ void Database::ImportAssets(const string& dir) {
 			string assetPath = path.string();
 			string extensionStr = path.extension().string();
 			if (extensionStr == FileSuffix::SUFFIX_PNG) {
-				string metaPath = assetPath + FileSuffix::SUFFIX_META;
+				string metaPath = assetPath + FileSuffix::META;
 				std::cout << "Database: Generate texture meta - " << metaPath << std::endl;
 
 				string guid;
@@ -78,30 +78,30 @@ void Database::ImportAssets(const string& dir) {
 				TextureMetadata texMeta = TextureMetadata();
 				texMeta.guid = guid;
 				texMeta.SerializeTo(metaPath);
-				m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
-				m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
+				InsertToMap_AssetPath2GUID(assetPath, guid);
+				InsertToMap_GUID2AssetPath(guid, assetPath);
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SHADER) {
-				string metaPath = assetPath + FileSuffix::SUFFIX_META;
+				string metaPath = assetPath + FileSuffix::META;
 				std::cout << "Database: Generate shader meta - " << metaPath << std::endl;
 
 				string guid;
 				GenerateGUIDFromPath(assetPath, guid);
-				m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
-				m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
+				InsertToMap_AssetPath2GUID(assetPath, guid);
+				InsertToMap_GUID2AssetPath(guid, assetPath);
 
 				TextureMetadata texMeta = TextureMetadata();
 				texMeta.guid = guid;
 				texMeta.SerializeTo(metaPath);
 			}
-			else if(extensionStr == FileSuffix::SUFFIX_MAT){
-				string metaPath = assetPath + FileSuffix::SUFFIX_META;
+			else if (extensionStr == FileSuffix::SUFFIX_MAT) {
+				string metaPath = assetPath + FileSuffix::META;
 				std::cout << "Database: Generate material meta - " << metaPath << std::endl;
 
 				string guid;
 				GenerateGUIDFromPath(assetPath, guid);
-				m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
-				m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
+				InsertToMap_AssetPath2GUID(assetPath, guid);
+				InsertToMap_GUID2AssetPath(guid, assetPath);
 
 				MaterialMetadata matMeta = MaterialMetadata();
 				matMeta.guid = guid;
@@ -137,7 +137,7 @@ void Database::ImportModel(const string& assetPath) {
 		ImportModel_Node(scene->mRootNode, scene, dir, objMeta);
 	}
 
-	string objMetaPath = assetPath + FileSuffix::SUFFIX_META;
+	string objMetaPath = assetPath + FileSuffix::META;
 	objMeta.SerializeTo(objMetaPath);
 	std::cout << "Database: Generate obj meta " << objMetaPath << std::endl;
 }
@@ -168,7 +168,7 @@ void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const
 	std::cout << "Database: Generate mat " << matPath << std::endl;
 
 	MaterialMetadata matMeta = MaterialMetadata();
-	string matMetaPath = matPath + FileSuffix::SUFFIX_META;
+	string matMetaPath = matPath + FileSuffix::META;
 	GenerateGUIDFromPath(matPath, matMeta.guid);
 	matMeta.SerializeTo(matMetaPath);
 	std::cout << "Database: Generate mat meta " << matMetaPath << std::endl;
@@ -183,9 +183,13 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 		aiString str;
 		aMat->GetTexture(aTextureType, i, &str);
 		string texPath = dir + str.C_Str();
-		string texGUID = GetGUIDFromAssetPath(texPath);
-		if (texGUID == "") GenerateGUIDFromPath(texPath, texGUID);
-		if (aTextureType == aiTextureType_DIFFUSE) mat.diffuseTextureGUID = texGUID;
+		string texGUID;
+		if (!TryGetGUIDFromAssetPath(texPath, texGUID)) {
+			GenerateGUIDFromPath(texPath, texGUID);
+		}
+		if (aTextureType == aiTextureType_DIFFUSE) {
+			mat.diffuseTextureGUID = texGUID;
+		}
 	}
 }
 
@@ -203,7 +207,7 @@ void Database::ClearInvalidMeta(const string& dir) {
 		}
 		else {
 			string extensionStr = path.extension().string();
-			if (extensionStr == FileSuffix::SUFFIX_META) {
+			if (extensionStr == FileSuffix::META) {
 				FileHelper::DeleteFile(path.string());
 			}
 		}
@@ -241,42 +245,84 @@ bool Database::GenerateGUIDFromPath(const string& assetPath, string& guid) {
 	return true;
 }
 
-string Database::GetAssetPathFromGUID(const string& guid) {
+bool Database::TryGetAssetPathFromGUID(const string& guid, string& assetPath) {
 	std::unordered_map<string, string>::iterator it = m_guid2AssetPath.find(guid);
 	if (it != m_guid2AssetPath.end()) {
-		return it->second;
+		assetPath = it->second;
+		return true;
 	}
 
 	std::cout << "Database: GetAssetPathFromGUID - " << guid << " not found" << std::endl;
-	return "";
+	return false;
 }
 
-string Database::GetGUIDFromAssetPath(const string& path) {
+bool Database::TryGetGUIDFromAssetPath(const string& path, string& guid) {
 	std::unordered_map<string, string>::iterator it;
 	for (it = m_assetPath2GUID.begin(); it != m_assetPath2GUID.end(); it++) {
 		string assetPath = it->first;
 		if (FileHelper::PathEquals(assetPath, path)) {
-			return it->second;
+			guid = it->second;
+			return true;
 		}
 	}
 
-	std::cout << "Database: GetGUIDFromAssetPath - " << path << " not found" << std::endl;
-	return "";
+	std::cout << "Database: TryGetGUIDFromAssetPath - " << path << " not found" << std::endl;
+	return false;
 }
 
-void Database::LoadMaterialByGUID(const string& guid, Material& material){
-	string path = GetAssetPathFromGUID(guid);
-	LoadMaterialByAssetPath(path, material);
+bool Database::TryLoadMaterialByGUID(const string& guid, Material*& material) {
+	if (!GUIDExist(guid)) {
+		return false;
+	}
+
+	string matPath;
+	if (!TryGetAssetPathFromGUID(guid, matPath)) {
+		return false;
+	}
+
+	Mat mat = Mat();
+	mat.DeserializeFrom(matPath);
+	material->shaderGUID = mat.shaderGUID;
+	material->diffuseTextureGUID = mat.diffuseTextureGUID;
+	material->diffuseColor = mat.diffuseColor;
+	material->specularIntensity = mat.specularIntensity;
+	material->shininess = mat.shininess;
+
+	return true;
 }
 
-void Database::LoadMaterialByAssetPath(const string& path, Material& material){
+bool Database::TryLoadMaterialByAssetPath(const string& path, Material*& material) {
+	if (!AssetPathExist(path)) {
+		return false;
+	}
+
 	Mat mat = Mat();
 	mat.DeserializeFrom(path);
-	material.shaderGUID = mat.shaderGUID;
-	material.diffuseTextureGUID = mat.diffuseTextureGUID;
-	material.diffuseColor = mat.diffuseColor;
-	material.specularIntensity = mat.specularIntensity;
-	material.shininess = mat.shininess;
+	material->shaderGUID = mat.shaderGUID;
+	material->diffuseTextureGUID = mat.diffuseTextureGUID;
+	material->diffuseColor = mat.diffuseColor;
+	material->specularIntensity = mat.specularIntensity;
+	material->shininess = mat.shininess;
+
+	return true;
 }
 
+bool Database::GUIDExist(const string& guid) {
+	unordered_map<string, string>::iterator it = m_guid2AssetPath.find(guid);
+	return it != m_guid2AssetPath.end();
+}
 
+bool Database::AssetPathExist(const string& path) {
+	unordered_map<string, string>::iterator it = m_assetPath2GUID.find(path);
+	return it != m_assetPath2GUID.end();
+}
+
+void Database::InsertToMap_AssetPath2GUID(string& assetPath, const string& guid) {
+	FileHelper::NormalizePath(assetPath);
+	m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
+}
+
+void Database::InsertToMap_GUID2AssetPath(const string& guid, string& assetPath) {
+	FileHelper::NormalizePath(assetPath);
+	m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
+}

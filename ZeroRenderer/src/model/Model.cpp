@@ -1,5 +1,7 @@
 #include "Model.h"
 #include <assimp/postprocess.h>
+#include "Database.h"
+#include "FileSuffix.h"
 
 Model::Model() {
 	transform = new Transform();
@@ -31,22 +33,26 @@ void Model::LoadModel(const std::string& path) {
 		return;
 	}
 
-	ProcessNode(scene->mRootNode, scene);
+	string modelMetaPath = path + FileSuffix::META;
+	ObjMetadata objMeta = ObjMetadata();
+	objMeta.DeserializeFrom(modelMetaPath);
+	size_t materialIndex = 0;
+	ProcessNode(scene->mRootNode, scene, objMeta, materialIndex);
 	BatchMeshes();
 }
 
-void Model::ProcessNode(aiNode* aNode, const aiScene* aScene) {
+void Model::ProcessNode(aiNode* aNode, const aiScene* aScene, const ObjMetadata& objMeta, size_t& materialIndex) {
 	for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
 		aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
-		allMeshes->push_back(ProcessMesh(mesh, aScene));
+		allMeshes->push_back(ProcessMesh(mesh, aScene, objMeta, materialIndex));
 	}
 	for (unsigned int i = 0; i < aNode->mNumChildren; i++) {
 		aiNode* childNode = aNode->mChildren[i];
-		ProcessNode(childNode, aScene);
+		ProcessNode(childNode, aScene, objMeta, materialIndex);
 	}
 }
 
-Mesh* Model::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene) {
+Mesh* Model::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMetadata& objMeta, size_t& materialIndex) {
 	Mesh* mesh = new Mesh();
 	std::vector<Vertex*>* vertices = mesh->vertices;
 
@@ -75,6 +81,8 @@ Mesh* Model::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene) {
 		}
 	}
 
+	string materialGUID = objMeta.materialGUIDs[materialIndex++];
+	mesh->materialGUID = materialGUID;
 	return mesh;
 }
 
@@ -111,13 +119,13 @@ void Model::BatchMeshes() {
 	std::cout << "Model BatchMeshes: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << std::endl;
 }
 
-void Model::RenderModel() {
+void Model::Render() {
 	va->Bind();
 	ib->Bind();
 	glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void Model::RenderModelMesh() {
+void Model::RenderModelMesh(const Camera3D*& camera, const DirectLight*& light) {
 	std::vector<float> vertexData;
 	std::vector<unsigned int> indiceArray;
 	unsigned int vertexCount = 0;
@@ -131,6 +139,8 @@ void Model::RenderModelMesh() {
 			vertexData.push_back(position.x);
 			vertexData.push_back(position.y);
 			vertexData.push_back(position.z);
+			vertexData.push_back(texCoords.x);
+			vertexData.push_back(texCoords.y);
 			vertexCount++;
 		}
 		std::vector<unsigned int>* indices = mesh->indices;
@@ -139,6 +149,7 @@ void Model::RenderModelMesh() {
 			indiceCount++;
 		}
 
+		// TODO
 		VertexArray va = VertexArray();
 		VertexBuffer vb = VertexBuffer();
 		VertexBufferLayout vbLayout = VertexBufferLayout();
