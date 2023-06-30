@@ -1,6 +1,7 @@
 #include "Test.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Database.h"
 
 namespace test {
 
@@ -14,6 +15,10 @@ namespace test {
 	}
 
 	void TestMenu::OnImGuiRender() {
+		if (ImGui::Button("Clear Database")) {
+			Database::ClearInvalidMeta();
+		}
+
 		for (auto& test : m_Tests) {
 			if (ImGui::Button(test.first.c_str())) {
 				m_CurrentTest = test.second();

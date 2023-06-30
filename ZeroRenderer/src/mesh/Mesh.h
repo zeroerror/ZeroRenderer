@@ -4,16 +4,18 @@
 #include "Vertex.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
+#include "Material.h"
 
 using namespace std;
 
 class Mesh {
 
 public:
-    std::vector<Vertex*>* vertices;
-    std::vector<unsigned int>* indices;
-    string materialGUID;
+	string materialGUID;
 
+	std::vector<Vertex*>* vertices;
+    std::vector<unsigned int>* indices;
+	Material* material;
 	VertexArray* va;
 	VertexBuffer* vb;
 	VertexBufferLayout* vbLayout;

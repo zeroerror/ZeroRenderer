@@ -25,6 +25,7 @@ Shader::Shader(const std::string& filePath) {
 	ShaderProgramSource source = ParseShader(filePath);
 	m_programID = CreateShader(source.VertexSource, source.FragmentSource);
 	GLCall(glUseProgram(m_programID));
+	path = filePath;
 	std::cout << "Shader::Shader() " << m_programID << std::endl;
 }
 

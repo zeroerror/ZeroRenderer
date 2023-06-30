@@ -27,14 +27,13 @@ bool MaterialRepo::TryAddMaterial(const std::string& guid, Material*& material) 
 		allMaterials_sortedByPath.insert(std::pair<std::string, Material*>(path, material));
 	}
 
-	std::cout << "MaterialRepo::TryAddMaterial: " << guid << std::endl;
+	std::cout << "MaterialRepo::AddMaterial: " << guid << std::endl;
 	return true;
 }
 
 bool MaterialRepo::TryGetMaterialByGUID(const std::string& guid, Material*& material) {
 	std::unordered_map<std::string, Material*>::iterator it = allMaterials_sortedByGUID.find(guid);
 	if (it == allMaterials_sortedByGUID.end()) {
-		std::cout << "  ################ _TryGetMaterialByGUID: " << guid << " not found" << std::endl;
 		return false;
 	}
 

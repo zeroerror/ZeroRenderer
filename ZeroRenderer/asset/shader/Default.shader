@@ -7,12 +7,10 @@ layout(location = 2) in vec3 normal;
 
 uniform mat4 u_mvp;
 uniform mat4 u_modRotationMatrix;
-
 out vec2 v_texCoord;
 
 void main() {
-	vec4 glPos = u_mvp * u_modRotationMatrix * position;
-	gl_Position = glPos;
+	gl_Position = u_mvp * u_modRotationMatrix * position;
 	v_texCoord = texCoord;
 }
 

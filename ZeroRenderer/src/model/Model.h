@@ -3,9 +3,6 @@
 #include <string>
 #include <glm/gtx/quaternion.hpp>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-
 #include "Transform.h"
 #include "Texture.h"
 #include "Shader.h"
@@ -25,9 +22,6 @@ public:
 	Model();
 	~Model();
 
-	void LoadModel(const string& path);
-	void ProcessNode(aiNode* aiNode, const aiScene* aiScene, const ObjMetadata& objMeta, size_t& materialIndex);
-	Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aiScene, const ObjMetadata& objMeta, size_t& materialIndex);
 	void BatchMeshes();
 	void BatchedDraw();
 

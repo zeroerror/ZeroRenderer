@@ -4,21 +4,14 @@
 #include "ShaderMetadata.h"
 #include "FileSuffix.h"
 
+#include <assimp/postprocess.h>
+
 void EditorRendererDomain::Inject(EditorContext* ctxt) {
 	this->editorContext = ctxt;
 }
 
-void EditorRendererDomain::DrawModel(const Model* model, const Camera3D* camera, const DirectLight* light) {
-	BindMaterial(model, model->material);
-	_DrawModel(model, camera, light);
-}
-
-void EditorRendererDomain::DrawModel(const Model* model, const Camera3D* camera, const DirectLight* light, const Material* material) {
-	BindMaterial(model, material);
-	_DrawModel(model, camera, light);
-}
-
-void EditorRendererDomain::_DrawModel(const Model* model, const Camera3D* camera, const DirectLight* light) {
+void EditorRendererDomain::DrawModel(const Model* model) {
+	Shader* modelShader = model->material->shader;
 	if (model->isBatched) {
 		IndexBuffer* ib = model->ib_batched;
 		model->va_batched->Bind();
@@ -26,9 +19,17 @@ void EditorRendererDomain::_DrawModel(const Model* model, const Camera3D* camera
 		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
 	}
 	else {
-		MaterialRepo* materialRepo = editorContext->GetMaterialRepo();
 		vector<Mesh*>* allMeshes = model->allMeshes;
 		for (auto mesh : *allMeshes) {
+			Material* meshMaterial = mesh->material;
+
+			Shader* meshShader = meshMaterial->shader;
+			meshShader = meshShader != nullptr ? meshShader : modelShader;
+			BindShader(model, modelShader);
+
+			Texture* meshDiffuseTexture = meshMaterial->diffuseTexture;
+			BindDiffuseTexture(meshDiffuseTexture, TextureType::Diffuse);
+
 			IndexBuffer* ib = mesh->ib;
 			mesh->va->Bind();
 			ib->Bind();
@@ -37,8 +38,28 @@ void EditorRendererDomain::_DrawModel(const Model* model, const Camera3D* camera
 	}
 }
 
-void EditorRendererDomain::BindMaterial(const Model* model, const Material* material) {
-	Shader* shader = material->shader;
+void EditorRendererDomain::DrawModel(const Model* model, const Material* material) {
+	if (model->isBatched) {
+		IndexBuffer* ib = model->ib_batched;
+		model->va_batched->Bind();
+		ib->Bind();
+		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+	}
+	else {
+		vector<Mesh*>* allMeshes = model->allMeshes;
+		for (auto mesh : *allMeshes) {
+			BindShader(model, material->shader);
+			BindDiffuseTexture(material->diffuseTexture, TextureType::Diffuse);
+			
+			IndexBuffer* ib = mesh->ib;
+			mesh->va->Bind();
+			ib->Bind();
+			GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+		}
+	}
+}
+
+void EditorRendererDomain::BindShader(const Model* model, Shader* shader) {
 	if (shader != nullptr) {
 		shader->Bind();
 
@@ -69,24 +90,26 @@ void EditorRendererDomain::BindMaterial(const Model* model, const Material* mate
 		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
 		shader->SetUniform1f("u_farPlane", camera->farPlane);
 	}
+}
 
-	Texture* texture = material->diffuseTexture;
-	if (texture != nullptr)	texture->Bind(1);
+void EditorRendererDomain::BindDiffuseTexture(Texture* texture, const TextureType& textureType) {
+	if (texture == nullptr) {
+		return;
+	}
+
+	if (textureType == TextureType::Diffuse) texture->Bind(1);
 }
 
 bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& material) {
-	if (!Database::GUIDExist(guid)) {
+	string matPath;
+	if (!Database::TryGetAssetPathFromGUID(guid, matPath)) {
+		cout << " **************** Error: EditorRendererDomain::TryLoadMaterialByGUID: GUID no exist!: " << guid << endl;
 		return false;
 	}
 
 	MaterialRepo* materialRepo = editorContext->GetMaterialRepo();
 	if (materialRepo->TryGetMaterialByGUID(guid, material)) {
 		return true;
-	}
-
-	string matPath;
-	if (!Database::TryGetAssetPathFromGUID(guid, matPath)) {
-		return false;
 	}
 
 	Mat mat = Mat();
@@ -102,6 +125,9 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 			material->shader = new Shader(shaderPath);
 			shaderRepo->TryAddShader(shaderGUID, material->shader);
 		}
+		else {
+			cout << " ################ Warning: EditorRendererDomain::TryLoadMaterialByGUID: Shader GUID no exist!: " << shaderGUID << endl;
+		}
 	}
 
 	TextureRepo* textureRepo = editorContext->GetTextureRepo();
@@ -110,6 +136,9 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 		if (Database::TryGetAssetPathFromGUID(diffuseTextureGUID, texturePath)) {
 			material->diffuseTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(diffuseTextureGUID, material->diffuseTexture);
+		}
+		else {
+			cout << " ################ Warning: EditorRendererDomain::TryLoadMaterialByGUID: Texture[Diffuse] GUID no exist!: " << diffuseTextureGUID << endl;
 		}
 	}
 
@@ -121,12 +150,11 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 }
 
 bool EditorRendererDomain::TryLoadMaterialByAssetPath(const string& path, Material*& material) {
-	if (!Database::AssetPathExist(path)) {
+	string guid;
+	if (!Database::TryGetGUIDFromAssetPath(path, guid)) {
+		cout << " **************** Error: EditorRendererDomain::TryLoadMaterialByAssetPath: Asset path no exist!: " << path << endl;
 		return false;
 	}
-
-	string guid;
-	Database::TryGetGUIDFromAssetPath(path, guid);
 
 	MaterialRepo* materialRepo = editorContext->GetMaterialRepo();
 	if (materialRepo->TryGetMaterialByGUID(guid, material)) {
@@ -150,6 +178,9 @@ bool EditorRendererDomain::TryLoadMaterialByAssetPath(const string& path, Materi
 			material->shader = shader;
 			shaderRepo->TryAddShader(shaderGUID, material->shader);
 		}
+		else {
+			cout << " ################ Warning: EditorRendererDomain::TryLoadMaterialByAssetPath: Shader GUID no exist!: " << shaderGUID << endl;
+		}
 	}
 
 	TextureRepo* textureRepo = editorContext->GetTextureRepo();
@@ -158,6 +189,9 @@ bool EditorRendererDomain::TryLoadMaterialByAssetPath(const string& path, Materi
 		if (Database::TryGetAssetPathFromGUID(diffuseTextureGUID, texturePath)) {
 			material->diffuseTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(diffuseTextureGUID, material->diffuseTexture);
+		}
+		else {
+			cout << " ################ Warning: EditorRendererDomain::TryLoadMaterialByAssetPath: Texture[Diffuse] GUID no exist!: " << diffuseTextureGUID << endl;
 		}
 	}
 
@@ -188,8 +222,8 @@ void EditorRendererDomain::LoadDefaultScene() {
 	directLight->scrWidth = scrWidth;
 	directLight->scrHeight = scrHeight;
 	directLight->shadowType = ShadowType::Hard;
-	directLight->transform->SetPosition(camera->transform->GetPosition());
-	directLight->transform->SetRotation(camera->transform->GetRotation());
+	directLight->transform->SetPosition(glm::vec3(0, 10.0f, 0));
+	directLight->transform->SetRotation(glm::quat(glm::vec3(0, 0.5f, 0)));
 	directLight->fov = camera->fov;
 	directLight->scrWidth = camera->scrWidth;
 	directLight->scrHeight = camera->scrHeight;
@@ -213,7 +247,7 @@ void EditorRendererDomain::LoadDefaultScene() {
 
 	// Create a depth map 2D image
 	scene->depthMapImage = Rectangle::CreateRectangle(16.0f, 9.0f);
-	scene->depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 10.0f));
+	scene->depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 20.0f));
 	scene->depthMapImage->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
 	scene->depthMapImage->material = depthMapMaterial;
 
@@ -251,12 +285,82 @@ void EditorRendererDomain::LoadDefaultScene() {
 	scene->cubes->push_back(obstacle3);
 
 	// ========================== Load Model
-	Model* model = new Model();
-	model->LoadModel("asset/model/nanosuit/nanosuit.obj");
-	model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 20.0f));
-	model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
-	model->material = defaultLightMaterial;
-	scene->models->push_back(model);
+	Model* model;
+	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
+		model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+		model->material = defaultLightMaterial;
+		scene->models->push_back(model);
+	}
 
 	editorContext->currentScene = scene;
 }
+
+
+bool EditorRendererDomain::TryLoadModel(const string& path, Model*& model) {
+	model = nullptr;
+
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+		cout << "  #################################ERROR::ASSIMP::" << importer.GetErrorString() << endl;
+		return false;
+	}
+
+	string modelMetaPath = path + FileSuffix::SUFFIX_META;
+	ObjMetadata objMeta = ObjMetadata();
+	objMeta.DeserializeFrom(modelMetaPath);
+	size_t materialIndex = 0;
+	model = new Model();
+	ProcessNode(scene->mRootNode, scene, objMeta, model->allMeshes, materialIndex);
+	return true;
+}
+
+void EditorRendererDomain::ProcessNode(aiNode* aNode, const aiScene* aScene, const ObjMetadata& objMeta, vector<Mesh*>* allMeshes, size_t& materialIndex) {
+	for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
+		aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
+		allMeshes->push_back(ProcessMesh(mesh, aScene, objMeta, materialIndex));
+	}
+	for (unsigned int i = 0; i < aNode->mNumChildren; i++) {
+		aiNode* childNode = aNode->mChildren[i];
+		ProcessNode(childNode, aScene, objMeta, allMeshes, materialIndex);
+	}
+}
+
+Mesh* EditorRendererDomain::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMetadata& objMeta, size_t& materialIndex) {
+	Mesh* mesh = new Mesh();
+	vector<Vertex*>* vertices = mesh->vertices;
+
+	aiVector3D* aTexCoords = aiMesh->mTextureCoords[0];
+
+	for (unsigned int i = 0; i < aiMesh->mNumVertices; i++) {
+		aiVector3D aPosition = aiMesh->mVertices[i];
+		aiVector3D aNormal = aiMesh->mNormals[i];
+		aiVector2D texCoord;
+		if (aTexCoords != nullptr) {
+			texCoord = aTexCoords[0][i];
+		}
+
+		Vertex* vertex = new Vertex();
+		vertex->SetPosition(aPosition.x, aPosition.y, aPosition.z);
+		vertex->SetNormal(aNormal.x, aNormal.y, aNormal.z);
+		vertex->SetTexCoords(texCoord.x, texCoord.y);
+		vertices->push_back(vertex);
+	}
+
+	vector<unsigned int>* indices = mesh->indices;
+	for (unsigned int i = 0; i < aiMesh->mNumFaces; i++) {
+		aiFace face = aiMesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; j++) {
+			indices->push_back(face.mIndices[j]);
+		}
+	}
+
+	string materialGUID = objMeta.materialGUIDs[materialIndex++];
+	mesh->materialGUID = materialGUID;
+	TryLoadMaterialByGUID(materialGUID, mesh->material);
+	mesh->GenerateRenderer();
+
+	return mesh;
+}
+

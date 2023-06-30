@@ -10,9 +10,10 @@ Mesh::Mesh() {
 	vbLayout = new VertexBufferLayout();
 	vbLayout->Push<float>(3);
 	vbLayout->Push<float>(2);
+	material = nullptr;
 }
 
-void Mesh::GenerateRenderer(){
+void Mesh::GenerateRenderer() {
 	vector<float> vertexData;
 	vector<unsigned int> indiceArray;
 

@@ -37,7 +37,5 @@ bool TextureRepo::TryGetTextureByGUID(const std::string& guid, Texture*& texture
 		texture = it->second;
 		return true;
 	}
-
-	std::cout << "  ################ GetTextureByGUID: " << guid << " not found" << std::endl;
 	return false;
 }

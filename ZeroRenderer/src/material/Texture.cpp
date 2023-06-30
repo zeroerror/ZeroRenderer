@@ -22,6 +22,7 @@ Texture::Texture(const std::string& path) {
 		stbi_image_free(m_LocalBuffer);
 	}
 
+	this->path = path;
 	std::cout << "Texture::Texture() " << m_RendererID << std::endl;
 }
 

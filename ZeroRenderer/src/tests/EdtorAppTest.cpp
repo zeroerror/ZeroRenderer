@@ -40,6 +40,14 @@ namespace test {
 	void EdtorAppTest::Init() {
 		// ======================== Database
 		Database::ImportAssets();
+		Database::SetMat_ShaderGUID("asset/material/default.mat", "asset/shader/Default.shader");
+		Database::SetMat_DiffuseTextureGUID("asset/material/default.mat", "asset/texture/jerry.png", TextureType::Diffuse);
+		Database::SetMat_ShaderGUID("asset/material/defaultLight.mat", "asset/shader/DefaultLight.shader");
+		Database::SetMat_DiffuseTextureGUID("asset/material/defaultLight.mat", "asset/texture/jerry.png", TextureType::Diffuse);
+		Database::SetMat_ShaderGUID("asset/material/depthMap.mat", "asset/shader/DepthMap.shader");
+		Database::SetMat_DiffuseTextureGUID("asset/material/depthMap.mat", "asset/texture/jerry.png", TextureType::Diffuse);
+		Database::SetMat_ShaderGUID("asset/material/lightCube.mat", "asset/shader/Default.shader");
+		Database::SetMat_DiffuseTextureGUID("asset/material/lightCube.mat", "asset/texture/jerry.png", TextureType::Diffuse);
 
 		// ======================== GL
 		InitOpenGL();
@@ -217,7 +225,7 @@ namespace test {
 		glm::vec3 lightDirection = -directLight->GetLightDirection();
 
 		for (auto model : *models) {
-			editorRendererDomain->DrawModel(model, sceneCamera, directLight);
+			editorRendererDomain->DrawModel(model);
 		}
 	}
 
@@ -246,7 +254,7 @@ namespace test {
 			for (auto model : *models) {
 				Material* material;
 				if (editorRendererDomain->TryLoadMaterialByAssetPath("asset/material/default.mat", material)) {
-					editorRendererDomain->DrawModel(model, sceneCamera, directLight, material);
+					editorRendererDomain->DrawModel(model, material);
 				}
 			}
 		}
@@ -256,34 +264,32 @@ namespace test {
 	}
 
 	void EdtorAppTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
-		if (material == nullptr) {
-			std::cout << "  ########################## Material is null!\n" << std::endl;
-		}
-		else {
+		if (material != nullptr) {
+			Shader* shader = material->shader;
+			if (shader != nullptr) {
+				shader->Bind();
+				shader->SetUniform1i("u_texture", 1);
+				shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
+				shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
+				shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
+
+				glm::vec3 lightPos = directLight->transform->GetPosition();
+				glm::vec3 lightColor = directLight->color;
+				glm::vec3 lightDirection = -directLight->GetLightDirection();
+				shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+				shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
+				shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
+
+				shader->SetUniform1i("u_depthMapTexture", 2);
+				shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
+				shader->SetUniform1f("u_nearPlane", sceneCamera->nearPlane);
+				shader->SetUniform1f("u_farPlane", sceneCamera->farPlane);
+			}
+
 			Texture* texture = material->diffuseTexture;
+
 			if (texture != nullptr) {
 				texture->Bind(1);
-
-				Shader* shader = material->shader;
-				if (shader != nullptr) {
-					shader->Bind();
-					shader->SetUniform1i("u_texture", 1);
-					shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-					shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
-					shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
-
-					glm::vec3 lightPos = directLight->transform->GetPosition();
-					glm::vec3 lightColor = directLight->color;
-					glm::vec3 lightDirection = -directLight->GetLightDirection();
-					shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
-					shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
-					shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
-
-					shader->SetUniform1i("u_depthMapTexture", 2);
-					shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
-					shader->SetUniform1f("u_nearPlane", sceneCamera->nearPlane);
-					shader->SetUniform1f("u_farPlane", sceneCamera->farPlane);
-				}
 			}
 		}
 
