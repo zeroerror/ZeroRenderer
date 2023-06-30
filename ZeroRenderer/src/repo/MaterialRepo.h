@@ -8,11 +8,12 @@ public:
 	MaterialRepo();
 	~MaterialRepo();
 
-	bool TryLoadMaterial(const char* path, Material*& material);
+	bool TryAddMaterial(const string& guid, Material*& material);
+	bool TryGetMaterialByGUID(const std::string& guid, Material*& material);
 
 private:
-	std::unordered_map<std::string, Material*> allMaterials;
-	bool _TryGetMaterialByGUID(const std::string& guid, Material*& material);
+	std::unordered_map<std::string, Material*> allMaterials_sortedByPath;
+	std::unordered_map<std::string, Material*> allMaterials_sortedByGUID;
 
 };
 

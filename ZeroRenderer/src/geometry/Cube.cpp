@@ -10,6 +10,15 @@ Cube::Cube() {
 	transform = new Transform();
 }
 
+Cube::~Cube() {
+	std::cout << "Cube::~Cube()" << std::endl;
+	delete transform;
+	delete va;
+	delete vb;
+	delete m_vbLayout;
+	delete ib;
+}
+
 void Cube::Ctor(float width, float height, float depth) {
 	this->width = width;
 	this->height = height;
@@ -63,10 +72,10 @@ void Cube::Ctor(float width, float height, float depth) {
 		-halfWidth, halfHeight, halfDepth, 0.0f, 1.0f, normal_luf.x,normal_luf.y,normal_luf.z
 				   }, 64);
 
-	this->m_vbLayout = VertexBufferLayout();
-	this->m_vbLayout.Push<float>(3);
-	this->m_vbLayout.Push<float>(2);
-	this->m_vbLayout.Push<float>(3);
+	this->m_vbLayout = new VertexBufferLayout();
+	this->m_vbLayout->Push<float>(3);
+	this->m_vbLayout->Push<float>(2);
+	this->m_vbLayout->Push<float>(3);
 
 	this->va->AddBuffer(vb, m_vbLayout);
 
@@ -74,13 +83,6 @@ void Cube::Ctor(float width, float height, float depth) {
 	this->ib->Ctor(m_indiceArray, 36);
 }
 
-Cube::~Cube() {
-	std::cout << "Cube::~Cube()" << std::endl;
-	delete transform;
-	delete va;
-	delete vb;
-	delete ib;
-}
 
 Cube* Cube::CreateCube(const float& width, const float& height, const float& depth) {
 	Cube* cube = new Cube();

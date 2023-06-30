@@ -18,7 +18,7 @@ class Database {
 public:
 	static void ImportAssets();
 	static void ImportAssets(const string& path);
-	static void ImportModel(const string& path);
+	static void ImportModel(string& path);
 	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMetadata& objMeta);
 	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir, ObjMetadata& objMeta);
 	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, Mat& matMeta);
@@ -26,12 +26,9 @@ public:
 	static void ClearInvalidMeta();
 	static void ClearInvalidMeta(const string& path);
 
-	static bool GenerateGUIDFromPath(const string& assetPath, string& guid);
+	static void GetGUIDFromAssetPath(const string& assetPath, string& guid);
 	static bool TryGetGUIDFromAssetPath(const string& assetPath, string& guid);
 	static bool TryGetAssetPathFromGUID(const string& guid, string& assetPath);
-
-	static bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
-	static bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 
 	static bool GUIDExist(const string& guid);
 	static bool AssetPathExist(const string& path);

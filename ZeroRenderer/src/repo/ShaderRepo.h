@@ -11,13 +11,12 @@ public:
 	ShaderRepo();
 	~ShaderRepo();
 
-	bool TryLoadShaderByGUID(const string& guid, Shader*& shader);
-	bool TryLoadShaderByAssetPath(const string& path, Shader*& shader);
+	bool TryAddShader(const string& guid, Shader*& shader);
+	bool TryGetShaderByGUID(const std::string& guid, Shader*& shader);
 
 private:
 	std::unordered_map<std::string, Shader*> allShaders_sortedByPath;
 	std::unordered_map<std::string, Shader*> allShaders_sortedByGUID;
-	bool _TryGetShaderByGUID(const std::string& guid, Shader*& shader);
 
 };
 

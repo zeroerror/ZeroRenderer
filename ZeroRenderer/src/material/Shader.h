@@ -35,6 +35,8 @@ public:
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 	int GetUniformLocation(const std::string& name);
 
+	bool useLightingMVP;
+
 private:
 	ShaderProgramSource ParseShader(const std::string& filePath);
 	unsigned int CompileShader(unsigned int type, const std::string& source);

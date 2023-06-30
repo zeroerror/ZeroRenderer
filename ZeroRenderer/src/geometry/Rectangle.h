@@ -28,7 +28,7 @@ public:
 	IndexBuffer* ib;
 
 private:
-	VertexBufferLayout m_vbLayout;
+	VertexBufferLayout* m_vbLayout;
 	static unsigned int m_indiceArray[];
 };
 

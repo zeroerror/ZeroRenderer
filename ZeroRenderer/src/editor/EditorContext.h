@@ -3,6 +3,8 @@
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
 #include "Camera3D.h"
+#include "DirectLight.h"
+#include "Scene.h"
 
 class EditorContext {
 
@@ -14,7 +16,9 @@ public:
 	ShaderRepo* GetShaderRepo();
 	TextureRepo* GetTextureRepo();
 
-	Camera3D* _sceneViewCamera;
+	Camera3D* sceneViewCamera;
+	DirectLight* sceneDirectLight;
+	Scene* currentScene;
 
 private:
 	MaterialRepo* _materialRepo;

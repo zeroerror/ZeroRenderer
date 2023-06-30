@@ -25,10 +25,10 @@
     <ClCompile Include="src\editor\generic\Mat.cpp" />
     <ClCompile Include="src\editor\MaterialMetadata.cpp" />
     <ClCompile Include="src\editor\ObjMetadata.cpp" />
+    <ClCompile Include="src\editor\ShaderMetadata.cpp" />
     <ClCompile Include="src\editor\TextureMetadata.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
-    <ClCompile Include="src\editor\SceneManager.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
     <ClCompile Include="src\model\Model.cpp" />
     <ClCompile Include="src\mesh\Mesh.cpp" />
@@ -52,7 +52,6 @@
     <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\tests\EdtorAppTest.cpp" />
-    <ClCompile Include="src\tests\PipelineTest.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -72,11 +71,11 @@
     <ClInclude Include="src\editor\generic\Mat.h" />
     <ClInclude Include="src\editor\MaterialMetadata.h" />
     <ClInclude Include="src\editor\ObjMetadata.h" />
+    <ClInclude Include="src\editor\ShaderMetadata.h" />
     <ClInclude Include="src\editor\TextureMetadata.h" />
     <ClInclude Include="src\generic\CameraType.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\Scene.h" />
-    <ClInclude Include="src\editor\SceneManager.h" />
     <ClInclude Include="src\editor\Database.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\glew.h" />
@@ -107,7 +106,6 @@
     <ClInclude Include="src\renderer\VertexBuffer.h" />
     <ClInclude Include="src\renderer\VertexBufferLayout.h" />
     <ClInclude Include="src\tests\EdtorAppTest.h" />
-    <ClInclude Include="src\tests\PipelineTest.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />

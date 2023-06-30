@@ -7,7 +7,6 @@
 
 #include "GLDebug.h"
 #include "EdtorAppTest.h"
-#include "PipelineTest.h"
 #include "FileHelper.h"
 #include "MaterialMetadata.h"
 #include "TextureMetadata.h"
@@ -53,16 +52,12 @@ int main() {
 	test::TestMenu* testMenu = new test::TestMenu(curTest);
 	testMenu->window = window;
 	testMenu->imguiContext = imguiContext;
-	testMenu->RegisterTest("Pipeline Test", []() {
-		std::shared_ptr<test::PipelineTest> test = std::make_shared<test::PipelineTest>();
-		test->Init();
-		return test;
-		});
+
 	testMenu->RegisterTest("EdtorAppTest", []() {
 		std::shared_ptr<test::EdtorAppTest> test = std::make_shared<test::EdtorAppTest>();
 		test->Init();
 		return test;
-		});
+	});
 
 	while (!glfwWindowShouldClose(window)) {
 		GLCall(glfwMakeContextCurrent(window));

@@ -74,8 +74,7 @@ namespace test {
 		void Repaint();
 		void RenderScene();
 		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix);
-		void RenderObjectForDepthMap();
-		void RenderSceneShadowMap();
+		void ShaderMapping();
 		void Draw();
 	};
 

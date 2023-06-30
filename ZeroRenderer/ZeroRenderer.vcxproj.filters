@@ -24,7 +24,6 @@
     <ClCompile Include="src\material\Shader.cpp" />
     <ClCompile Include="src\material\Texture.cpp" />
     <ClCompile Include="src\debug\GLDebug.cpp" />
-    <ClCompile Include="src\tests\PipelineTest.cpp" />
     <ClCompile Include="src\repo\ShaderRepo.cpp" />
     <ClCompile Include="src\repo\TextureRepo.cpp" />
     <ClCompile Include="src\component\SpotLight.cpp" />
@@ -35,7 +34,6 @@
     <ClCompile Include="src\renderer\Vertex.cpp" />
     <ClCompile Include="src\model\Model.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
-    <ClCompile Include="src\editor\SceneManager.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\MaterialMetadata.cpp" />
@@ -45,6 +43,7 @@
     <ClCompile Include="src\editor\ObjMetadata.cpp" />
     <ClCompile Include="src\editor\EditorContext.cpp" />
     <ClCompile Include="src\editor\EditorRendererDomain.cpp" />
+    <ClCompile Include="src\editor\ShaderMetadata.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -53,7 +52,6 @@
     <ClInclude Include="src\component\DirectLight.h" />
     <ClInclude Include="src\component\Transform.h" />
     <ClInclude Include="src\gameObject\GameObject.h" />
-    <ClInclude Include="src\tests\PipelineTest.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\detail\_features.hpp" />
     <ClInclude Include="src\vendor\glm\detail\_fixes.hpp" />
@@ -371,7 +369,6 @@
     <ClInclude Include="src\renderer\Vertex.h" />
     <ClInclude Include="src\model\Model.h" />
     <ClInclude Include="src\editor\Database.h" />
-    <ClInclude Include="src\editor\SceneManager.h" />
     <ClInclude Include="src\editor\Scene.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\MaterialMetadata.h" />
@@ -383,6 +380,7 @@
     <ClInclude Include="src\editor\ObjMetadata.h" />
     <ClInclude Include="src\editor\EditorContext.h" />
     <ClInclude Include="src\editor\EditorRendererDomain.h" />
+    <ClInclude Include="src\editor\ShaderMetadata.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

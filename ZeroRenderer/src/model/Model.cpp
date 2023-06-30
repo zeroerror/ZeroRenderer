@@ -5,40 +5,40 @@
 
 Model::Model() {
 	transform = new Transform();
-	allMeshes = new std::vector<Mesh*>();
-	va = new VertexArray();
-	vb = new VertexBuffer();
-	ib = new IndexBuffer();
+	allMeshes = new vector<Mesh*>();
 
-	vbLayout = VertexBufferLayout();
-	vbLayout.Push<float>(3);
-	vbLayout.Push<float>(2);
+	va_batched = new VertexArray();
+	vb_batched = new VertexBuffer();
+	vbLayout_batched = new VertexBufferLayout();
+	vbLayout_batched->Push<float>(3);
+	vbLayout_batched->Push<float>(2);
+	ib_batched = new IndexBuffer();
 }
 
 Model::~Model() {
 	delete transform;
 	// Consider Reuse
 	delete allMeshes;
-	delete va;
-	delete vb;
-	delete ib;
+	delete va_batched;
+	delete vb_batched;
+	delete vbLayout_batched;
+	delete ib_batched;
 	// Consider Reuse
 }
 
-void Model::LoadModel(const std::string& path) {
+void Model::LoadModel(const string& path) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "  #################################ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+		cout << "  #################################ERROR::ASSIMP::" << importer.GetErrorString() << endl;
 		return;
 	}
 
-	string modelMetaPath = path + FileSuffix::META;
+	string modelMetaPath = path + FileSuffix::SUFFIX_META;
 	ObjMetadata objMeta = ObjMetadata();
 	objMeta.DeserializeFrom(modelMetaPath);
 	size_t materialIndex = 0;
 	ProcessNode(scene->mRootNode, scene, objMeta, materialIndex);
-	BatchMeshes();
 }
 
 void Model::ProcessNode(aiNode* aNode, const aiScene* aScene, const ObjMetadata& objMeta, size_t& materialIndex) {
@@ -54,7 +54,7 @@ void Model::ProcessNode(aiNode* aNode, const aiScene* aScene, const ObjMetadata&
 
 Mesh* Model::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMetadata& objMeta, size_t& materialIndex) {
 	Mesh* mesh = new Mesh();
-	std::vector<Vertex*>* vertices = mesh->vertices;
+	vector<Vertex*>* vertices = mesh->vertices;
 
 	aiVector3D* aTexCoords = aiMesh->mTextureCoords[0];
 
@@ -73,7 +73,7 @@ Mesh* Model::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMetadat
 		vertices->push_back(vertex);
 	}
 
-	std::vector<unsigned int>* indices = mesh->indices;
+	vector<unsigned int>* indices = mesh->indices;
 	for (unsigned int i = 0; i < aiMesh->mNumFaces; i++) {
 		aiFace face = aiMesh->mFaces[i];
 		for (unsigned int j = 0; j < face.mNumIndices; j++) {
@@ -83,16 +83,19 @@ Mesh* Model::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMetadat
 
 	string materialGUID = objMeta.materialGUIDs[materialIndex++];
 	mesh->materialGUID = materialGUID;
+
+	mesh->GenerateRenderer();
+
 	return mesh;
 }
 
 void Model::BatchMeshes() {
-	std::vector<float> vertexData;
-	std::vector<unsigned int> indiceArray;
+	vector<float> vertexData;
+	vector<unsigned int> indiceArray;
 	unsigned int vertexCount = 0;
 
 	for (auto mesh : *allMeshes) {
-		std::vector<Vertex*>* vertices = mesh->vertices;
+		vector<Vertex*>* vertices = mesh->vertices;
 		for (auto vertex : *vertices) {
 			glm::vec3 position = vertex->position;
 			glm::vec2 texCoords = vertex->texCoords;
@@ -103,7 +106,7 @@ void Model::BatchMeshes() {
 			vertexData.push_back(texCoords.x);
 			vertexData.push_back(texCoords.y);
 		}
-		std::vector<unsigned int>* indices = mesh->indices;
+		vector<unsigned int>* indices = mesh->indices;
 		for (auto indice : *indices) {
 			indiceArray.push_back(indice + vertexCount);
 		}
@@ -111,54 +114,17 @@ void Model::BatchMeshes() {
 		vertexCount += vertices->size();
 	}
 
-	va->Bind();
-	vb->Ctor(vertexData.data(), vertexData.size());
-	va->AddBuffer(vb, vbLayout);
-	ib->Ctor(indiceArray.data(), indiceArray.size());
+	va_batched->Bind();
+	vb_batched->Ctor(vertexData.data(), vertexData.size());
+	va_batched->AddBuffer(vb_batched, vbLayout_batched);
+	ib_batched->Ctor(indiceArray.data(), indiceArray.size());
 
-	std::cout << "Model BatchMeshes: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << std::endl;
+	isBatched = true;
+	cout << "Model BatchMeshes: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << endl;
 }
 
-void Model::Render() {
-	va->Bind();
-	ib->Bind();
-	glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
-}
-
-void Model::RenderModelMesh(const Camera3D*& camera, const DirectLight*& light) {
-	std::vector<float> vertexData;
-	std::vector<unsigned int> indiceArray;
-	unsigned int vertexCount = 0;
-	unsigned int indiceCount = 0;
-	for (auto mesh : *allMeshes) {
-		std::vector<Vertex*>* vertices = mesh->vertices;
-		for (auto vertex : *vertices) {
-			glm::vec3 position = vertex->position;
-			glm::vec2 texCoords = vertex->texCoords;
-			glm::vec3 normal = vertex->normal;
-			vertexData.push_back(position.x);
-			vertexData.push_back(position.y);
-			vertexData.push_back(position.z);
-			vertexData.push_back(texCoords.x);
-			vertexData.push_back(texCoords.y);
-			vertexCount++;
-		}
-		std::vector<unsigned int>* indices = mesh->indices;
-		for (auto indice : *indices) {
-			indiceArray.push_back(indice);
-			indiceCount++;
-		}
-
-		// TODO
-		VertexArray va = VertexArray();
-		VertexBuffer vb = VertexBuffer();
-		VertexBufferLayout vbLayout = VertexBufferLayout();
-		IndexBuffer ib = IndexBuffer();
-		va.Bind();
-		vb.Ctor(vertexData.data(), vertexCount);
-		vbLayout.Push<float>(3);
-		va.AddBuffer(&vb, vbLayout);
-		ib.Ctor(indiceArray.data(), indiceCount);
-		glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
-	}
+void Model::BatchedDraw() {
+	va_batched->Bind();
+	ib_batched->Bind();
+	glDrawElements(GL_TRIANGLES, ib_batched->GetCount(), GL_UNSIGNED_INT, nullptr);
 }

@@ -18,7 +18,6 @@
 #include "ShadowType.h"
 #include "CameraType.h"
 #include "Database.h"
-#include "SceneManager.h"
 
 namespace test {
 
@@ -47,10 +46,10 @@ namespace test {
 		InitImGui();
 		InitShadowMaping();
 
-		// ======================== Scene
-		SceneManager::LoadScene();
+		// ======================== Load Default Scene
+		editorRendererDomain->LoadDefaultScene();
 		// ======================== TO BE REMOVE ========================
-		scene = SceneManager::scene;
+		scene = editorContext->currentScene;
 		cubes = scene->cubes;
 		models = scene->models;
 		directLight = scene->directLight;
@@ -62,6 +61,9 @@ namespace test {
 		cameraController.Inject(sceneCamera, window);
 		shaderRepo = editorContext->GetShaderRepo();
 		textureRepo = editorContext->GetTextureRepo();
+
+		editorContext->sceneViewCamera = sceneCamera;
+		editorContext->sceneDirectLight = directLight;
 		// ======================== TO BE REMOVE ========================
 
 		// ======================== Device Input - Mouse
@@ -168,7 +170,7 @@ namespace test {
 
 		DirectLight* directLight = scene->directLight;
 		if (directLight->shadowType != ShadowType::None) {
-			RenderSceneShadowMap();
+			ShaderMapping();
 			Repaint();
 		}
 
@@ -215,11 +217,11 @@ namespace test {
 		glm::vec3 lightDirection = -directLight->GetLightDirection();
 
 		for (auto model : *models) {
-			editorRendererDomain->RenderModel(model, sceneCamera, directLight);
+			editorRendererDomain->DrawModel(model, sceneCamera, directLight);
 		}
 	}
 
-	void EdtorAppTest::RenderSceneShadowMap() {
+	void EdtorAppTest::ShaderMapping() {
 		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -230,31 +232,27 @@ namespace test {
 			std::cout << "  ########################## Framebuffer is not complete!" << std::endl;
 		}
 		else {
-			RenderObjectForDepthMap();
+			for (auto cube : *cubes) {
+				Material* material = cube->material;
+				VertexArray* va = cube->va;
+				IndexBuffer* ib = cube->ib;
+				glm::vec3 pos = cube->transform->GetPosition();
+				glm::quat rot = cube->transform->GetRotation();
+				glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
+				RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
+			}
+
+			// - Model
+			for (auto model : *models) {
+				Material* material;
+				if (editorRendererDomain->TryLoadMaterialByAssetPath("asset/material/default.mat", material)) {
+					editorRendererDomain->DrawModel(model, sceneCamera, directLight, material);
+				}
+			}
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, scene->camera->scrWidth, scene->camera->scrHeight);
-	}
-
-	void EdtorAppTest::RenderObjectForDepthMap() {
-		for (auto cube : *cubes) {
-			Material* material = cube->material;
-			VertexArray* va = cube->va;
-			IndexBuffer* ib = cube->ib;
-			glm::vec3 pos = cube->transform->GetPosition();
-			glm::quat rot = cube->transform->GetRotation();
-			glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
-			RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
-		}
-
-		// - Model
-		for (auto model : *models) {
-			glm::vec3 pos = model->transform->GetPosition();
-			glm::quat rot = model->transform->GetRotation();
-			glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
-			model->Render();
-		}
 	}
 
 	void EdtorAppTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
@@ -262,14 +260,12 @@ namespace test {
 			std::cout << "  ########################## Material is null!\n" << std::endl;
 		}
 		else {
-			std::string textureGUID = material->diffuseTextureGUID;
-			Texture* texture = nullptr;
-			if (textureRepo->TryLoadTextureByGUID(textureGUID, texture)) {
+			Texture* texture = material->diffuseTexture;
+			if (texture != nullptr) {
 				texture->Bind(1);
 
-				std::string shaderGUID = material->shaderGUID;
-				Shader* shader;
-				if (shaderRepo->TryLoadShaderByGUID(shaderGUID, shader)) {
+				Shader* shader = material->shader;
+				if (shader != nullptr) {
 					shader->Bind();
 					shader->SetUniform1i("u_texture", 1);
 					shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);

@@ -16,41 +16,22 @@ TextureRepo::~TextureRepo() {
 	}
 }
 
-bool TextureRepo::TryLoadTextureByPath(const string& path, Texture*& texture) {
-	string guid;
-	if (!Database::TryGetGUIDFromAssetPath(path, guid)) {
-		std::cout << "############## TextureRepo::LoadTextureByPath -  path doesn't exist : " << path << std::endl;
+bool TextureRepo::TryAddTexture(const std::string& guid, Texture*& texture) {
+	if(!Database::GUIDExist(guid)) {
 		return false;
 	}
 
-	if (_TryGetTextureByGUID(guid, texture)) {
-		return true;
-	}
-
-	texture = new Texture(path);
 	allTextures_sortedByGUID.insert(std::pair<std::string, Texture*>(guid, texture));
-	allTextures_sortedByPath.insert(std::pair<std::string, Texture*>(path, texture));
-	return true;
-}
-
-bool TextureRepo::TryLoadTextureByGUID(const string& guid, Texture*& texture) {
+	
 	string path;
-	if (!Database::TryGetAssetPathFromGUID(guid, path)) {
-		std::cout << "############## TextureRepo::LoadTextureByGUID -  guid doesn't exist : " << guid << std::endl;
-		return false;
+	if (Database::TryGetAssetPathFromGUID(guid, path)) {
+		allTextures_sortedByPath.insert(std::pair<std::string, Texture*>(path, texture));
 	}
 
-	if (_TryGetTextureByGUID(guid, texture)) {
-		return true;
-	}
-
-	texture = new Texture(path);
-	allTextures_sortedByGUID.insert(std::pair<std::string, Texture*>(guid, texture));
-	allTextures_sortedByPath.insert(std::pair<std::string, Texture*>(path, texture));
 	return true;
 }
 
-bool TextureRepo::_TryGetTextureByGUID(const std::string& guid, Texture*& texture) {
+bool TextureRepo::TryGetTextureByGUID(const std::string& guid, Texture*& texture) {
 	std::unordered_map<std::string, Texture*>::iterator it = allTextures_sortedByGUID.find(guid);
 	if (it != allTextures_sortedByGUID.end()) {
 		texture = it->second;

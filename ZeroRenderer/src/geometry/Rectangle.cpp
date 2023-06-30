@@ -28,9 +28,9 @@ void Rectangle::Ctor(float width, float height) {
 		-halfWidth, halfHeight, 0.0f, 1.0f
 				   }, 16);
 
-	this->m_vbLayout = VertexBufferLayout();
-	this->m_vbLayout.Push<float>(2);
-	this->m_vbLayout.Push<float>(2);
+	this->m_vbLayout = new VertexBufferLayout();
+	this->m_vbLayout->Push<float>(2);
+	this->m_vbLayout->Push<float>(2);
 
 	this->va->AddBuffer(vb, m_vbLayout);
 
