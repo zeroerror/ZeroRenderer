@@ -1,6 +1,1 @@
-﻿  EditorRendererDomain.cpp
-C:\ZeroRenderer\ZeroRenderer\src\editor\EditorRendererDomain.cpp(215,21): warning C4244: “=”: 从“unsigned int”转换到“float”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\editor\EditorRendererDomain.cpp(216,22): warning C4244: “=”: 从“unsigned int”转换到“float”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\editor\EditorRendererDomain.cpp(222,26): warning C4244: “=”: 从“unsigned int”转换到“float”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\editor\EditorRendererDomain.cpp(223,27): warning C4244: “=”: 从“unsigned int”转换到“float”，可能丢失数据
-  ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe
+﻿  ZeroRenderer.vcxproj -> D:\Works\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe

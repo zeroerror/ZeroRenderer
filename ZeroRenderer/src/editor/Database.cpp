@@ -156,6 +156,7 @@ void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const
 
 	Mat mat = Mat();
 	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_DIFFUSE, dir, mat);
+	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_SPECULAR, dir, mat);
 	string matPath = dir + meshName + ".mat";
 	mat.SerializeTo(matPath);
 	std::cout << "Database: Generate mat " << matPath << std::endl;
@@ -185,6 +186,8 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 		}
 		if (aTextureType == aiTextureType_DIFFUSE) {
 			mat.diffuseTextureGUID = texGUID;
+		}else if (aTextureType == aiTextureType_SPECULAR) {
+			mat.specularTextureGUID = texGUID;
 		}
 
 		InsertToMap_GUID2AssetPath(texGUID, texPath);

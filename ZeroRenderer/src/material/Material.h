@@ -15,6 +15,7 @@ public:
 
 	Shader* shader;
 	Texture* diffuseTexture;
+	Texture* specularTexture;
 
 	glm::vec4 diffuseColor;
 	float specularIntensity;

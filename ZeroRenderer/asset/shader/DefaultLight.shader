@@ -41,7 +41,8 @@ in vec3 v_normal;
 in vec4 v_relativePosition;
 in vec4 v_glPos;
 
-uniform sampler2D u_texture;
+uniform sampler2D u_diffuseTexture;
+uniform sampler2D u_specularTexture;
 uniform sampler2D u_depthMapTexture;
 
 uniform vec3 u_lightColor;
@@ -52,35 +53,42 @@ uniform float u_farPlane;
 
 void main()
 {
-    vec4 textureColor = texture(u_texture, v_texCoord);
-    if(textureColor.a == 0)
-    {
-        textureColor = vec4(v_texCoord, 0, 1);
-    }
-    vec4 outColor = textureColor;
+    vec4 diffuseColor = texture(u_diffuseTexture, v_texCoord);
+    vec4 specularColor = texture(u_specularTexture, v_texCoord);
+    vec4 mixColor = diffuseColor + specularColor;
+    vec4 outColor = mixColor;
 
-    // // - Lambert Light Model -
-    // float dot = dot(v_normal, u_lightDirection);
-    // float intensity = -min(dot, 0.0);
-    // vec3 diffuse = u_lightColor * intensity; 
-    // outColor.rgb *= diffuse;
+    // - Lambert Light Model -
+     float dot = dot(v_normal, u_lightDirection);
+    float epsilon = 0.001;
+    if (abs(specularColor.r - 0.0) < epsilon && 
+        abs(specularColor.g - 0.0) < epsilon && 
+        abs(specularColor.b - 0.0) < epsilon &&
+        abs(specularColor.a - 0.0) < epsilon) 
+    {
+        
+    }else{
+        float intensity = -min(dot, 0.0);
+        vec3 diffuse = u_lightColor * intensity; 
+        outColor.rgb *= diffuse;
+    }
 
     // // ------ Shadow -------
-    // vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
-    // vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
-    // float mapDepth = texture(u_depthMapTexture, depthCoord).r;
-    // float curDepth = light_glPos.z / light_glPos.w;
-    // curDepth = curDepth * 0.5 + 0.5;
-    // curDepth = curDepth > 1.0 ? 1.0 : curDepth;
-    // float bias = min(0.00002 * (1 + dot), 0.00002);
-    // float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
-    // outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
+    vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
+    vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
+    float mapDepth = texture(u_depthMapTexture, depthCoord).r;
+    float curDepth = light_glPos.z / light_glPos.w;
+    curDepth = curDepth * 0.5 + 0.5;
+    curDepth = curDepth > 1.0 ? 1.0 : curDepth;
+    float bias = min(0.00002 * (1 + dot), 0.00002);
+    float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
+    outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
 
-    // // ------ Ambient Light -------
-    // vec3 ambientColor = textureColor.xyz;
-    // float ambientStrength = 0.3;
-    // vec3 ambient = ambientColor * ambientStrength;
-    // outColor.rgb += ambient;
+    // ------ Ambient Light -------
+    vec3 ambientColor = mixColor.xyz;
+    float ambientStrength = 0.3;
+    vec3 ambient = ambientColor * ambientStrength;
+    outColor.rgb += ambient;
 
     color = outColor;
 }

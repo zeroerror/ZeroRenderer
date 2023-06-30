@@ -17,7 +17,7 @@ public:
 	void DrawModel(const Model* model);
 	void DrawModel(const Model* model, const Material* material);
 	void BindShader(const Model* model, Shader* shader);
-	void BindDiffuseTexture(Texture* texture, const TextureType& textureType);
+	void BindTexture(Texture* texture, const TextureType& textureType);
 
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
 	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);

@@ -12,6 +12,7 @@ public:
 
 	string shaderGUID;
 	string diffuseTextureGUID;
+	string specularTextureGUID;
 	
 	glm::vec4 diffuseColor;
 	float specularIntensity;

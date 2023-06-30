@@ -1,5 +1,6 @@
 shaderGUID: 
 diffuseTextureGUID: 1c3807669d6bf623
+specularTextureGUID: a55cd8394d94e650
 diffuseColor: -1.07374e+08 -1.07374e+08 -1.07374e+08 -1.07374e+08
 specularIntensity: -1.07374e+08
 shininess: -1.07374e+08

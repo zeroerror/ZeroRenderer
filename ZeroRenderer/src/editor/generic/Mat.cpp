@@ -6,6 +6,7 @@ void Mat::SerializeTo(const string& path){
 	std::stringstream ss;
 	ss << "shaderGUID: " << shaderGUID << std::endl;
 	ss << "diffuseTextureGUID: " << diffuseTextureGUID << std::endl;
+	ss << "specularTextureGUID: " << specularTextureGUID << std::endl;
 	ss << "diffuseColor: " << diffuseColor.x << " " << diffuseColor.y << " " << diffuseColor.z << " " << diffuseColor.w << std::endl;
 	ss << "specularIntensity: " << specularIntensity << std::endl;
 	ss << "shininess: " << shininess << std::endl;
@@ -33,6 +34,9 @@ void Mat::DeserializeFrom(const string& path){
 		}
 		else if (key == "diffuseTextureGUID:") {
 			iss >> diffuseTextureGUID;
+		}
+		else if (key == "specularTextureGUID:") {
+			iss >> specularTextureGUID;
 		}
 		else if (key == "diffuseColor:") {
 			iss >> diffuseColor.x >> diffuseColor.y >> diffuseColor.z >> diffuseColor.w;

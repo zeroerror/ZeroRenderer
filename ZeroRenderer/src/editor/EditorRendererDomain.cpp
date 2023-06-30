@@ -5,6 +5,7 @@
 #include "FileSuffix.h"
 
 #include <assimp/postprocess.h>
+#include <src/vendor/glm/gtx/string_cast.hpp>
 
 void EditorRendererDomain::Inject(EditorContext* ctxt) {
 	this->editorContext = ctxt;
@@ -28,7 +29,9 @@ void EditorRendererDomain::DrawModel(const Model* model) {
 			BindShader(model, modelShader);
 
 			Texture* meshDiffuseTexture = meshMaterial->diffuseTexture;
-			BindDiffuseTexture(meshDiffuseTexture, TextureType::Diffuse);
+			Texture* meshSpecularTexture = meshMaterial->specularTexture;
+			BindTexture(meshDiffuseTexture, TextureType::Diffuse);
+			BindTexture(meshSpecularTexture, TextureType::Specular);
 
 			IndexBuffer* ib = mesh->ib;
 			mesh->va->Bind();
@@ -49,8 +52,9 @@ void EditorRendererDomain::DrawModel(const Model* model, const Material* materia
 		vector<Mesh*>* allMeshes = model->allMeshes;
 		for (auto mesh : *allMeshes) {
 			BindShader(model, material->shader);
-			BindDiffuseTexture(material->diffuseTexture, TextureType::Diffuse);
-			
+			BindTexture(material->diffuseTexture, TextureType::Diffuse);
+			BindTexture(material->specularTexture, TextureType::Specular);
+
 			IndexBuffer* ib = mesh->ib;
 			mesh->va->Bind();
 			ib->Bind();
@@ -61,8 +65,6 @@ void EditorRendererDomain::DrawModel(const Model* model, const Material* materia
 
 void EditorRendererDomain::BindShader(const Model* model, Shader* shader) {
 	if (shader != nullptr) {
-		shader->Bind();
-
 		glm::vec3 modelPos = model->transform->GetPosition();
 		glm::qua modelRot = model->transform->GetRotation();
 
@@ -78,7 +80,8 @@ void EditorRendererDomain::BindShader(const Model* model, Shader* shader) {
 
 		// TODO: BIND AND SET BY THE SHADER META DATA.
 		shader->Bind();
-		shader->SetUniform1i("u_texture", 1);
+		shader->SetUniform1i("u_diffuseTexture", 1);
+		shader->SetUniform1i("u_specularTexture", 2);
 		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
 		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(modelRot));
 		shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
@@ -92,12 +95,13 @@ void EditorRendererDomain::BindShader(const Model* model, Shader* shader) {
 	}
 }
 
-void EditorRendererDomain::BindDiffuseTexture(Texture* texture, const TextureType& textureType) {
+void EditorRendererDomain::BindTexture(Texture* texture, const TextureType& textureType) {
 	if (texture == nullptr) {
 		return;
 	}
 
 	if (textureType == TextureType::Diffuse) texture->Bind(1);
+	if (textureType == TextureType::Specular) texture->Bind(2);
 }
 
 bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& material) {
@@ -116,7 +120,6 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 	mat.DeserializeFrom(matPath);
 	material = new Material();
 	string shaderGUID = mat.shaderGUID;
-	string diffuseTextureGUID = mat.diffuseTextureGUID;
 
 	ShaderRepo* shaderRepo = editorContext->GetShaderRepo();
 	if (!shaderRepo->TryGetShaderByGUID(shaderGUID, material->shader)) {
@@ -131,6 +134,8 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 	}
 
 	TextureRepo* textureRepo = editorContext->GetTextureRepo();
+
+	string diffuseTextureGUID = mat.diffuseTextureGUID;
 	if (!textureRepo->TryGetTextureByGUID(diffuseTextureGUID, material->diffuseTexture)) {
 		string texturePath;
 		if (Database::TryGetAssetPathFromGUID(diffuseTextureGUID, texturePath)) {
@@ -139,6 +144,18 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 		}
 		else {
 			cout << " ################ Warning: EditorRendererDomain::TryLoadMaterialByGUID: Texture[Diffuse] GUID no exist!: " << diffuseTextureGUID << endl;
+		}
+	}
+
+	string specularTextureGUID = mat.specularTextureGUID;
+	if (!textureRepo->TryGetTextureByGUID(specularTextureGUID, material->specularTexture)) {
+		string texturePath;
+		if (Database::TryGetAssetPathFromGUID(specularTextureGUID, texturePath)) {
+			material->specularTexture = new Texture(texturePath);
+			textureRepo->TryAddTexture(specularTextureGUID, material->specularTexture);
+		}
+		else {
+			cout << " ################ Warning: EditorRendererDomain::TryLoadMaterialByGUID: Texture[Specular] GUID no exist!: " << specularTextureGUID << endl;
 		}
 	}
 
@@ -301,7 +318,7 @@ bool EditorRendererDomain::TryLoadModel(const string& path, Model*& model) {
 	model = nullptr;
 
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate );
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		cout << "  #################################ERROR::ASSIMP::" << importer.GetErrorString() << endl;
 		return false;
@@ -329,22 +346,35 @@ void EditorRendererDomain::ProcessNode(aiNode* aNode, const aiScene* aScene, con
 
 Mesh* EditorRendererDomain::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMetadata& objMeta, size_t& materialIndex) {
 	Mesh* mesh = new Mesh();
-	vector<Vertex*>* vertices = mesh->vertices;
 
-	aiVector3D* aTexCoords = aiMesh->mTextureCoords[0];
+	string materialGUID = objMeta.materialGUIDs[materialIndex++];
+	mesh->materialGUID = materialGUID;
+	TryLoadMaterialByGUID(materialGUID, mesh->material);
+
+	vector<Vertex*>* vertices = mesh->vertices;
 
 	for (unsigned int i = 0; i < aiMesh->mNumVertices; i++) {
 		aiVector3D aPosition = aiMesh->mVertices[i];
 		aiVector3D aNormal = aiMesh->mNormals[i];
-		aiVector2D texCoord;
-		if (aTexCoords != nullptr) {
-			texCoord = aTexCoords[0][i];
+		Vertex* vertex = new Vertex();
+		if (aiMesh->mTextureCoords[0] != nullptr) {
+			glm::vec2 texCoord;
+			texCoord.x = aiMesh->mTextureCoords[0][i].x;
+			texCoord.y = aiMesh->mTextureCoords[0][i].y;
+			if (texCoord.x > 1.0f) {
+				texCoord.x -= 1.0f;
+			}
+			if (texCoord.y > 1.0f) {
+				texCoord.y -= 1.0f;
+			}
+			vertex->SetTexCoords(texCoord.x, texCoord.y);
+		}
+		else {
+			vertex->SetTexCoords(0, 0);
 		}
 
-		Vertex* vertex = new Vertex();
 		vertex->SetPosition(aPosition.x, aPosition.y, aPosition.z);
 		vertex->SetNormal(aNormal.x, aNormal.y, aNormal.z);
-		vertex->SetTexCoords(texCoord.x, texCoord.y);
 		vertices->push_back(vertex);
 	}
 
@@ -356,9 +386,7 @@ Mesh* EditorRendererDomain::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, c
 		}
 	}
 
-	string materialGUID = objMeta.materialGUIDs[materialIndex++];
-	mesh->materialGUID = materialGUID;
-	TryLoadMaterialByGUID(materialGUID, mesh->material);
+
 	mesh->GenerateRenderer();
 
 	return mesh;
