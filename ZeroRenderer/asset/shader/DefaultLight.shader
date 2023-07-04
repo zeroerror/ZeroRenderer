@@ -55,25 +55,17 @@ void main()
 {
     vec4 diffuseColor = texture(u_diffuseTexture, v_texCoord);
     vec4 specularColor = texture(u_specularTexture, v_texCoord);
+    specularColor.a = 1.0;
     vec4 mixColor = diffuseColor + specularColor;
     vec4 outColor = mixColor;
 
     // - Lambert Light Model -
-     float dot = dot(v_normal, u_lightDirection);
-    float epsilon = 0.001;
-    if (abs(specularColor.r - 0.0) < epsilon && 
-        abs(specularColor.g - 0.0) < epsilon && 
-        abs(specularColor.b - 0.0) < epsilon &&
-        abs(specularColor.a - 0.0) < epsilon) 
-    {
-        
-    }else{
-        float intensity = -min(dot, 0.0);
-        vec3 diffuse = u_lightColor * intensity; 
-        outColor.rgb *= diffuse;
-    }
+    float dot = dot(v_normal, u_lightDirection);
+    float intensity = -min(dot, 0.0);
+    vec3 diffuse = u_lightColor * intensity; 
+    outColor.rgb *= diffuse;
 
-    // // ------ Shadow -------
+    // ------ Shadow -------
     vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
     vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
     float mapDepth = texture(u_depthMapTexture, depthCoord).r;

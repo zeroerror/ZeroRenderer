@@ -269,6 +269,7 @@ namespace test {
 			if (shader != nullptr) {
 				shader->Bind();
 				shader->SetUniform1i("u_diffuseTexture", 1);
+				shader->SetUniform1i("u_specularTexture", 0);
 				shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
 				shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
 				shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
