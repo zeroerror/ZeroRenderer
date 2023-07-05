@@ -41,13 +41,13 @@ namespace test {
 		// ======================== Database
 		Database::ImportAssets();
 		Database::SetMat_ShaderGUID("asset/material/default.mat", "asset/shader/Default.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/default.mat", "asset/texture/jerry.png", TextureType::Diffuse);
+		Database::SetMat_DiffuseTextureGUID("asset/material/default.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
 		Database::SetMat_ShaderGUID("asset/material/defaultLight.mat", "asset/shader/DefaultLight.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/defaultLight.mat", "asset/texture/jerry.png", TextureType::Diffuse);
+		Database::SetMat_DiffuseTextureGUID("asset/material/defaultLight.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
 		Database::SetMat_ShaderGUID("asset/material/depthMap.mat", "asset/shader/DepthMap.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/depthMap.mat", "asset/texture/jerry.png", TextureType::Diffuse);
+		Database::SetMat_DiffuseTextureGUID("asset/material/depthMap.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
 		Database::SetMat_ShaderGUID("asset/material/lightCube.mat", "asset/shader/Default.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/lightCube.mat", "asset/texture/jerry.png", TextureType::Diffuse);
+		Database::SetMat_DiffuseTextureGUID("asset/material/lightCube.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
 
 		// ======================== GL
 		InitOpenGL();
@@ -234,7 +234,7 @@ namespace test {
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, depthTexture);
+		glBindTexture(GL_TEXTURE_2D, depthTextureRID);
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 			std::cout << "  ########################## Framebuffer is not complete!" << std::endl;
@@ -268,8 +268,9 @@ namespace test {
 			Shader* shader = material->shader;
 			if (shader != nullptr) {
 				shader->Bind();
-				shader->SetUniform1i("u_diffuseTexture", 1);
-				shader->SetUniform1i("u_specularTexture", 0);
+				shader->SetUniform1i("u_diffuseMap", TEX_SLOT_DIFFUSE_MAP);
+				shader->SetUniform1i("u_depthMap", TEX_SLOT_DEPTH_MAP);
+				shader->SetUniform1i("u_specularMap", 0);
 				shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
 				shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(rot));
 				shader->SetUniform3f("u_modPosition", pos.x, pos.y, pos.z);
@@ -281,17 +282,15 @@ namespace test {
 				shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
 				shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
 
-				shader->SetUniform1i("u_depthMapTexture", 2);
 				shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
 				shader->SetUniform1f("u_nearPlane", sceneCamera->nearPlane);
 				shader->SetUniform1f("u_farPlane", sceneCamera->farPlane);
 			}
 
 			Texture* texture = material->diffuseTexture;
-
-			if (texture != nullptr) {
-				texture->Bind(1);
-			}
+			if (texture != nullptr) texture->Bind(TEX_SLOT_DIFFUSE_MAP);
+			glActiveTexture(GL_TEXTURE0 + TEX_SLOT_DEPTH_MAP);
+			glBindTexture(GL_TEXTURE_2D, depthTextureRID);
 		}
 
 		va->Bind();
@@ -362,8 +361,9 @@ namespace test {
 		glGenFramebuffers(1, &framebuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
-		glGenTextures(1, &depthTexture);
-		glBindTexture(GL_TEXTURE_2D, depthTexture);
+		glGenTextures(1, &depthTextureRID);
+		glActiveTexture(GL_TEXTURE0 + TEX_SLOT_DEPTH_MAP);
+		glBindTexture(GL_TEXTURE_2D, depthTextureRID);
 
 		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapWidth, shadowMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -374,7 +374,7 @@ namespace test {
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
 		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer));
-		GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0));
+		GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTextureRID, 0));
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

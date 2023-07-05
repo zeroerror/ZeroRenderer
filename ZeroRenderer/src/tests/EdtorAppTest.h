@@ -46,7 +46,7 @@ namespace test {
 
 		Camera3DController cameraController;
 		bool cameraControllerEnabled;
-		GLuint depthTexture;
+		GLuint depthTextureRID;
 		GLuint framebuffer;
 
 		const float moveSpeed = 0.1f;

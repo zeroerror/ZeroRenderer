@@ -23,6 +23,7 @@
     <ClCompile Include="src\editor\EditorContext.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
     <ClCompile Include="src\editor\generic\Mat.cpp" />
+    <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
     <ClCompile Include="src\editor\MaterialMetadata.cpp" />
     <ClCompile Include="src\editor\ObjMetadata.cpp" />
     <ClCompile Include="src\editor\ShaderMetadata.cpp" />
@@ -533,7 +534,6 @@
     <None Include="Dependencies\GLFW\docs\html\vulkan_guide.html" />
     <None Include="Dependencies\GLFW\docs\html\window_8dox.html" />
     <None Include="Dependencies\GLFW\docs\html\window_guide.html" />
-    <None Include="src\editor\generic\TextureType.h" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />

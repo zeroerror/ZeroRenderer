@@ -1,4 +1,5 @@
-﻿  EdtorAppTest.cpp
+﻿  正在扫描源以查找模块依赖项...
+  EdtorAppTest.cpp
 C:\ZeroRenderer\ZeroRenderer\src\tests\EdtorAppTest.cpp(263,58): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
 C:\ZeroRenderer\ZeroRenderer\src\tests\EdtorAppTest.cpp(263,33): warning C4244: “参数”: 从“float”转换到“GLsizei”，可能丢失数据
   ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe

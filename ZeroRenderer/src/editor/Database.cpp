@@ -13,6 +13,7 @@
 #include "TextureMetadata.h"
 #include "MaterialMetadata.h"
 #include "ShaderMetadata.h"
+#include "TextureSlotCollection.h"
 
 using namespace std;
 namespace fs = filesystem;
@@ -186,7 +187,8 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 		}
 		if (aTextureType == aiTextureType_DIFFUSE) {
 			mat.diffuseTextureGUID = texGUID;
-		}else if (aTextureType == aiTextureType_SPECULAR) {
+		}
+		else if (aTextureType == aiTextureType_SPECULAR) {
 			mat.specularTextureGUID = texGUID;
 		}
 
@@ -195,7 +197,7 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 	}
 }
 
-bool Database::SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const TextureType& textureType) {
+bool Database::SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot) {
 	if (!AssetPathExist(texturePath)) return false;
 	if (!AssetPathExist(matPath)) return false;
 
@@ -206,7 +208,7 @@ bool Database::SetMat_DiffuseTextureGUID(const string& matPath, const string& te
 
 	Mat mat = Mat();
 	mat.DeserializeFrom(matPath);
-	if (textureType == TextureType::Diffuse)mat.diffuseTextureGUID = texGUID;
+	if (textureSlot == TEX_SLOT_DIFFUSE_MAP)mat.diffuseTextureGUID = texGUID;
 	mat.SerializeTo(matPath);
 	return true;
 }

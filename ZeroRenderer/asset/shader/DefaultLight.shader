@@ -41,9 +41,9 @@ in vec3 v_normal;
 in vec4 v_relativePosition;
 in vec4 v_glPos;
 
-uniform sampler2D u_diffuseTexture;
-uniform sampler2D u_specularTexture;
-uniform sampler2D u_depthMapTexture;
+uniform sampler2D u_diffuseMap;
+uniform sampler2D u_specularMap;
+uniform sampler2D u_depthMap;
 
 uniform vec3 u_lightColor;
 uniform mat4 u_lightMVPMatrix;
@@ -53,8 +53,8 @@ uniform float u_farPlane;
 
 void main()
 {
-    vec4 diffuseColor = texture(u_diffuseTexture, v_texCoord);
-    vec4 specularColor = texture(u_specularTexture, v_texCoord);
+    vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
+    vec4 specularColor = texture(u_specularMap, v_texCoord);
     specularColor.a = 1.0;
     vec4 mixColor = diffuseColor + specularColor;
     vec4 outColor = mixColor;
@@ -68,7 +68,7 @@ void main()
     // ------ Shadow -------
     vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
     vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
-    float mapDepth = texture(u_depthMapTexture, depthCoord).r;
+    float mapDepth = texture(u_depthMap, depthCoord).r;
     float curDepth = light_glPos.z / light_glPos.w;
     curDepth = curDepth * 0.5 + 0.5;
     curDepth = curDepth > 1.0 ? 1.0 : curDepth;

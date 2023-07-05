@@ -44,6 +44,7 @@
     <ClCompile Include="src\editor\EditorContext.cpp" />
     <ClCompile Include="src\editor\EditorRendererDomain.cpp" />
     <ClCompile Include="src\editor\ShaderMetadata.cpp" />
+    <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -651,6 +652,5 @@
     <None Include="Dependencies\GLFW\docs\html\vulkan_guide.html" />
     <None Include="Dependencies\GLFW\docs\html\window_8dox.html" />
     <None Include="Dependencies\GLFW\docs\html\window_guide.html" />
-    <None Include="src\editor\generic\TextureType.h" />
   </ItemGroup>
 </Project>

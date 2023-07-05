@@ -2,7 +2,7 @@
 #include "EditorContext.h"
 #include "Model.h"
 #include "ObjMetadata.h"
-#include "TextureType.h"
+#include "TextureSlotCollection.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -17,7 +17,6 @@ public:
 	void DrawModel(const Model* model);
 	void DrawModel(const Model* model, const Material* material);
 	void BindShader(const Model* model, Shader* shader);
-	void BindTexture(Texture* texture, const TextureType& textureType);
 
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
 	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);

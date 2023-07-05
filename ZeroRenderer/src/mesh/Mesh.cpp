@@ -10,7 +10,7 @@ Mesh::Mesh() {
 	vbLayout = new VertexBufferLayout();
 	vbLayout->Push<float>(3);
 	vbLayout->Push<float>(2);
-	vbLayout->Push<float>(2);
+	vbLayout->Push<float>(3);
 	material = nullptr;
 }
 
@@ -29,6 +29,7 @@ void Mesh::GenerateRenderer() {
 		vertexData.push_back(texCoords.y);
 		vertexData.push_back(normal.x);
 		vertexData.push_back(normal.y);
+		vertexData.push_back(normal.z);
 	}
 	for (auto indice : *indices) {
 		indiceArray.push_back(indice);

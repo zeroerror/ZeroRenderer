@@ -3,7 +3,7 @@
 #include "Mat.h"
 #include "Material.h"
 #include "ObjMetadata.h"
-#include "TextureType.h"
+#include "TextureSlotCollection.h"
 
 #include <unordered_map>
 #include <string>
@@ -22,7 +22,7 @@ public:
 	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir, ObjMetadata& objMeta);
 	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, Mat& matMeta);
 
-	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const TextureType& textureType);
+	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
 	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
 
 	static void ClearInvalidMeta();

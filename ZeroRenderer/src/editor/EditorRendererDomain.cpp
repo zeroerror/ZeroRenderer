@@ -30,8 +30,8 @@ void EditorRendererDomain::DrawModel(const Model* model) {
 
 			Texture* meshDiffuseTexture = meshMaterial->diffuseTexture;
 			Texture* meshSpecularTexture = meshMaterial->specularTexture;
-			BindTexture(meshDiffuseTexture, TextureType::Diffuse);
-			BindTexture(meshSpecularTexture, TextureType::Specular);
+			if (meshDiffuseTexture != nullptr) meshDiffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
+			if (meshSpecularTexture != nullptr)meshSpecularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 
 			IndexBuffer* ib = mesh->ib;
 			mesh->va->Bind();
@@ -52,8 +52,8 @@ void EditorRendererDomain::DrawModel(const Model* model, const Material* materia
 		vector<Mesh*>* allMeshes = model->allMeshes;
 		for (auto mesh : *allMeshes) {
 			BindShader(model, material->shader);
-			BindTexture(material->diffuseTexture, TextureType::Diffuse);
-			BindTexture(material->specularTexture, TextureType::Specular);
+			if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
+			if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 
 			IndexBuffer* ib = mesh->ib;
 			mesh->va->Bind();
@@ -64,44 +64,37 @@ void EditorRendererDomain::DrawModel(const Model* model, const Material* materia
 }
 
 void EditorRendererDomain::BindShader(const Model* model, Shader* shader) {
-	if (shader != nullptr) {
-		glm::vec3 modelPos = model->transform->GetPosition();
-		glm::qua modelRot = model->transform->GetRotation();
-
-		DirectLight* light = editorContext->sceneDirectLight;
-		glm::mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
-		glm::vec3 lightPos = light->transform->GetPosition();
-		glm::vec3 lightColor = light->color;
-		glm::vec3 lightDirection = -light->GetLightDirection();
-
-		Camera3D* camera = editorContext->sceneViewCamera;
-		glm::mat4 cameraMVPMatrix = shader->useLightingMVP ?
-			lightMVPMatrix : camera->GetMVPMatrix_Perspective(modelPos);
-
-		// TODO: BIND AND SET BY THE SHADER META DATA.
-		shader->Bind();
-		shader->SetUniform1i("u_diffuseTexture", 1);
-		shader->SetUniform1i("u_specularTexture", 2);
-		shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-		shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(modelRot));
-		shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
-
-		shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
-		shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
-		shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
-		shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
-		shader->SetUniform1f("u_nearPlane", camera->nearPlane);
-		shader->SetUniform1f("u_farPlane", camera->farPlane);
-	}
-}
-
-void EditorRendererDomain::BindTexture(Texture* texture, const TextureType& textureType) {
-	if (texture == nullptr) {
+	if (shader == nullptr) {
 		return;
 	}
+	glm::vec3 modelPos = model->transform->GetPosition();
+	glm::qua modelRot = model->transform->GetRotation();
 
-	if (textureType == TextureType::Diffuse) texture->Bind(1);
-	if (textureType == TextureType::Specular) texture->Bind(2);
+	DirectLight* light = editorContext->sceneDirectLight;
+	glm::mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
+	glm::vec3 lightPos = light->transform->GetPosition();
+	glm::vec3 lightColor = light->color;
+	glm::vec3 lightDirection = -light->GetLightDirection();
+
+	Camera3D* camera = editorContext->sceneViewCamera;
+	glm::mat4 cameraMVPMatrix = shader->useLightingMVP ?
+		lightMVPMatrix : camera->GetMVPMatrix_Perspective(modelPos);
+
+	// TODO: BIND AND SET BY THE SHADER META DATA.
+	shader->Bind();
+	shader->SetUniform1i("u_depthMap", TEX_SLOT_DEPTH_MAP);
+	shader->SetUniform1i("u_diffuseMap", TEX_SLOT_DIFFUSE_MAP);
+	shader->SetUniform1i("u_specularMap", TEX_SLOT_SPECULAR_MAP);
+	shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
+	shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(modelRot));
+	shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
+
+	shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
+	shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
+	shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
+	shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
+	shader->SetUniform1f("u_nearPlane", camera->nearPlane);
+	shader->SetUniform1f("u_farPlane", camera->farPlane);
 }
 
 bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& material) {
@@ -304,7 +297,13 @@ void EditorRendererDomain::LoadDefaultScene() {
 	// ========================== Load Model
 	Model* model;
 	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
-		model->transform->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+		model->transform->SetPosition(glm::vec3(5.0f, 0.0f, 0.0f));
+		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+		model->material = defaultLightMaterial;
+		scene->models->push_back(model);
+	}
+	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
+		model->transform->SetPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		model->material = defaultLightMaterial;
 		scene->models->push_back(model);
@@ -318,9 +317,9 @@ bool EditorRendererDomain::TryLoadModel(const string& path, Model*& model) {
 	model = nullptr;
 
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate );
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		cout << "  #################################ERROR::ASSIMP::" << importer.GetErrorString() << endl;
+		cout << "  ################################# ERROR::ASSIMP::" << importer.GetErrorString() << endl;
 		return false;
 	}
 
