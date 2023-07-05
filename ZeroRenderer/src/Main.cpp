@@ -54,7 +54,7 @@ int main() {
 	testMenu->imguiContext = imguiContext;
 
 	testMenu->RegisterTest("EdtorAppTest", []() {
-		std::shared_ptr<test::EdtorAppTest> test = std::make_shared<test::EdtorAppTest>();
+		std::shared_ptr<test::EditorAppTest> test = std::make_shared<test::EditorAppTest>();
 		test->Init();
 		return test;
 	});

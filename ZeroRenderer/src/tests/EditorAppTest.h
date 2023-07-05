@@ -26,7 +26,7 @@
 
 namespace test {
 
-	class EdtorAppTest:public Test {
+	class EditorAppTest:public Test {
 	public:
 		// ---- Scene
 		Scene* scene;
@@ -59,8 +59,8 @@ namespace test {
 		ShaderRepo* shaderRepo;
 		TextureRepo* textureRepo;
 
-		EdtorAppTest();
-		~EdtorAppTest();
+		EditorAppTest();
+		~EditorAppTest();
 
 		void Init();
 		void OnUpdate(const float& deltaTime) override;

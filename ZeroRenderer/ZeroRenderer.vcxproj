@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\editor\EditorRendererDomain.cpp" />
     <ClCompile Include="src\editor\EditorContext.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
@@ -42,7 +43,6 @@
     <ClCompile Include="src\component\Transform.cpp" />
     <ClCompile Include="src\debug\GLDebug.cpp" />
     <ClCompile Include="src\gameObject\GameObject.cpp" />
-    <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\renderer\Vertex.cpp" />
     <ClCompile Include="src\repo\ShaderRepo.cpp" />
     <ClCompile Include="src\repo\TextureRepo.cpp" />
@@ -52,7 +52,7 @@
     <ClCompile Include="src\renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\renderer\VertexBuffer.cpp" />
-    <ClCompile Include="src\tests\EdtorAppTest.cpp" />
+    <ClCompile Include="src\tests\EditorAppTest.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -106,7 +106,7 @@
     <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\renderer\VertexBuffer.h" />
     <ClInclude Include="src\renderer\VertexBufferLayout.h" />
-    <ClInclude Include="src\tests\EdtorAppTest.h" />
+    <ClInclude Include="src\tests\EditorAppTest.h" />
     <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />

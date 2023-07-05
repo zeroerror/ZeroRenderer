@@ -6,7 +6,6 @@
     <ClCompile Include="src\component\Camera3DController.cpp" />
     <ClCompile Include="src\component\Transform.cpp" />
     <ClCompile Include="src\gameObject\GameObject.cpp" />
-    <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -29,7 +28,7 @@
     <ClCompile Include="src\component\SpotLight.cpp" />
     <ClCompile Include="src\component\DirectLight.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
-    <ClCompile Include="src\tests\EdtorAppTest.cpp" />
+    <ClCompile Include="src\tests\EditorAppTest.cpp" />
     <ClCompile Include="src\mesh\Mesh.cpp" />
     <ClCompile Include="src\renderer\Vertex.cpp" />
     <ClCompile Include="src\model\Model.cpp" />
@@ -45,6 +44,7 @@
     <ClCompile Include="src\editor\EditorRendererDomain.cpp" />
     <ClCompile Include="src\editor\ShaderMetadata.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
+    <ClCompile Include="src\App.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -365,7 +365,7 @@
     <ClInclude Include="src\component\SpotLight.h" />
     <ClInclude Include="src\generic\ShadowType.h" />
     <ClInclude Include="src\geometry\Rectangle.h" />
-    <ClInclude Include="src\tests\EdtorAppTest.h" />
+    <ClInclude Include="src\tests\EditorAppTest.h" />
     <ClInclude Include="src\mesh\Mesh.h" />
     <ClInclude Include="src\renderer\Vertex.h" />
     <ClInclude Include="src\model\Model.h" />

@@ -1,4 +1,4 @@
-#include "EdtorAppTest.h"
+#include "EditorAppTest.h"
 
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
@@ -21,7 +21,7 @@
 
 namespace test {
 
-	EdtorAppTest::EdtorAppTest() {
+	EditorAppTest::EditorAppTest() {
 		editorContext = new EditorContext();
 		editorRendererDomain = new EditorRendererDomain();
 		editorRendererDomain->Inject(editorContext);
@@ -29,7 +29,7 @@ namespace test {
 		cameraControllerEnabled = false;
 	}
 
-	EdtorAppTest::~EdtorAppTest() {
+	EditorAppTest::~EditorAppTest() {
 		std::cout << "EditorAppTest::~EditorAppTest()" << std::endl;
 		GLCall(glfwMakeContextCurrent(window));
 
@@ -37,7 +37,7 @@ namespace test {
 		glfwDestroyWindow(window);
 	}
 
-	void EdtorAppTest::Init() {
+	void EditorAppTest::Init() {
 		// ======================== Database
 		Database::ImportAssets();
 		Database::SetMat_ShaderGUID("asset/material/default.mat", "asset/shader/Default.shader");
@@ -77,7 +77,7 @@ namespace test {
 		// ======================== Device Input - Mouse
 		glfwSetWindowUserPointer(window, this);
 		glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
-			EdtorAppTest* camera3DCubeTest = static_cast<EdtorAppTest*>(glfwGetWindowUserPointer(window));
+			EditorAppTest* camera3DCubeTest = static_cast<EditorAppTest*>(glfwGetWindowUserPointer(window));
 			Transform* camTrans = camera3DCubeTest->scene->camera->transform;
 			glm::vec3 pos = camTrans->GetPosition();
 			glm::vec3 forward = camTrans->GetForward();
@@ -86,7 +86,7 @@ namespace test {
 		});
 	}
 
-	void EdtorAppTest::OnUpdate(const float& deltaTime) {
+	void EditorAppTest::OnUpdate(const float& deltaTime) {
 		if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
 			cameraControllerEnabled = true;
 			cameraController.InitCursorPos();
@@ -173,7 +173,7 @@ namespace test {
 		}
 	}
 
-	void EdtorAppTest::OnRender() {
+	void EditorAppTest::OnRender() {
 		Repaint();
 
 		DirectLight* directLight = scene->directLight;
@@ -189,7 +189,7 @@ namespace test {
 		}
 	}
 
-	void EdtorAppTest::RenderScene() {
+	void EditorAppTest::RenderScene() {
 		for (auto cube : *cubes) {
 			Material* material = cube->material;
 			VertexArray* va = cube->va;
@@ -229,7 +229,7 @@ namespace test {
 		}
 	}
 
-	void EdtorAppTest::ShaderMapping() {
+	void EditorAppTest::ShaderMapping() {
 		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -263,7 +263,7 @@ namespace test {
 		glViewport(0, 0, scene->camera->scrWidth, scene->camera->scrHeight);
 	}
 
-	void EdtorAppTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
+	void EditorAppTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {
 		if (material != nullptr) {
 			Shader* shader = material->shader;
 			if (shader != nullptr) {
@@ -298,12 +298,12 @@ namespace test {
 		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
 	}
 
-	void EdtorAppTest::Draw() {
+	void EditorAppTest::Draw() {
 		glfwMakeContextCurrent(window);
 		glfwSwapBuffers(window);
 	}
 
-	void EdtorAppTest::OnImGuiRender() {
+	void EditorAppTest::OnImGuiRender() {
 		ImGui::SetCurrentContext(imguiContext);
 		ImGui_ImplGlfw_NewFrame();
 		ImGui_ImplOpenGL3_NewFrame();
@@ -330,7 +330,7 @@ namespace test {
 		Draw();
 	}
 
-	void EdtorAppTest::InitOpenGL() {
+	void EditorAppTest::InitOpenGL() {
 		if (!glfwInit())
 			return;
 
@@ -355,7 +355,7 @@ namespace test {
 		std::cout << glGetString(GL_VERSION) << std::endl;
 	}
 
-	void EdtorAppTest::InitShadowMaping() {
+	void EditorAppTest::InitShadowMaping() {
 		shadowMapWidth = 2048;
 		shadowMapHeight = 2048;
 		glGenFramebuffers(1, &framebuffer);
@@ -380,7 +380,7 @@ namespace test {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void EdtorAppTest::InitImGui() {
+	void EditorAppTest::InitImGui() {
 		IMGUI_CHECKVERSION();
 		imguiContext = ImGui::CreateContext();
 		ImGui::SetCurrentContext(imguiContext);
@@ -390,7 +390,7 @@ namespace test {
 		ImGui_ImplOpenGL3_Init();
 	}
 
-	void EdtorAppTest::Repaint() {
+	void EditorAppTest::Repaint() {
 		glfwMakeContextCurrent(window);
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

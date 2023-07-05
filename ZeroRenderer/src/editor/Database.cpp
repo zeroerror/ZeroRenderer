@@ -300,6 +300,60 @@ bool Database::AssetPathExist(const string& path) {
 	return it != m_assetPath2GUID.end();
 }
 
+vector<string> Database::GetAllAssetPaths() {
+	unordered_map<string, string>::iterator it = m_assetPath2GUID.begin();
+	vector<string> fileResources;
+	for (; it != m_assetPath2GUID.end(); it++) {
+		string assetPath = it->first;
+		fileResources.push_back(assetPath);
+	}
+	return fileResources;
+}
+
+AssetTreeNode* Database::GetRootAssetTreeNode() {
+	vector<string> allAssetPaths = GetAllAssetPaths();
+	AssetTreeNode* rootNode = new AssetTreeNode();
+	rootNode->assetName = "asset";
+	rootNode->childNodes = unordered_map<string, AssetTreeNode*>();
+	for (auto path : allAssetPaths) {
+		FillToAssetTreeNode(rootNode, path);
+	}
+
+	return rootNode;
+}
+
+void Database::FillToAssetTreeNode(AssetTreeNode* node, const string& path) {
+	size_t pos1 = path.find('/');
+	if (pos1 != string::npos) {
+		// Dir
+		size_t pos2 = path.find('/', pos1 + 1);
+		size_t start = pos1 + 1;
+		size_t len = pos2 - start;
+		string childAssetName = path.substr(start, len);
+		AssetTreeNode* childNode;
+		if (node->childNodes.find(childAssetName) != node->childNodes.end()) {
+			childNode = node->childNodes.at(childAssetName);
+		}
+		else {
+			childNode = new AssetTreeNode();
+			childNode->assetName = childAssetName;
+			childNode->childNodes = unordered_map<string, AssetTreeNode*>();
+			node->childNodes.insert(pair<string, AssetTreeNode*>(childAssetName, childNode));
+		}
+
+		node->isDir = true;
+		FillToAssetTreeNode(childNode, path.substr(pos1 + 1));
+	}
+}
+
+
+void Database::MoveFile(const string& fromPath, const string& toPath) {
+	string fromGUID;
+	if (!TryGetGUIDFromAssetPath(fromPath, fromGUID)) return;
+	string toGUID;
+	if (!TryGetGUIDFromAssetPath(toPath, toGUID))return;
+}
+
 void Database::InsertToMap_AssetPath2GUID(string& assetPath, const string& guid) {
 	FileHelper::NormalizePath(assetPath);
 	m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
