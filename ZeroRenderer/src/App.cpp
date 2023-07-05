@@ -4,6 +4,7 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <stb_image/stb_image.h>
+#include <stack>
 
 #include "Database.h"
 
@@ -20,25 +21,49 @@ const int EDITOR_WINDOW_PROJECT_DETAILS_WIDTH = EDITOR_WINDOW_WIDTH * 0.75;
 const int EDITOR_WINDOW_PROJECT_DETAILS_HEIGHT = EDITOR_WINDOW_HEIGHT;
 
 // ********************** EDITOR CACHE **********************
-AssetTreeNode* rootNode;
+AssetTreeNode* _rootNode;
 static string _curProjectChoosedPath = "";
 static string _curProjectDetailsChoosedPath = "";
-float _assetClickTime;
+double _assetClickTime;
 unsigned int _texture_id;
 
-void ImGui_ShowProjectPanel() {
-	for (auto kvp : rootNode->childNodes) {
-		ImGui::Image(reinterpret_cast<ImTextureID>(_texture_id), ImVec2(32, 32)); // 调整图标大小
-		ImGui::SameLine();
-		AssetTreeNode* node = kvp.second;
-		string assetName = node->assetName;
-		const char* assetName_c = assetName.c_str();
-		string pjChoosedPath = rootNode->assetName;
-		pjChoosedPath = pjChoosedPath + "/" + assetName;
-		if (ImGui::Selectable(assetName_c, assetName == _curProjectChoosedPath)) {
-			_curProjectChoosedPath = pjChoosedPath;
+void ImGui_ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset) {
+
+	// Self GUI
+	ImGui::Indent(xOffset);
+	ImGui::Image(reinterpret_cast<ImTextureID>(_texture_id), ImVec2(32, 32)); // 调整图标大小
+	ImGui::SameLine();
+
+	// Listen double click
+	string assetName = node->assetName;
+	const char* assetNamec = assetName.c_str();
+	string choosedPath = dir + assetName;
+	if (ImGui::Selectable(assetNamec, choosedPath == _curProjectChoosedPath)) {
+		_curProjectChoosedPath = choosedPath;
+		double nowClickTime = glfwGetTime();
+		double clickTimeOffset = nowClickTime - _assetClickTime;
+		if (clickTimeOffset < 0.2f) {
+			node->isExpanded = !node->isExpanded;
 		}
+		_assetClickTime = nowClickTime;
 	}
+
+	if (!node->isExpanded) {
+		ImGui::Unindent(xOffset);
+		return;
+	}
+
+	// Child
+	choosedPath += "/";
+	for (auto kvp : node->childNodes) {
+		AssetTreeNode* childNode = kvp.second;
+		ImGui_ShowProjectPanel(childNode, dir, xOffset + 10.0f);
+	}
+}
+
+void ImGui_ShowProjectPanel() {
+	float xoffset = 0;
+	ImGui_ShowProjectPanel(_rootNode, "", xoffset);
 }
 
 void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
@@ -58,7 +83,8 @@ int main() {
 
 	// Import Database
 	Database::ImportAssets();
-	rootNode = Database::GetRootAssetTreeNode();
+	_rootNode = Database::GetRootAssetTreeNode();
+	_rootNode->isExpanded = true;
 
 	// Initialize GLFW and create a window
 	glfwInit();
@@ -106,7 +132,7 @@ int main() {
 		ImGui::Begin("Details", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 		if (_curProjectChoosedPath != "") {
 			AssetTreeNode* node;
-			if (rootNode->TryGetNodeByPath(_curProjectChoosedPath, node)) {
+			if (_rootNode->TryGetNodeByPath(_curProjectChoosedPath, node)) {
 				ImGui_ShowProjectDetailsPanel(node);
 			}
 		}
