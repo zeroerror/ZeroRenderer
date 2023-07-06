@@ -36,13 +36,22 @@ struct AssetTreeNode {
 			}
 
 			offset = pos + 1;
-			string curName = path.substr(offset, pos - offset);
-			if (childNodes.find(curName) == childNodes.end()) {
+			pos = path.find('/', offset);
+			string curName;
+			if (pos == string::npos) {
+				curName = path.substr(offset);
+			}
+			else {
+				curName = path.substr(offset, pos - offset);
+			}
+
+			unordered_map<string, AssetTreeNode*> curChilds = curNode->childNodes;
+			if (curChilds.find(curName) == curChilds.end()) {
 				node = nullptr;
 				return false;
 			}
 
-			curNode = childNodes.at(curName);
+			curNode = curChilds.at(curName);
 		} while (true);
 
 		return false;

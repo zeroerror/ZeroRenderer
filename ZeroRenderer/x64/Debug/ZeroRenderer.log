@@ -1,10 +1,6 @@
 ﻿  正在扫描源以查找模块依赖项...
   App.cpp
-C:\ZeroRenderer\ZeroRenderer\src\App.cpp(16,61): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\App.cpp(20,69): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
-C:\ZeroRenderer\ZeroRenderer\src\App.cpp(34,56): warning C4312: “reinterpret_cast”: 从“unsigned int”转换到更大的“ImTextureID”
+C:\ZeroRenderer\ZeroRenderer\src\App.cpp(17,63): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+C:\ZeroRenderer\ZeroRenderer\src\App.cpp(30,57): warning C4312: “reinterpret_cast”: 从“unsigned int”转换到更大的“ImTextureID”
 C:\ZeroRenderer\ZeroRenderer\src\App.cpp(73,58): warning C4312: “reinterpret_cast”: 从“unsigned int”转换到更大的“ImTextureID”
-glew32s.lib(glew.obj) : warning LNK4099: 未找到 PDB“vc120.pdb”(使用“glew32s.lib(glew.obj)”或在“C:\ZeroRenderer\ZeroRenderer\x64\Debug\vc120.pdb”中寻找)；正在链接对象，如同没有调试信息一样
-LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
   ZeroRenderer.vcxproj -> C:\ZeroRenderer\ZeroRenderer\x64\Debug\ZeroRenderer.exe

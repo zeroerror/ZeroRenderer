@@ -12,13 +12,9 @@
 const int EDITOR_WINDOW_WIDTH = 1920;
 const int EDITOR_WINDOW_HEIGHT = 1080;
 
-const ImVec2 EDITOR_WINDOW_PROJECT_POSITION = ImVec2(0, 0);
-const int EDITOR_WINDOW_PROJECT_WIDTH = EDITOR_WINDOW_WIDTH * 0.25f;
-const int EDITOR_WINDOW_PROJECT_HEIGHT = EDITOR_WINDOW_HEIGHT;
-
-const ImVec2 EDITOR_WINDOW_PROJECT_DETAILS_POSITION = ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, 0);
-const int EDITOR_WINDOW_PROJECT_DETAILS_WIDTH = EDITOR_WINDOW_WIDTH * 0.75;
-const int EDITOR_WINDOW_PROJECT_DETAILS_HEIGHT = EDITOR_WINDOW_HEIGHT;
+const ImVec2 EDITOR_WINDOW_PROJECT_POSITION = ImVec2(0, EDITOR_WINDOW_HEIGHT * (1.8f / 3.0f));
+const int EDITOR_WINDOW_PROJECT_WIDTH = EDITOR_WINDOW_WIDTH;
+const int EDITOR_WINDOW_PROJECT_HEIGHT = EDITOR_WINDOW_HEIGHT / 3.0f;
 
 // ********************** EDITOR CACHE **********************
 AssetTreeNode* _rootNode;
@@ -28,13 +24,12 @@ double _assetClickTime;
 unsigned int _texture_id;
 
 void ImGui_ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset) {
-
 	// Self GUI
 	ImGui::Indent(xOffset);
-	ImGui::Image(reinterpret_cast<ImTextureID>(_texture_id), ImVec2(32, 32)); // 调整图标大小
-	ImGui::SameLine();
-
-	// Listen double click
+	if (node->isDir) {
+		ImGui::Image(reinterpret_cast<ImTextureID>(_texture_id), ImVec2(32, 32)); // 调整图标大小
+		ImGui::SameLine();
+	}
 	string assetName = node->assetName;
 	const char* assetNamec = assetName.c_str();
 	string choosedPath = dir + assetName;
@@ -44,6 +39,7 @@ void ImGui_ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset) {
 		double clickTimeOffset = nowClickTime - _assetClickTime;
 		if (clickTimeOffset < 0.2f) {
 			node->isExpanded = !node->isExpanded;
+			std::cout << " choosedPath  " + choosedPath << std::endl;
 		}
 		_assetClickTime = nowClickTime;
 	}
@@ -54,10 +50,11 @@ void ImGui_ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset) {
 	}
 
 	// Child
+	xOffset += 10.0f;
 	choosedPath += "/";
 	for (auto kvp : node->childNodes) {
 		AssetTreeNode* childNode = kvp.second;
-		ImGui_ShowProjectPanel(childNode, dir, xOffset + 10.0f);
+		ImGui_ShowProjectPanel(childNode, choosedPath, xOffset);
 	}
 }
 
@@ -67,6 +64,9 @@ void ImGui_ShowProjectPanel() {
 }
 
 void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
+	ImGui::Text(_curProjectChoosedPath.c_str());
+	ImGui::Spacing();
+	ImGui::Indent(10.0f);
 	for (auto kvp : node->childNodes) {
 		AssetTreeNode* node = kvp.second;
 		if (node->isDir) {
@@ -123,13 +123,11 @@ int main() {
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POSITION);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
 		ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-		ImGui_ShowProjectPanel();
-		ImGui::End();
 
-		// - Project Details Panel 
-		ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_DETAILS_POSITION);
-		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_DETAILS_WIDTH, EDITOR_WINDOW_PROJECT_DETAILS_HEIGHT));
-		ImGui::Begin("Details", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+		ImGui::Columns(2);
+		ImGui_ShowProjectPanel();
+		ImGui::NextColumn();
+
 		if (_curProjectChoosedPath != "") {
 			AssetTreeNode* node;
 			if (_rootNode->TryGetNodeByPath(_curProjectChoosedPath, node)) {
