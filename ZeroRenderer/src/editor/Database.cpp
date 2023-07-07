@@ -313,37 +313,52 @@ vector<string> Database::GetAllAssetPaths() {
 AssetTreeNode* Database::GetRootAssetTreeNode() {
 	vector<string> allAssetPaths = GetAllAssetPaths();
 	AssetTreeNode* rootNode = new AssetTreeNode();
+	rootNode->assetPath = "asset";
 	rootNode->assetName = "asset";
 	rootNode->childNodes = unordered_map<string, AssetTreeNode*>();
 	for (auto path : allAssetPaths) {
-		FillToAssetTreeNode(rootNode, path);
+		FillToAssetTreeNode(rootNode, path, 0);
 	}
 
 	return rootNode;
 }
 
-void Database::FillToAssetTreeNode(AssetTreeNode* node, const string& path) {
-	size_t pos1 = path.find('/');
-	if (pos1 != string::npos) {
-		// Dir
-		size_t pos2 = path.find('/', pos1 + 1);
-		size_t start = pos1 + 1;
-		size_t len = pos2 - start;
-		string childAssetName = path.substr(start, len);
-		AssetTreeNode* childNode;
-		if (node->childNodes.find(childAssetName) != node->childNodes.end()) {
-			childNode = node->childNodes.at(childAssetName);
-		}
-		else {
-			childNode = new AssetTreeNode();
-			childNode->assetName = childAssetName;
-			childNode->childNodes = unordered_map<string, AssetTreeNode*>();
-			node->childNodes.insert(pair<string, AssetTreeNode*>(childAssetName, childNode));
-		}
-
-		node->isDir = true;
-		FillToAssetTreeNode(childNode, path.substr(pos1 + 1));
+void Database::FillToAssetTreeNode(AssetTreeNode* node, const string& path, size_t offset) {
+	 offset = path.find('/', offset);
+	if (offset == string::npos) {
+		return;
 	}
+
+	offset++;
+
+	size_t nexPos = path.find('/', offset);
+	string assetPath = path.substr(0, offset-1);
+	string assetName;
+	if (nexPos == string::npos) {
+		assetName = path.substr(offset);
+		assetPath = path.substr(0);
+	}
+	else {
+		size_t len = nexPos - offset;
+		assetName = path.substr(offset, len);
+		assetPath = path.substr(0, nexPos);
+	}
+
+	AssetTreeNode* childNode;
+	if (node->childNodes.find(assetName) != node->childNodes.end()) {
+		childNode = node->childNodes.at(assetName);
+	}
+	else {
+		childNode = new AssetTreeNode();
+		childNode->assetPath = assetPath;
+		childNode->assetName = assetName;
+		childNode->childNodes = unordered_map<string, AssetTreeNode*>();
+		childNode->fatherNode = node;
+		node->childNodes.insert(pair<string, AssetTreeNode*>(assetName, childNode));
+	}
+
+	node->isDir = true;
+	FillToAssetTreeNode(childNode, path, offset);
 }
 
 

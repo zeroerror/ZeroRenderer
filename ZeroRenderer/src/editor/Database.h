@@ -13,10 +13,12 @@
 using namespace std;
 
 struct AssetTreeNode {
+	string assetPath;
 	string assetName;
-	unordered_map<string, AssetTreeNode*> childNodes;
 	bool isExpanded;
 	bool isDir;
+	AssetTreeNode* fatherNode;
+	unordered_map<string, AssetTreeNode*> childNodes;
 
 	bool TryGetNodeByPath(const string& path, AssetTreeNode*& node) {
 		AssetTreeNode* curNode = this;
@@ -91,7 +93,7 @@ private:
 	static std::unordered_map<string, string> m_guid2AssetPath;
 	static void InsertToMap_AssetPath2GUID(string& assetPath, const string& guid);
 	static void InsertToMap_GUID2AssetPath(const string& guid, string& assetPath);
-	static inline void FillToAssetTreeNode(AssetTreeNode* node, const string& path);
+	static inline void FillToAssetTreeNode(AssetTreeNode* node, const string& path, size_t offset);
 
 };
 
