@@ -1,12 +1,15 @@
 #include "Transform.h"
 
+#include "FileHelper.h"
+#include <filesystem>
+
 Transform::Transform()
 	: m_position(0.0f),
 	m_rotation(1.0f, 0.0f, 0.0f, 0.0f),
 	m_forward(0, 0, 1),
 	m_up(0, 1, 0),
 	m_right(-1, 0, 0) {
-
+	componentType = ComponentType_Transform;
 }
 
 Transform::~Transform() {
@@ -44,4 +47,13 @@ void Transform::SetRotation(const glm::quat& newRotation) {
 	m_forward = glm::normalize(newRotation * glm::vec3(0.0f, 0.0f, 1.0f));
 	m_up = glm::normalize(newRotation * glm::vec3(0.0f, 1.0f, 0.0f));
 	m_right = glm::normalize(newRotation * glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
+void Transform::SerializeTo(stringstream& ss) {
+	ss << "componentType: " << componentType << std::endl;
+	ss << "m_position: " << m_position.x << ',' << m_position.y << ',' << m_position.z << std::endl;
+	ss << "m_rotation: " << m_rotation.x << ',' << m_rotation.y << ',' << m_rotation.z << ',' << m_rotation.w << std::endl;
+}
+
+void  Transform::DeserializeFrom(stringstream& ss) {
 }

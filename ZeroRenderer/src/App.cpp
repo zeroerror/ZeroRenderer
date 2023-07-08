@@ -7,6 +7,7 @@
 #include <stack>
 
 #include "Database.h"
+#include <src/editor/Scene.h>
 
 using namespace glm;
 
@@ -28,8 +29,8 @@ enum EditorPanelFlags_ {
 	EditorPanelFlags_ProjectRightColunm = 1 << 1,
 };
 
-// ********************** EDITOR CACHE **********************
-// -------- EDITOR CACHE - PROJECT 
+#pragma region [EDITOR CACHE]
+
 AssetTreeNode* _rootNode = nullptr;
 AssetTreeNode* _curProjectChoosedNode = nullptr;
 AssetTreeNode* _curProjectDetailsChoosedNode = nullptr;
@@ -37,7 +38,8 @@ EditorPanelFlags_ _curChoosedPanelFlags = EditorPanelFlags_None;
 double _assetClickTime;
 unsigned int _texture_id;
 
-// ********************** EDITOR CACHE **********************
+#pragma endregion
+
 #pragma region [Device Input]
 
 enum KeyStatus_ {
@@ -177,6 +179,13 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 #pragma endregion
 
 int main() {
+	Scene scene = Scene(); 
+	GameObject* go = new GameObject();
+	go->transform->SetPosition(vec3(6, 6, 6));
+	Camera3D* cam = new Camera3D();
+	go->AddComponent(cam);
+	scene.gameObjects.push_back(go);
+	scene.SerializeTo("asset/scene");
 
 	// Import Database
 	Database::ImportAssets();

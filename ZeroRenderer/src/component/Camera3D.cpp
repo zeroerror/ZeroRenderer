@@ -1,5 +1,5 @@
 #include "Camera3D.h"
- #include "VertexArray.h"
+#include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
 #include "Shader.h"
@@ -12,7 +12,6 @@
 #include <GLFW/glfw3.h>
 
 Camera3D::Camera3D() {
-	transform = new Transform();
 	nearPlane = 0.1f;
 	farPlane = 100.0f;
 	fov = 45.0f;
@@ -21,6 +20,7 @@ Camera3D::Camera3D() {
 
 	scrWidth = 1920;
 	scrHeight = 1080;
+	componentType = ComponentType_Camera;
 }
 
 Camera3D::~Camera3D() {
@@ -32,7 +32,7 @@ void Camera3D::Update(const float& dt) {
 	u_Time += dt;
 }
 
-glm::mat4 Camera3D::GetMVPMatrix_Ortho(const glm::vec3& pos) const{
+glm::mat4 Camera3D::GetMVPMatrix_Ortho(const glm::vec3& pos) const {
 	glm::vec3 cameraPos = transform->GetPosition();
 	glm::mat4 model = glm::translate(glm::mat4(1), pos - cameraPos);
 
@@ -46,7 +46,7 @@ glm::mat4 Camera3D::GetMVPMatrix_Ortho(const glm::vec3& pos) const{
 	return mvp;
 }
 
-glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) const{
+glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) const {
 	glm::vec3 cameraForward = transform->GetForward();
 	glm::vec3 cameraPos = transform->GetPosition();
 	glm::mat4 model = glm::translate(glm::mat4(1), pos - cameraPos);
@@ -55,7 +55,7 @@ glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) const{
 	cameraRot = cameraRot * glm::quat(glm::vec3(0, glm::radians(180.0f), 0));
 	glm::mat4 view = glm::toMat4(glm::inverse(cameraRot));
 
-	float fovRadians = glm::radians(fov); 
+	float fovRadians = glm::radians(fov);
 	float aspectRatio = scrWidth / scrHeight;
 	glm::mat4 proj = glm::perspectiveRH(fovRadians, aspectRatio, nearPlane, farPlane);
 
@@ -65,3 +65,17 @@ glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) const{
 }
 
 
+void Camera3D::SerializeTo(std::stringstream& ss) {
+	ss << "componentType: " << componentType << std::endl;
+	float scrWidth;
+	float scrHeight;
+	float fov;
+	float nearPlane;
+	float farPlane;
+	float orthoSize;
+
+}
+
+void Camera3D::DeserializeFrom(std::stringstream& ss) {
+
+}

@@ -161,7 +161,7 @@ namespace detail
 		{
 			io::format_punct<CTy> const& fmt(io::get_facet<io::format_punct<CTy> >(os));
 
-			length_t const& components(type<V>::components);
+			length_t const& _components(type<V>::_components);
 
 			if(fmt.formatted)
 			{
@@ -169,10 +169,10 @@ namespace detail
 
 				os << std::fixed << std::right << std::setprecision(fmt.precision) << std::setfill(fmt.space) << fmt.delim_left;
 
-				for(length_t i(0); i < components; ++i)
+				for(length_t i(0); i < _components; ++i)
 				{
 					os << std::setw(fmt.width) << a[i];
-					if(components-1 != i)
+					if(_components-1 != i)
 						os << fmt.separator;
 				}
 
@@ -180,11 +180,11 @@ namespace detail
 			}
 			else
 			{
-				for(length_t i(0); i < components; ++i)
+				for(length_t i(0); i < _components; ++i)
 				{
 					os << a[i];
 
-					if(components-1 != i)
+					if(_components-1 != i)
 						os << fmt.space;
 				}
 			}

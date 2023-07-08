@@ -36,7 +36,7 @@ namespace glm
 		static bool const is_vec = false;
 		static bool const is_mat = false;
 		static bool const is_quat = false;
-		static length_t const components = 0;
+		static length_t const _components = 0;
 		static length_t const cols = 0;
 		static length_t const rows = 0;
 	};
@@ -47,7 +47,7 @@ namespace glm
 		static bool const is_vec = true;
 		static bool const is_mat = false;
 		static bool const is_quat = false;
-		static length_t const components = L;
+		static length_t const _components = L;
 	};
 
 	template<length_t C, length_t R, typename T, qualifier Q>
@@ -56,7 +56,7 @@ namespace glm
 		static bool const is_vec = false;
 		static bool const is_mat = true;
 		static bool const is_quat = false;
-		static length_t const components = C;
+		static length_t const _components = C;
 		static length_t const cols = C;
 		static length_t const rows = R;
 	};
@@ -67,7 +67,7 @@ namespace glm
 		static bool const is_vec = false;
 		static bool const is_mat = false;
 		static bool const is_quat = true;
-		static length_t const components = 4;
+		static length_t const _components = 4;
 	};
 
 	template<typename T, qualifier Q>
@@ -76,7 +76,7 @@ namespace glm
 		static bool const is_vec = false;
 		static bool const is_mat = false;
 		static bool const is_quat = true;
-		static length_t const components = 8;
+		static length_t const _components = 8;
 	};
 
 	/// @}

@@ -1,0 +1,7 @@
+GameObjects: 
+GameObject:
+componentType: 0
+m_position: 6,6,6
+m_rotation: 0,0,0,1
+componentType: 1
+---

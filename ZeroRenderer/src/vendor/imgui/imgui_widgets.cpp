@@ -2474,7 +2474,7 @@ bool ImGui::DragScalar(const char* label, ImGuiDataType data_type, void* p_data,
     return value_changed;
 }
 
-bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, float v_speed, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
+bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data, int _components, float v_speed, const void* p_min, const void* p_max, const char* format, ImGuiSliderFlags flags)
 {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -2484,9 +2484,9 @@ bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data
     bool value_changed = false;
     BeginGroup();
     PushID(label);
-    PushMultiItemsWidths(components, CalcItemWidth());
+    PushMultiItemsWidths(_components, CalcItemWidth());
     size_t type_size = GDataTypeInfo[data_type].Size;
-    for (int i = 0; i < components; i++)
+    for (int i = 0; i < _components; i++)
     {
         PushID(i);
         if (i > 0)
@@ -3063,7 +3063,7 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_dat
 }
 
 // Add multiple sliders on 1 line for compact edition of multiple components
-bool ImGui::SliderScalarN(const char* label, ImGuiDataType data_type, void* v, int components, const void* v_min, const void* v_max, const char* format, ImGuiSliderFlags flags)
+bool ImGui::SliderScalarN(const char* label, ImGuiDataType data_type, void* v, int _components, const void* v_min, const void* v_max, const char* format, ImGuiSliderFlags flags)
 {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -3073,9 +3073,9 @@ bool ImGui::SliderScalarN(const char* label, ImGuiDataType data_type, void* v, i
     bool value_changed = false;
     BeginGroup();
     PushID(label);
-    PushMultiItemsWidths(components, CalcItemWidth());
+    PushMultiItemsWidths(_components, CalcItemWidth());
     size_t type_size = GDataTypeInfo[data_type].Size;
-    for (int i = 0; i < components; i++)
+    for (int i = 0; i < _components; i++)
     {
         PushID(i);
         if (i > 0)
@@ -3510,7 +3510,7 @@ bool ImGui::InputScalar(const char* label, ImGuiDataType data_type, void* p_data
     return value_changed;
 }
 
-bool ImGui::InputScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, const void* p_step, const void* p_step_fast, const char* format, ImGuiInputTextFlags flags)
+bool ImGui::InputScalarN(const char* label, ImGuiDataType data_type, void* p_data, int _components, const void* p_step, const void* p_step_fast, const char* format, ImGuiInputTextFlags flags)
 {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
@@ -3520,9 +3520,9 @@ bool ImGui::InputScalarN(const char* label, ImGuiDataType data_type, void* p_dat
     bool value_changed = false;
     BeginGroup();
     PushID(label);
-    PushMultiItemsWidths(components, CalcItemWidth());
+    PushMultiItemsWidths(_components, CalcItemWidth());
     size_t type_size = GDataTypeInfo[data_type].Size;
-    for (int i = 0; i < components; i++)
+    for (int i = 0; i < _components; i++)
     {
         PushID(i);
         if (i > 0)
@@ -5120,7 +5120,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
 
     const bool alpha = (flags & ImGuiColorEditFlags_NoAlpha) == 0;
     const bool hdr = (flags & ImGuiColorEditFlags_HDR) != 0;
-    const int components = alpha ? 4 : 3;
+    const int _components = alpha ? 4 : 3;
 
     // Convert to the formats we need
     float f[4] = { col[0], col[1], col[2], alpha ? col[3] : 1.0f };
@@ -5144,8 +5144,8 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
     if ((flags & (ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV)) != 0 && (flags & ImGuiColorEditFlags_NoInputs) == 0)
     {
         // RGB/HSV 0..255 Sliders
-        const float w_item_one  = ImMax(1.0f, IM_FLOOR((w_inputs - (style.ItemInnerSpacing.x) * (components - 1)) / (float)components));
-        const float w_item_last = ImMax(1.0f, IM_FLOOR(w_inputs - (w_item_one + style.ItemInnerSpacing.x) * (components - 1)));
+        const float w_item_one  = ImMax(1.0f, IM_FLOOR((w_inputs - (style.ItemInnerSpacing.x) * (_components - 1)) / (float)_components));
+        const float w_item_last = ImMax(1.0f, IM_FLOOR(w_inputs - (w_item_one + style.ItemInnerSpacing.x) * (_components - 1)));
 
         const bool hide_prefix = (w_item_one <= CalcTextSize((flags & ImGuiColorEditFlags_Float) ? "M:0.000" : "M:000").x);
         static const char* ids[4] = { "##X", "##Y", "##Z", "##W" };
@@ -5163,11 +5163,11 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
         };
         const int fmt_idx = hide_prefix ? 0 : (flags & ImGuiColorEditFlags_DisplayHSV) ? 2 : 1;
 
-        for (int n = 0; n < components; n++)
+        for (int n = 0; n < _components; n++)
         {
             if (n > 0)
                 SameLine(0, style.ItemInnerSpacing.x);
-            SetNextItemWidth((n + 1 < components) ? w_item_one : w_item_last);
+            SetNextItemWidth((n + 1 < _components) ? w_item_one : w_item_last);
 
             // FIXME: When ImGuiColorEditFlags_HDR flag is passed HS values snap in weird ways when SV values go below 0.
             if (flags & ImGuiColorEditFlags_Float)
@@ -5300,7 +5300,7 @@ bool ImGui::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flag
         }
         if (const ImGuiPayload* payload = AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_4F))
         {
-            memcpy((float*)col, payload->Data, sizeof(float) * components);
+            memcpy((float*)col, payload->Data, sizeof(float) * _components);
             value_changed = accepted_drag_drop = true;
         }
 
@@ -5381,7 +5381,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags fl
         flags |= (g.ColorEditOptions & ImGuiColorEditFlags_AlphaBar);
 
     // Setup
-    int components = (flags & ImGuiColorEditFlags_NoAlpha) ? 3 : 4;
+    int _components = (flags & ImGuiColorEditFlags_NoAlpha) ? 3 : 4;
     bool alpha_bar = (flags & ImGuiColorEditFlags_AlphaBar) && !(flags & ImGuiColorEditFlags_NoAlpha);
     ImVec2 picker_pos = window->DC.CursorPos;
     float square_sz = GetFrameHeight();
@@ -5392,7 +5392,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags fl
     float bars_triangles_half_sz = IM_FLOOR(bars_width * 0.20f);
 
     float backup_initial_col[4];
-    memcpy(backup_initial_col, col, components * sizeof(float));
+    memcpy(backup_initial_col, col, _components * sizeof(float));
 
     float wheel_thickness = sv_picker_size * 0.08f;
     float wheel_r_outer = sv_picker_size * 0.50f;
@@ -5525,7 +5525,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags fl
             ImVec4 ref_col_v4(ref_col[0], ref_col[1], ref_col[2], (flags & ImGuiColorEditFlags_NoAlpha) ? 1.0f : ref_col[3]);
             if (ColorButton("##original", ref_col_v4, (flags & sub_flags_to_forward), ImVec2(square_sz * 3, square_sz * 2)))
             {
-                memcpy(col, ref_col, components * sizeof(float));
+                memcpy(col, ref_col, _components * sizeof(float));
                 value_changed = true;
             }
         }
@@ -5699,7 +5699,7 @@ bool ImGui::ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags fl
 
     EndGroup();
 
-    if (value_changed && memcmp(backup_initial_col, col, components * sizeof(float)) == 0)
+    if (value_changed && memcmp(backup_initial_col, col, _components * sizeof(float)) == 0)
         value_changed = false;
     if (value_changed && g.LastItemData.ID != 0) // In case of ID collision, the second EndGroup() won't catch g.ActiveId
         MarkItemEdited(g.LastItemData.ID);

@@ -1,13 +1,22 @@
 #pragma once
+
+class Component;
+class GameObject;
+#include "GameObject.h"
+#include "Component.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <sstream>
 
-class Transform {
+using namespace std;
+
+class Transform : public Component {
 public:
 	Transform();
 	~Transform();
 
-public:
+	GameObject* gameObject;
 	glm::vec3 GetPosition() const;
 	void SetPosition(const glm::vec3& newPosition);
 
@@ -17,6 +26,9 @@ public:
 	glm::vec3 GetForward() const;
 	glm::vec3 GetUp() const;
 	glm::vec3 GetRight() const;
+
+	void SerializeTo(stringstream& ss);
+	void DeserializeFrom(stringstream& ss);
 
 private:
 	glm::vec3 m_position;

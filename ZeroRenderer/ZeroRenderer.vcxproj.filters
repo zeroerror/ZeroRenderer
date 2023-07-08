@@ -382,6 +382,7 @@
     <ClInclude Include="src\editor\EditorContext.h" />
     <ClInclude Include="src\editor\EditorRendererDomain.h" />
     <ClInclude Include="src\editor\ShaderMetadata.h" />
+    <ClInclude Include="src\component\Component.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />
