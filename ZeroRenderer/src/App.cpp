@@ -113,12 +113,15 @@ void ImGui_ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset) {
 	string choosedPath = dir + assetName;
 	ImGui::PushID(1);
 	if (ImGui::Selectable(assetNamec, _curProjectChoosedNode != nullptr ? choosedPath == _curProjectChoosedNode->assetPath : false)) {
-		_curProjectChoosedNode = node;
 		double nowClickTime = glfwGetTime();
 		double clickTimeOffset = nowClickTime - _assetClickTime;
 		_assetClickTime = nowClickTime;
-		if (clickTimeOffset < 0.2f) {
-			node->isExpanded = !node->isExpanded;
+
+		if (node->isDir) {
+			_curProjectChoosedNode = node;
+			if (clickTimeOffset < 0.2f) {
+				node->isExpanded = !node->isExpanded;
+			}
 		}
 	}
 	ImGui::PopID();
@@ -230,7 +233,7 @@ int main() {
 			std::cout << "Choosed Panel: " << _curChoosedPanelFlags << std::endl;
 		}
 		if (GetKeyDown(ImGuiKey_Backspace)) {
-			if (_curProjectChoosedNode!=nullptr&& _curProjectChoosedNode->fatherNode != nullptr) {
+			if (_curProjectChoosedNode != nullptr && _curProjectChoosedNode->fatherNode != nullptr) {
 				_curProjectChoosedNode = _curProjectChoosedNode->fatherNode;
 				_curProjectDetailsChoosedNode = nullptr;
 			}
