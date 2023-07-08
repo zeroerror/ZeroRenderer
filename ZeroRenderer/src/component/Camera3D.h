@@ -26,7 +26,7 @@ public:
 	glm::mat4 GetMVPMatrix_Ortho(const glm::vec3& pos) const;
 	glm::mat4 GetMVPMatrix_Perspective(const glm::vec3& pos) const;
 
-	void SerializeTo(stringstream& ss) override;
-	void DeserializeFrom(stringstream& ss) override;
+	void SerializeTo(stringstream& ss) ;
+	void DeserializeFrom(stringstream& ss) ;
 
 };

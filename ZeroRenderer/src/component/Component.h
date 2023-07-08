@@ -2,25 +2,26 @@
 
 class Transform;
 class GameObject;
-#include "Transform.h"
-#include "GameObject.h"
 
 #include <sstream>
 
 using namespace std;
 
 enum ComponentType_ {
-    ComponentType_Transform,
-    ComponentType_Camera,
-    ComponentType_DirectLight,
-    ComponentType_SpotLight,
+	ComponentType_Transform,
+	ComponentType_Camera,
+	ComponentType_DirectLight,
+	ComponentType_SpotLight,
 };
 
 class Component {
 public:
-    virtual ~Component() {}
-    GameObject* gameObject;
-    Transform* transform;
-    ComponentType_ componentType;
+	virtual ~Component() {}
+	GameObject* gameObject;
+	Transform* transform;
+	ComponentType_ componentType;
+
+	virtual void SerializeTo(stringstream& ss) = 0;
+	virtual void DeserializeFrom(stringstream& ss) = 0;
 
 };
