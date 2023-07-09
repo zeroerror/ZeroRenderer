@@ -45,6 +45,7 @@
     <ClCompile Include="src\editor\ShaderMetadata.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
     <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\editor\Serialization.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -383,6 +384,7 @@
     <ClInclude Include="src\editor\EditorRendererDomain.h" />
     <ClInclude Include="src\editor\ShaderMetadata.h" />
     <ClInclude Include="src\component\Component.h" />
+    <ClInclude Include="src\editor\Serialization.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

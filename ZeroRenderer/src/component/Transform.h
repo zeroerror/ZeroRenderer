@@ -16,6 +16,9 @@ public:
 	Transform();
 	~Transform();
 
+	glm::vec3 position;
+	glm::quat rotation;
+
 	glm::vec3 GetPosition() const;
 	void SetPosition(const glm::vec3& newPosition);
 
@@ -26,12 +29,7 @@ public:
 	glm::vec3 GetUp() const;
 	glm::vec3 GetRight() const;
 
-	void SerializeTo(stringstream& ss);
-	void DeserializeFrom(stringstream& ss);
-
 private:
-	glm::vec3 m_position;
-	glm::quat m_rotation;
 	glm::vec3 m_forward;
 	glm::vec3 m_up;
 	glm::vec3 m_right;

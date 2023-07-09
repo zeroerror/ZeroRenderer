@@ -5,6 +5,7 @@
 #include "Rectangle.h"
 #include "Camera3D.h"
 #include "GameObject.h"
+using namespace std;
 
 class Scene {
 
@@ -17,14 +18,13 @@ public:
 	DirectLight* directLight;
 	Rectangle* depthMapImage;
 	Cube* lightCube;
-	std::vector<Cube*>* cubes;
-	std::vector<Model*>* models;
+	vector<Cube*>* cubes;
+	vector<Model*>* models;
 
 	vector<GameObject*> gameObjects;
 
 	void SerializeTo(const string& path);
 	void DeserializeFrom(const string& path);
-
 
 };
 

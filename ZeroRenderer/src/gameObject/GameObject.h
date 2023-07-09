@@ -14,22 +14,21 @@ public:
 	GameObject();
 	~GameObject();
 
-	Transform* transform;
-
-	void SerializeTo(stringstream& ss);
-	void DeserializeFrom(stringstream& ss);
+	Transform* transform() { return _transform; };
+	vector<Component*> GetAllComponents();
 
 	template <typename T>
 	Component* AddComponent() {
 		Component* c = new T();
 		c->gameObject = this;
-		c->transform = this->transform;
-		_components->push_back(c);
+		c->transform = this->_transform;
+		_components.push_back(c);
 		return c;
 	}
 
 private:
-	vector<Component*>* _components;
+	Transform* _transform;
+	vector<Component*> _components;
 
 };
 

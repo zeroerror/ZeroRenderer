@@ -20,8 +20,4 @@ public:
 	GameObject* gameObject;
 	Transform* transform;
 	ComponentType_ componentType;
-
-	virtual void SerializeTo(stringstream& ss) = 0;
-	virtual void DeserializeFrom(stringstream& ss) = 0;
-
 };

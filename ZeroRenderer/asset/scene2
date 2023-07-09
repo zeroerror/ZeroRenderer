@@ -1,8 +1,8 @@
 GameObjects: 
 GameObject:
 componentType: 0
-m_position: 0 10 -10
-m_rotation: 0 0 0 1
+position: 0 10 -10
+rotation: 0 0 0 1
 componentEnd
 componentType: 1
 scrWidth: 1920

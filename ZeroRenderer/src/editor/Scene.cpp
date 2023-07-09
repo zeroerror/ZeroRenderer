@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include "FileHelper.h"
+#include "Serialization.h"
+using namespace Serialization;
 
 Scene::Scene() {
 	camera = new Camera3D();
@@ -28,7 +30,7 @@ void Scene::SerializeTo(const string& path) {
 	ss << "GameObjects: " << endl;
 	for (auto go : gameObjects) {
 		ss << "GameObject:" << endl;
-		go->SerializeTo(ss);
+		GameObject_SerializeTo(go, ss);
 	}
 	ss << "---" << endl;
 	string result = ss.str();
@@ -59,7 +61,7 @@ void Scene::DeserializeFrom(const string& path) {
 				}
 				if (key == "GameObject:") {
 					GameObject* go = new GameObject();
-					go->DeserializeFrom(ss);
+					GameObject_DeserializeFrom(go, ss);
 					gameObjects.push_back(go);
 				}
 				else if (key == "---") {
