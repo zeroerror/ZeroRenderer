@@ -13,7 +13,6 @@ class Camera3D : public Component{
 public:
 	Camera3D();
 	~Camera3D();
-	Transform* transform;
 	CameraType cameraType;
 	float scrWidth;
 	float scrHeight;

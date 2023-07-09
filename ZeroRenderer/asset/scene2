@@ -1,0 +1,15 @@
+GameObjects: 
+GameObject:
+componentType: 0
+m_position: 0 10 -10
+m_rotation: 0 0 0 1
+componentEnd
+componentType: 1
+scrWidth: 1920
+scrHeight: 1080
+fov: 45
+nearPlane: 0.1
+farPlane: 100
+orthoSize: 20
+componentEnd
+---

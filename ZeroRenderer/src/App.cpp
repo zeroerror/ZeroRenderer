@@ -179,13 +179,19 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 #pragma endregion
 
 int main() {
-	Scene scene = Scene(); 
+	// Scene Serialize Test
+	Scene scene1 = Scene();
 	GameObject* go = new GameObject();
-	go->transform->SetPosition(vec3(6, 6, 6));
-	Camera3D* cam = new Camera3D();
-	go->AddComponent(cam);
-	scene.gameObjects.push_back(go);
-	scene.SerializeTo("asset/scene");
+	Camera3D* camera = dynamic_cast<Camera3D*>(go->AddComponent<Camera3D>());
+	camera->scrWidth = 1920;
+	camera->scrHeight = 1080;
+	camera->transform->SetPosition(glm::vec3(0, 10, -10));
+	camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
+	scene1.gameObjects.push_back(go);
+	scene1.SerializeTo("asset/scene1");
+	Scene scene2 = Scene();
+	scene2.DeserializeFrom("asset/scene1");
+	scene2.SerializeTo("asset/scene2");
 
 	// Import Database
 	Database::ImportAssets();

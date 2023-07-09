@@ -16,7 +16,6 @@ public:
 	Transform();
 	~Transform();
 
-	GameObject* gameObject;
 	glm::vec3 GetPosition() const;
 	void SetPosition(const glm::vec3& newPosition);
 

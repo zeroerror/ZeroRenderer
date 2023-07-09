@@ -20,7 +20,7 @@ Camera3D::Camera3D() {
 
 	scrWidth = 1920;
 	scrHeight = 1080;
-	componentType = ComponentType_Camera;
+	componentType = ComponentType_Camera3D;
 }
 
 Camera3D::~Camera3D() {
@@ -67,15 +67,49 @@ glm::mat4 Camera3D::GetMVPMatrix_Perspective(const glm::vec3& pos) const {
 
 void Camera3D::SerializeTo(std::stringstream& ss) {
 	ss << "componentType: " << componentType << std::endl;
-	float scrWidth;
-	float scrHeight;
-	float fov;
-	float nearPlane;
-	float farPlane;
-	float orthoSize;
-
+	ss << "scrWidth: " << scrWidth << std::endl;
+	ss << "scrHeight: " << scrHeight << std::endl;
+	ss << "fov: " << fov << std::endl;
+	ss << "nearPlane: " << nearPlane << std::endl;
+	ss << "farPlane: " << farPlane << std::endl;
+	ss << "orthoSize: " << orthoSize << std::endl;
+	ss << "componentEnd" << std::endl;
 }
 
 void Camera3D::DeserializeFrom(std::stringstream& ss) {
-
+	string line;
+	while (getline(ss, line)) {
+		istringstream iss(line);
+		string key;
+		if (!(iss >> key)) {
+			break;
+		}
+		if (key == "componentEnd") {
+			break;
+		}
+		if (key == "scrWidth:") {
+			iss >> key;
+			scrWidth = atof(key.c_str());
+		}
+		else if (key == "scrHeight:") {
+			iss >> key;
+			scrHeight = atof(key.c_str());
+		}
+		else if (key == "fov:") {
+			iss >> key;
+			fov = atof(key.c_str());
+		}
+		else if (key == "nearPlane:") {
+			iss >> key;
+			nearPlane = atof(key.c_str());
+		}
+		else if (key == "farPlane:") {
+			iss >> key;
+			farPlane = atof(key.c_str());
+		}
+		else if (key == "orthoSize:") {
+			iss >> key;
+			orthoSize = atof(key.c_str());
+		}
+	}
 }

@@ -9,7 +9,7 @@ using namespace std;
 
 enum ComponentType_ {
 	ComponentType_Transform,
-	ComponentType_Camera,
+	ComponentType_Camera3D,
 	ComponentType_DirectLight,
 	ComponentType_SpotLight,
 };
