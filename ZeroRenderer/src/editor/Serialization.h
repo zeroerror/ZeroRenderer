@@ -3,6 +3,7 @@
 #include "Camera3D.h"
 #include "Transform.h"
 #include "Scene.h"
+#include "MatMeta.h"
 using namespace std;
 
 namespace Serialization {
@@ -23,6 +24,9 @@ namespace Serialization {
 
 	void Scene_SerializeTo(Scene* scene, const string& path);
 	void Scene_DeserializeFrom(Scene* scene, const string& path);
+
+	void MatMeta_SerializeTo(MatMeta* matMeta, const string& path);
+	void MatMeta_DeserializeFrom(MatMeta* matMeta, const string& path);
 
 }
 

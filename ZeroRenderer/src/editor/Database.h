@@ -11,6 +11,7 @@
 #include <assimp/scene.h>
 
 using namespace std;
+using namespace Serialization;
 
 struct AssetTreeNode {
 	string assetPath;
@@ -77,7 +78,7 @@ public:
 	static void ClearInvalidMeta();
 	static void ClearInvalidMeta(const string& path);
 
-	static void GenerateGUIDFromAssetPath(string& assetPath, string& guid);
+	static string GenerateGUIDFromAssetPath(const string& assetPath);
 	static bool TryGetGUIDFromAssetPath(const string& assetPath, string& guid);
 	static bool TryGetAssetPathFromGUID(const string& guid, string& assetPath);
 

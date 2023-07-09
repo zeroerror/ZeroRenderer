@@ -20,6 +20,4 @@ public:
 	glm::vec4 diffuseColor;
 	float specularIntensity;
 	float shininess;
-
-	string assetPath;
 };

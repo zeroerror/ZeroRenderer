@@ -26,7 +26,6 @@
     <ClCompile Include="src\editor\FileHelper.cpp" />
     <ClCompile Include="src\editor\generic\Mat.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
-    <ClCompile Include="src\editor\MaterialMetadata.cpp" />
     <ClCompile Include="src\editor\ObjMetadata.cpp" />
     <ClCompile Include="src\editor\ShaderMetadata.cpp" />
     <ClCompile Include="src\editor\TextureMetadata.cpp" />
@@ -73,7 +72,7 @@
     <ClInclude Include="src\editor\FileHelper.h" />
     <ClInclude Include="src\editor\generic\FileSuffix.h" />
     <ClInclude Include="src\editor\generic\Mat.h" />
-    <ClInclude Include="src\editor\MaterialMetadata.h" />
+    <ClInclude Include="src\editor\MatMeta.h" />
     <ClInclude Include="src\editor\ObjMetadata.h" />
     <ClInclude Include="src\editor\ShaderMetadata.h" />
     <ClInclude Include="src\editor\TextureMetadata.h" />

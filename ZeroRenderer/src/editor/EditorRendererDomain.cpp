@@ -208,7 +208,6 @@ bool EditorRendererDomain::TryLoadMaterialByAssetPath(const string& path, Materi
 	material->diffuseColor = mat.diffuseColor;
 	material->specularIntensity = mat.specularIntensity;
 	material->shininess = mat.shininess;
-	material->assetPath = path;
 
 	materialRepo->TryAddMaterial(guid, material);
 	return true;

@@ -11,10 +11,11 @@
 #include <assimp/postprocess.h>
 
 #include "TextureMetadata.h"
-#include "MaterialMetadata.h"
+#include "MatMeta.h"
 #include "ShaderMetadata.h"
 #include "TextureSlotCollection.h"
 
+using namespace Serialization;
 using namespace std;
 namespace fs = filesystem;
 
@@ -42,8 +43,7 @@ void Database::ImportAssets(const string& dir) {
 			string assetPath = path.string();
 			string extensionStr = path.extension().string();
 			if (extensionStr == FileSuffix::SUFFIX_PNG) {
-				string guid;
-				GenerateGUIDFromAssetPath(assetPath, guid);
+				string guid = GenerateGUIDFromAssetPath(assetPath);
 				string metaPath = assetPath + FileSuffix::SUFFIX_META;
 				if (!FileHelper::FileExist(metaPath)) {
 					TextureMetadata texMeta = TextureMetadata();
@@ -60,8 +60,7 @@ void Database::ImportAssets(const string& dir) {
 				std::cout << " +++ Database: Import " << assetPath << " guid - " << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SHADER) {
-				string guid;
-				GenerateGUIDFromAssetPath(assetPath, guid);
+				string guid = GenerateGUIDFromAssetPath(assetPath);
 				string metaPath = assetPath + FileSuffix::SUFFIX_META;
 				if (!FileHelper::FileExist(metaPath)) {
 					ShaderMetadata shaderMeta = ShaderMetadata();
@@ -79,17 +78,16 @@ void Database::ImportAssets(const string& dir) {
 				std::cout << " +++ Database: Import " << assetPath << " guid - " << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_MAT) {
-				string guid;
-				GenerateGUIDFromAssetPath(assetPath, guid);
+				string guid = GenerateGUIDFromAssetPath(assetPath);
 				string metaPath = assetPath + FileSuffix::SUFFIX_META;
 				if (!FileHelper::FileExist(metaPath)) {
-					MaterialMetadata matMeta = MaterialMetadata();
+					MatMeta matMeta = MatMeta();
 					matMeta.guid = guid;
-					matMeta.SerializeTo(metaPath);
+					Serialization::MatMeta_SerializeTo(matMeta, metaPath);
 				}
 				else {
-					MaterialMetadata matMeta = MaterialMetadata();
-					matMeta.DeserializeFrom(metaPath);
+					MatMeta matMeta = MatMeta();
+					Serialization::MatMeta_DeserializeFrom(matMeta, metaPath);
 					guid = matMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
@@ -104,8 +102,7 @@ void Database::ImportAssets(const string& dir) {
 }
 
 void Database::ImportModel(string& assetPath) {
-	string guid;
-	GenerateGUIDFromAssetPath(assetPath, guid);
+	string guid = GenerateGUIDFromAssetPath(assetPath);
 	InsertToMap_AssetPath2GUID(assetPath, guid);
 	InsertToMap_GUID2AssetPath(guid, assetPath);
 
@@ -162,10 +159,10 @@ void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const
 	mat.SerializeTo(matPath);
 	std::cout << "Database: Generate mat " << matPath << std::endl;
 
-	MaterialMetadata matMeta = MaterialMetadata();
+	MatMeta matMeta = MatMeta();
 	string matMetaPath = matPath + FileSuffix::SUFFIX_META;
-	GenerateGUIDFromAssetPath(matPath, matMeta.guid);
-	matMeta.SerializeTo(matMetaPath);
+	matMeta.guid = GenerateGUIDFromAssetPath(matPath);
+	Serialization::MatMeta_SerializeTo(matMeta, matMetaPath);
 	std::cout << "Database: Generate mat meta " << matMetaPath << std::endl;
 
 	objMeta.meshNames.push_back(meshName);
@@ -183,7 +180,7 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 		string texPath = dir + str.C_Str();
 		string texGUID;
 		if (!TryGetGUIDFromAssetPath(texPath, texGUID)) {
-			GenerateGUIDFromAssetPath(texPath, texGUID);
+			texGUID = GenerateGUIDFromAssetPath(texPath);
 		}
 		if (aTextureType == aiTextureType_DIFFUSE) {
 			mat.diffuseTextureGUID = texGUID;
@@ -249,14 +246,8 @@ void Database::ClearInvalidMeta(const string& dir) {
 	}
 }
 
-void Database::GenerateGUIDFromAssetPath(string& assetPath, string& guid) {
+string Database::GenerateGUIDFromAssetPath(const string& assetPath) {
 	FileHelper::NormalizePath(assetPath);
-	std::unordered_map<string, string>::iterator it = m_assetPath2GUID.find(assetPath);
-	if (it != m_assetPath2GUID.end()) {
-		guid = it->second;
-		return;
-	}
-
 	std::hash<string> hasher;
 	stringstream ss;
 
@@ -264,7 +255,7 @@ void Database::GenerateGUIDFromAssetPath(string& assetPath, string& guid) {
 	std::size_t pathHash = hasher(assetPath);
 	ss << std::hex << pathHash;
 
-	guid = ss.str();
+	return ss.str();
 }
 
 bool Database::TryGetAssetPathFromGUID(const string& guid, string& assetPath) {
@@ -324,7 +315,7 @@ AssetTreeNode* Database::GetRootAssetTreeNode() {
 }
 
 void Database::FillToAssetTreeNode(AssetTreeNode* node, const string& path, size_t offset) {
-	 offset = path.find('/', offset);
+	offset = path.find('/', offset);
 	if (offset == string::npos) {
 		return;
 	}
@@ -332,7 +323,7 @@ void Database::FillToAssetTreeNode(AssetTreeNode* node, const string& path, size
 	offset++;
 
 	size_t nexPos = path.find('/', offset);
-	string assetPath = path.substr(0, offset-1);
+	string assetPath = path.substr(0, offset - 1);
 	string assetName;
 	if (nexPos == string::npos) {
 		assetName = path.substr(offset);
