@@ -1,4 +1,5 @@
 #include "Serialization.h"
+#include "FileHelper.h"
 
 void Serialization::Transform_SerializeTo(Transform* transform, stringstream& ss) {
 	ss << "componentType: " << transform->componentType << std::endl;
@@ -127,3 +128,53 @@ void Serialization::GameObject_DeserializeFrom(GameObject* gameObject, stringstr
 		}
 	}
 }
+
+
+void Serialization::Scene_SerializeTo(Scene* scene, const string& path) {
+	stringstream ss;
+	ss << "GameObjects: " << endl;
+	for (auto go : scene->gameObjects) {
+		ss << "GameObject:" << endl;
+		GameObject_SerializeTo(go, ss);
+	}
+	ss << "---" << endl;
+	string result = ss.str();
+	size_t len = result.length() + 1;
+	unsigned char* charResult = new unsigned char[len];
+	memcpy(charResult, result.c_str(), len);
+	FileHelper::WriteCharsTo(path, charResult);
+	delete charResult;
+}
+
+void Serialization::Scene_DeserializeFrom(Scene* scene, const string& path) {
+	unsigned char* res = new unsigned char[1024];
+	FileHelper::ReadCharsFrom(path, res);
+	string str(reinterpret_cast<char*>(res));
+	stringstream ss(str);
+	string line;
+	while (getline(ss, line)) {
+		istringstream iss(line);
+		string key;
+		if (!(iss >> key)) {
+			break;
+		}
+		if (key == "GameObjects:") {
+			while (getline(ss, line)) {
+				iss = istringstream(line);
+				if (!(iss >> key)) {
+					break;
+				}
+				if (key == "GameObject:") {
+					GameObject* go = new GameObject();
+					GameObject_DeserializeFrom(go, ss);
+					scene->gameObjects.push_back(go);
+				}
+				else if (key == "---") {
+					break;
+				}
+			}
+		}
+	}
+	delete res;
+}
+

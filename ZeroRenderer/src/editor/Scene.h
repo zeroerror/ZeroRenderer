@@ -23,8 +23,5 @@ public:
 
 	vector<GameObject*> gameObjects;
 
-	void SerializeTo(const string& path);
-	void DeserializeFrom(const string& path);
-
 };
 

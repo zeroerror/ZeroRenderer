@@ -5,10 +5,12 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <stb_image/stb_image.h>
 #include <stack>
-
-#include "Database.h"
 #include <src/editor/Scene.h>
 
+#include "Database.h"
+#include "Serialization.h"
+
+using namespace Serialization;
 using namespace glm;
 
 // ********************** EDITOR USER CONFIG **********************
@@ -188,10 +190,10 @@ int main() {
 	camera->transform->SetPosition(glm::vec3(0, 10, -10));
 	camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
 	scene1.gameObjects.push_back(go);
-	scene1.SerializeTo("asset/scene1");
+	Scene_SerializeTo(&scene1, "asset/scene1");
 	Scene scene2 = Scene();
-	scene2.DeserializeFrom("asset/scene1");
-	scene2.SerializeTo("asset/scene2");
+	Scene_DeserializeFrom(&scene2, "asset/scene1");
+	Scene_SerializeTo(&scene2, "asset/scene2");
 
 	// Import Database
 	Database::ImportAssets();

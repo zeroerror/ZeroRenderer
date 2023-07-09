@@ -2,6 +2,7 @@
 #include <sstream>
 #include "Camera3D.h"
 #include "Transform.h"
+#include "Scene.h"
 using namespace std;
 
 namespace Serialization {
@@ -19,6 +20,9 @@ namespace Serialization {
 
 	void GameObject_SerializeTo(GameObject* gameObject, stringstream& ss);
 	void GameObject_DeserializeFrom(GameObject* gameObject, stringstream& ss);
+
+	void Scene_SerializeTo(Scene* scene, const string& path);
+	void Scene_DeserializeFrom(Scene* scene, const string& path);
 
 }
 
