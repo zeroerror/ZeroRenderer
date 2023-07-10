@@ -112,7 +112,7 @@ void Database::ImportModel(string& assetPath) {
 		return;
 	}
 
-	ObjMetadata objMeta = ObjMetadata();
+	ObjMeta objMeta = ObjMeta();
 	objMeta.guid = guid;
 
 	Assimp::Importer importer;
@@ -129,12 +129,12 @@ void Database::ImportModel(string& assetPath) {
 		ImportModel_Node(scene->mRootNode, scene, dir, objMeta);
 	}
 
-	objMeta.SerializeTo(objMetaPath);
+	ObjMeta_SerializeTo(objMeta, objMetaPath);
 
 	std::cout << " +++ Database: Import " << objMetaPath << " guid - " << guid << std::endl;
 }
 
-void Database::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const string& dir, ObjMetadata& objMeta) {
+void Database::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const string& dir, ObjMeta& objMeta) {
 	for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
 		aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
 		ImportModel_Node_Mesh(mesh, aScene, dir, objMeta);
@@ -145,7 +145,7 @@ void Database::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const stri
 	}
 }
 
-void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const  string& dir, ObjMetadata& objMeta) {
+void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const  string& dir, ObjMeta& objMeta) {
 	if (aMesh->mMaterialIndex < 0) {
 		return;
 	}

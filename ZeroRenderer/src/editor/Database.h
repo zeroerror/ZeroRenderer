@@ -2,7 +2,7 @@
 
 #include "Mat.h"
 #include "Material.h"
-#include "ObjMetadata.h"
+#include "ObjMeta.h"
 #include "TextureSlotCollection.h"
 
 #include <unordered_map>
@@ -67,8 +67,8 @@ public:
 	static void ImportAssets();
 	static void ImportAssets(const string& path);
 	static void ImportModel(string& path);
-	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMetadata& objMeta);
-	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir, ObjMetadata& objMeta);
+	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMeta& objMeta);
+	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir, ObjMeta& objMeta);
 	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, Mat& matMeta);
 
 	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);

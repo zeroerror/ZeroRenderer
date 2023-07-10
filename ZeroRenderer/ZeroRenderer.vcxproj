@@ -26,7 +26,6 @@
     <ClCompile Include="src\editor\FileHelper.cpp" />
     <ClCompile Include="src\editor\generic\Mat.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
-    <ClCompile Include="src\editor\ObjMetadata.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
@@ -71,7 +70,7 @@
     <ClInclude Include="src\editor\generic\FileSuffix.h" />
     <ClInclude Include="src\editor\generic\Mat.h" />
     <ClInclude Include="src\editor\MatMeta.h" />
-    <ClInclude Include="src\editor\ObjMetadata.h" />
+    <ClInclude Include="src\editor\ObjMeta.h" />
     <ClInclude Include="src\editor\ShaderMeta.h" />
     <ClInclude Include="src\editor\TextureMeta.h" />
     <ClInclude Include="src\generic\CameraType.h" />

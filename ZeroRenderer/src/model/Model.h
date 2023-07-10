@@ -10,7 +10,7 @@
 #include "IndexBuffer.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "ObjMetadata.h"
+#include "ObjMeta.h"
 #include "Camera3D.h"
 #include "DirectLight.h"
 

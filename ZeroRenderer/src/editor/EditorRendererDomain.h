@@ -1,7 +1,7 @@
 #pragma once
 #include "EditorContext.h"
 #include "Model.h"
-#include "ObjMetadata.h"
+#include "ObjMeta.h"
 #include "TextureSlotCollection.h"
 
 #include <assimp/Importer.hpp>
@@ -22,8 +22,8 @@ public:
 	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 
 	bool TryLoadModel(const string& path, Model*& model);
-	void ProcessNode(aiNode* aiNode, const aiScene* aiScene, const ObjMetadata& objMeta, vector<Mesh*>* allMeshes, size_t& materialIndex);
-	Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aiScene, const ObjMetadata& objMeta, size_t& materialIndex);
+	void ProcessNode(aiNode* aiNode, const aiScene* aiScene, const ObjMeta& objMeta, vector<Mesh*>* allMeshes, size_t& materialIndex);
+	Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aiScene, const ObjMeta& objMeta, size_t& materialIndex);
 
 	void LoadDefaultScene();
 

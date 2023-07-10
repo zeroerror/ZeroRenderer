@@ -36,5 +36,8 @@ namespace Serialization {
 	void TextureMeta_SerializeTo(const TextureMeta& textureMeta, const string& path);
 	void TextureMeta_DeserializeFrom(TextureMeta* textureMeta, const string& path);
 
+	void ObjMeta_SerializeTo(const ObjMeta& objMeta, const string& path);
+	void ObjMeta_DeserializeFrom(ObjMeta* objMeta, const string& path);
+
 }
 

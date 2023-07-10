@@ -184,8 +184,8 @@ bool EditorRendererDomain::TryLoadMaterialByAssetPath(const string& path, Materi
 		string shaderPath;
 		if (Database::TryGetAssetPathFromGUID(shaderGUID, shaderPath)) {
 			Shader* shader = new Shader(shaderPath);
-			ShaderMeta shaderMeta= ShaderMeta();
-			ShaderMeta_DeserializeFrom(&shaderMeta,shaderPath + FileSuffix::SUFFIX_META);
+			ShaderMeta shaderMeta = ShaderMeta();
+			ShaderMeta_DeserializeFrom(&shaderMeta, shaderPath + FileSuffix::SUFFIX_META);
 			shader->useLightingMVP = shaderMeta.useLightingMVP;
 			material->shader = shader;
 			shaderRepo->TryAddShader(shaderGUID, material->shader);
@@ -325,15 +325,15 @@ bool EditorRendererDomain::TryLoadModel(const string& path, Model*& model) {
 	}
 
 	string modelMetaPath = path + FileSuffix::SUFFIX_META;
-	ObjMetadata objMeta = ObjMetadata();
-	objMeta.DeserializeFrom(modelMetaPath);
+	ObjMeta objMeta = ObjMeta();
+	ObjMeta_DeserializeFrom(&objMeta, modelMetaPath);
 	size_t materialIndex = 0;
 	model = new Model();
 	ProcessNode(scene->mRootNode, scene, objMeta, model->allMeshes, materialIndex);
 	return true;
 }
 
-void EditorRendererDomain::ProcessNode(aiNode* aNode, const aiScene* aScene, const ObjMetadata& objMeta, vector<Mesh*>* allMeshes, size_t& materialIndex) {
+void EditorRendererDomain::ProcessNode(aiNode* aNode, const aiScene* aScene, const ObjMeta& objMeta, vector<Mesh*>* allMeshes, size_t& materialIndex) {
 	for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
 		aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
 		allMeshes->push_back(ProcessMesh(mesh, aScene, objMeta, materialIndex));
@@ -344,7 +344,7 @@ void EditorRendererDomain::ProcessNode(aiNode* aNode, const aiScene* aScene, con
 	}
 }
 
-Mesh* EditorRendererDomain::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMetadata& objMeta, size_t& materialIndex) {
+Mesh* EditorRendererDomain::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, const ObjMeta& objMeta, size_t& materialIndex) {
 	Mesh* mesh = new Mesh();
 
 	string materialGUID = objMeta.materialGUIDs[materialIndex++];

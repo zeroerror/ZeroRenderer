@@ -276,4 +276,64 @@ void Serialization::TextureMeta_DeserializeFrom(TextureMeta* textureMeta, const 
 	}
 }
 
+void Serialization::ObjMeta_SerializeTo(const ObjMeta& objMeta, const string& path) {
+	std::stringstream ss;
+	ss << "guid: " << objMeta.guid << std::endl;
+	ss << "materials: {" << std::endl;
+	for (auto matGUID : objMeta.materialGUIDs) {
+		ss << "\t" << matGUID << std::endl;
+	}
+	ss << "}" << std::endl;
+	ss << "meshNames: {" << std::endl;
+	for (auto meshName : objMeta.meshNames) {
+		ss << "\t" << meshName << std::endl;
+	}
+	ss << "}" << std::endl;
+
+	std::string result = ss.str();
+	size_t len = result.length() + 1;
+	unsigned char* charResult = new unsigned char[len];
+	memcpy(charResult, result.c_str(), len);
+	FileHelper::WriteCharsTo(path, charResult);
+
+	ss << "ObjMetadata::Serialize | guid: " << objMeta.guid << std::endl;
+}
+
+void Serialization::ObjMeta_DeserializeFrom(ObjMeta* objMeta, const string& path) {
+	unsigned char* res = new unsigned char[1024];
+	FileHelper::ReadCharsFrom(path, res);
+	std::string str(reinterpret_cast<char*>(res));
+	std::stringstream ss(str);
+	std::string line;
+	while (getline(ss, line)) {
+		std::istringstream iss(line);
+		std::string key;
+		if (!(iss >> key)) {
+			break;
+		}
+		if (key == "guid:") {
+			iss >> objMeta->guid;
+		}
+		else if (key == "materials:") {
+			while (std::getline(ss, line)) {
+				std::istringstream iss2(line);
+				string materialGUID;
+				if (!(iss2 >> materialGUID) || materialGUID == "}") {
+					break;
+				}
+				objMeta->materialGUIDs.push_back(materialGUID);
+			}
+		}
+		else if (key == "meshNames:") {
+			while (std::getline(ss, line)) {
+				std::istringstream iss2(line);
+				string meshName;
+				if (!(iss2 >> meshName) || meshName == "}") {
+					break;
+				}
+				objMeta->meshNames.push_back(meshName);
+			}
+		}
+	}
+}
 
