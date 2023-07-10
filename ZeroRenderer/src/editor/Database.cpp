@@ -98,6 +98,23 @@ void Database::ImportAssets(const string& dir) {
 			else if (extensionStr == FileSuffix::SUFFIX_OBJ) {
 				Database::ImportModel(assetPath);
 			}
+			else if (extensionStr == FileSuffix::SUFFIX_SCENE) {
+				string guid = GenerateGUIDFromAssetPath(assetPath);
+				string metaPath = assetPath + FileSuffix::SUFFIX_SCENE;
+				if (!FileHelper::FileExist(metaPath)) {
+					SceneMeta sceneMeta = SceneMeta();
+					sceneMeta.guid = guid;
+					SceneMeta_SerializeTo(sceneMeta, metaPath);
+				}
+				else {
+					SceneMeta sceneMeta = SceneMeta();
+					SceneMeta_DeserializeFrom(&sceneMeta, metaPath);
+					guid = sceneMeta.guid;
+				}
+				InsertToMap_AssetPath2GUID(assetPath, guid);
+				InsertToMap_GUID2AssetPath(guid, assetPath);
+				std::cout << " +++ Database: Import " << assetPath << " guid - " << guid << std::endl;
+			}
 		}
 	}
 }

@@ -25,10 +25,10 @@ namespace Serialization {
 	void GameObject_SerializeTo(GameObject* gameObject, stringstream& ss);
 	void GameObject_DeserializeFrom(GameObject* gameObject, stringstream& ss);
 
-	void Scene_SerializeTo(Scene* scene, const string& path, const string& guid);
+	void Scene_SerializeTo(const Scene& scene, const string& path);
 	void Scene_DeserializeFrom(Scene* scene, const string& path);
 
-	void SceneMeta_SerializeTo(SceneMeta* sceneMeta, const string& path, const string& guid);
+	void SceneMeta_SerializeTo(const SceneMeta& sceneMeta, const string& path);
 	void SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string& path);
 
 	void MatMeta_SerializeTo(MatMeta* matMeta, const string& path);

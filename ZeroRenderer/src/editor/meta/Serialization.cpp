@@ -130,10 +130,10 @@ void Serialization::GameObject_DeserializeFrom(GameObject* gameObject, stringstr
 	}
 }
 
-void Serialization::Scene_SerializeTo(Scene* scene, const string& path, const string& guid) {
+void Serialization::Scene_SerializeTo(const Scene& scene, const string& path) {
 	stringstream ss;
 	ss << "GameObjects: " << endl;
-	for (auto go : scene->gameObjects) {
+	for (auto go : scene.gameObjects) {
 		ss << "GameObject:" << endl;
 		GameObject_SerializeTo(go, ss);
 	}
@@ -178,16 +178,16 @@ void Serialization::Scene_DeserializeFrom(Scene* scene, const string& path) {
 	delete res;
 }
 
-void Serialization::SceneMeta_SerializeTo(SceneMeta* sceneMeta, const string& path, const string& guid) {
+void Serialization::SceneMeta_SerializeTo(const SceneMeta& sceneMeta, const string& path) {
 	stringstream ss;
-	ss << "guid: " << guid << std::endl;
+	ss << "guid: " << sceneMeta.guid << std::endl;
 	std::string result = ss.str();
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
 	FileHelper::WriteCharsTo(path, charResult);
 	delete charResult;
-	cout << "Scene Meta::Serialize | guid: " << guid << std::endl;
+	cout << "Scene Meta::Serialize | guid: " << sceneMeta.guid << std::endl;
 }
 
 void Serialization::SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string& path) {

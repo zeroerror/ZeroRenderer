@@ -10,6 +10,7 @@ public:
 	inline static const string SUFFIX_SHADER= ".shader";
 	inline static const string SUFFIX_OBJ= ".obj";
 	inline static const string SUFFIX_FBX= ".fbx";
-	inline static const string SUFFIX_MAT= ".mat";
+	inline static const string SUFFIX_MAT = ".mat";
+	inline static const string SUFFIX_SCENE= ".scene";
 
 };
