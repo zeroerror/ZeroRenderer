@@ -10,7 +10,7 @@
 #include "FileHelper.h"
 #include <assimp/postprocess.h>
 
-#include "TextureMetadata.h"
+#include "TextureMeta.h"
 #include "MatMeta.h"
 #include "ShaderMeta.h"
 #include "TextureSlotCollection.h"
@@ -47,13 +47,13 @@ void Database::ImportAssets(const string& dir) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
 				string metaPath = assetPath + FileSuffix::SUFFIX_META;
 				if (!FileHelper::FileExist(metaPath)) {
-					TextureMetadata texMeta = TextureMetadata();
+					TextureMeta texMeta = TextureMeta();
 					texMeta.guid = guid;
-					texMeta.SerializeTo(metaPath);
+					TextureMeta_SerializeTo(texMeta, metaPath);
 				}
 				else {
-					TextureMetadata texMeta = TextureMetadata();
-					texMeta.DeserializeFrom(metaPath);
+					TextureMeta texMeta = TextureMeta();
+					TextureMeta_DeserializeFrom(&texMeta, metaPath);
 					guid = texMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);

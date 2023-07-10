@@ -9,7 +9,7 @@
 #include "EdtorAppTest.h"
 #include "FileHelper.h"
 #include "MaterialMetadata.h"
-#include "TextureMetadata.h"
+#include "TextureMeta.h"
 
 int main() {
 	const char* glsl_version = "#version 330 core";

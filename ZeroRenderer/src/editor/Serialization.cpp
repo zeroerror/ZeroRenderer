@@ -240,4 +240,40 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 	}
 }
 
+void Serialization::TextureMeta_SerializeTo(const TextureMeta& textureMeta, const string& path) {
+	stringstream ss;
+	ss << "guid: " << textureMeta.guid << endl;
+	ss << "width: " << textureMeta.width << endl;
+	ss << "height: " << textureMeta.height << endl;
+	string result = ss.str();
+	size_t len = result.length() + 1;
+	unsigned char* charResult = new unsigned char[len];
+	memcpy(charResult, result.c_str(), len);
+	FileHelper::WriteCharsTo(path, charResult);
+}
+
+void Serialization::TextureMeta_DeserializeFrom(TextureMeta* textureMeta, const string& path) {
+	unsigned char* res = new unsigned char[1024];
+	FileHelper::ReadCharsFrom(path, res);
+	string str(reinterpret_cast<char*>(res));
+	stringstream ss(str);
+	string line;
+	while (getline(ss, line)) {
+		istringstream iss(line);
+		string key;
+		if (!(iss >> key)) {
+			break;
+		}
+		if (key == "guid:") {
+			iss >> textureMeta->guid;
+		}
+		else if (key == "width:") {
+			iss >> textureMeta->width;
+		}
+		else if (key == "height:") {
+			iss >> textureMeta->height;
+		}
+	}
+}
+
 

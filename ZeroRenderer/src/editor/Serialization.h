@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "MatMeta.h"
 #include "ShaderMeta.h"
+#include "TextureMeta.h"
 using namespace std;
 
 namespace Serialization {
@@ -32,7 +33,8 @@ namespace Serialization {
 	void ShaderMeta_SerializeTo(ShaderMeta* shaderMeta, const string& path);
 	void ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const string& path);
 
-
+	void TextureMeta_SerializeTo(const TextureMeta& textureMeta, const string& path);
+	void TextureMeta_DeserializeFrom(TextureMeta* textureMeta, const string& path);
 
 }
 
