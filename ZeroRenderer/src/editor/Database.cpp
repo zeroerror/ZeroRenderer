@@ -100,7 +100,7 @@ void Database::ImportAssets(const string& dir) {
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SCENE) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				string metaPath = assetPath + FileSuffix::SUFFIX_SCENE;
+				string metaPath = assetPath + FileSuffix::SUFFIX_META;
 				if (!FileHelper::FileExist(metaPath)) {
 					SceneMeta sceneMeta = SceneMeta();
 					sceneMeta.guid = guid;

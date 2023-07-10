@@ -181,20 +181,20 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 #pragma endregion
 
 int main() {
-	// Scene Serialize Test
-	Scene scene1 = Scene();
-	GameObject* go = new GameObject();
-	Camera3D* camera = dynamic_cast<Camera3D*>(go->AddComponent<Camera3D>());
-	camera->scrWidth = 1920;
-	camera->scrHeight = 1080;
-	camera->transform->SetPosition(glm::vec3(0, 10, -10));
-	camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
-	scene1.gameObjects.push_back(go);
-	Scene_SerializeTo(scene1, "asset/scene1");
+	//// Scene Serialize Test
+	//Scene scene1 = Scene();
+	//GameObject* go = new GameObject();
+	//Camera3D* camera = dynamic_cast<Camera3D*>(go->AddComponent<Camera3D>());
+	//camera->scrWidth = 1920;
+	//camera->scrHeight = 1080;
+	//camera->transform->SetPosition(glm::vec3(0, 10, -10));
+	//camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
+	//scene1.gameObjects.push_back(go);
+	//Scene_SerializeTo(scene1, "asset/scene1.scene");
 
-	Scene scene2 = Scene();
-	Scene_DeserializeFrom(&scene2, "asset/scene1");
-	Scene_SerializeTo(scene2, "asset/scene2");
+	//Scene scene2 = Scene();
+	//Scene_DeserializeFrom(&scene2, "asset/scene1.scene");
+	//Scene_SerializeTo(scene2, "asset/scene2.scene");
 
 	// Import Database
 	Database::ImportAssets();
