@@ -190,10 +190,15 @@ int main() {
 	camera->transform->SetPosition(glm::vec3(0, 10, -10));
 	camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
 	scene1.gameObjects.push_back(go);
-	Scene_SerializeTo(&scene1, "asset/scene1");
+	string path1 = "asset/scene1";
+	string guid1 = Database::GenerateGUIDFromAssetPath(path1);
+	Scene_SerializeTo(&scene1, path1, guid1);
+
 	Scene scene2 = Scene();
-	Scene_DeserializeFrom(&scene2, "asset/scene1");
-	Scene_SerializeTo(&scene2, "asset/scene2");
+	string path2 = "asset/scene2";
+	Scene_DeserializeFrom(&scene2, path1);
+	string guid2 = Database::GenerateGUIDFromAssetPath(path2);
+	Scene_SerializeTo(&scene2, path2, guid2);
 
 	// Import Database
 	Database::ImportAssets();
@@ -280,8 +285,8 @@ int main() {
 		ImGui::End();
 
 		// - Editor Panel
-		ImGui::SetNextWindowPos(ImVec2(0,0));
-		ImGui::SetNextWindowSize(ImVec2(100,100));
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(100, 100));
 		ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 		if (ImGui::Button("ClearInvalid")) {
 			Database::ClearMetaFile();

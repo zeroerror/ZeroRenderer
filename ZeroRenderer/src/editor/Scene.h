@@ -13,6 +13,8 @@ public:
 	Scene();
 	~Scene();
 
+	vector<GameObject*> gameObjects;
+
 	// todo remove
 	Camera3D* camera;
 	DirectLight* directLight;
@@ -20,8 +22,6 @@ public:
 	Cube* lightCube;
 	vector<Cube*>* cubes;
 	vector<Model*>* models;
-
-	vector<GameObject*> gameObjects;
 
 };
 

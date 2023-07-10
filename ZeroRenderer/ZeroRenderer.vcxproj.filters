@@ -38,10 +38,10 @@
     <ClCompile Include="src\editor\FileHelper.cpp" />
     <ClCompile Include="src\editor\generic\Mat.cpp" />
     <ClCompile Include="src\editor\EditorContext.cpp" />
-    <ClCompile Include="src\editor\EditorRendererDomain.cpp" />
+    <ClCompile Include="src\editor\domain\EditorRendererDomain.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
     <ClCompile Include="src\App.cpp" />
-    <ClCompile Include="src\editor\Serialization.cpp" />
+    <ClCompile Include="src\editor\meta\Serialization.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -369,18 +369,19 @@
     <ClInclude Include="src\editor\Database.h" />
     <ClInclude Include="src\editor\Scene.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
-    <ClInclude Include="src\editor\MatMeta.h" />
+    <ClInclude Include="src\editor\meta\MatMeta.h" />
     <ClInclude Include="src\editor\FileHelper.h" />
-    <ClInclude Include="src\editor\TextureMeta.h" />
+    <ClInclude Include="src\editor\meta\TextureMeta.h" />
     <ClInclude Include="src\editor\generic\FileSuffix.h" />
     <ClInclude Include="src\generic\CameraType.h" />
     <ClInclude Include="src\editor\generic\Mat.h" />
-    <ClInclude Include="src\editor\ObjMeta.h" />
+    <ClInclude Include="src\editor\meta\ObjMeta.h" />
     <ClInclude Include="src\editor\EditorContext.h" />
-    <ClInclude Include="src\editor\EditorRendererDomain.h" />
-    <ClInclude Include="src\editor\ShaderMeta.h" />
+    <ClInclude Include="src\editor\domain\EditorRendererDomain.h" />
+    <ClInclude Include="src\editor\meta\ShaderMeta.h" />
     <ClInclude Include="src\component\Component.h" />
-    <ClInclude Include="src\editor\Serialization.h" />
+    <ClInclude Include="src\editor\meta\Serialization.h" />
+    <ClInclude Include="src\editor\meta\SceneMeta.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

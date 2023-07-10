@@ -1,5 +1,6 @@
 #include "Serialization.h"
 #include "FileHelper.h"
+#include "FileSuffix.h"
 
 void Serialization::Transform_SerializeTo(Transform* transform, stringstream& ss) {
 	ss << "componentType: " << transform->componentType << std::endl;
@@ -129,7 +130,7 @@ void Serialization::GameObject_DeserializeFrom(GameObject* gameObject, stringstr
 	}
 }
 
-void Serialization::Scene_SerializeTo(Scene* scene, const string& path) {
+void Serialization::Scene_SerializeTo(Scene* scene, const string& path, const string& guid) {
 	stringstream ss;
 	ss << "GameObjects: " << endl;
 	for (auto go : scene->gameObjects) {
@@ -177,6 +178,36 @@ void Serialization::Scene_DeserializeFrom(Scene* scene, const string& path) {
 	delete res;
 }
 
+void Serialization::SceneMeta_SerializeTo(SceneMeta* sceneMeta, const string& path, const string& guid) {
+	stringstream ss;
+	ss << "guid: " << guid << std::endl;
+	std::string result = ss.str();
+	size_t len = result.length() + 1;
+	unsigned char* charResult = new unsigned char[len];
+	memcpy(charResult, result.c_str(), len);
+	FileHelper::WriteCharsTo(path + "." + FileSuffix::SUFFIX_META, charResult);
+	delete charResult;
+	cout << "Scene Meta::Serialize | guid: " << guid << std::endl;
+}
+
+void Serialization::SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string& path) {
+	unsigned char* res = new unsigned char[1024];
+	FileHelper::ReadCharsFrom(path, res);
+	std::string str(reinterpret_cast<char*>(res));
+	std::stringstream ss(str);
+	std::string line;
+	while (std::getline(ss, line)) {
+		std::istringstream iss(line);
+		std::string key;
+		if (!(iss >> key)) {
+			break;
+		}
+		if (key == "guid:") {
+			iss >> sceneMeta->guid;
+		}
+	}
+}
+
 void Serialization::MatMeta_SerializeTo(MatMeta* matMeta, const std::string& path) {
 	std::stringstream ss;
 	ss << "guid: " << matMeta->guid << std::endl;
@@ -184,9 +215,8 @@ void Serialization::MatMeta_SerializeTo(MatMeta* matMeta, const std::string& pat
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
-	FileHelper::WriteCharsTo(path, charResult);
-
-	ss << "Material Meta::Serialize | guid: " << matMeta->guid << std::endl;
+	FileHelper::WriteCharsTo(path + "." + FileSuffix::SUFFIX_META, charResult);
+	cout << "Material Meta::Serialize | guid: " << matMeta->guid << endl;
 }
 
 void Serialization::MatMeta_DeserializeFrom(MatMeta* matMeta, const std::string& path) {
