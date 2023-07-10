@@ -74,8 +74,8 @@ public:
 	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
 	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
 
-	static void ClearInvalidMeta();
-	static void ClearInvalidMeta(const string& path);
+	static void ClearMetaFile();
+	static void ClearMetaFile(const string& path);
 
 	static string GenerateGUIDFromAssetPath(string& assetPath);
 	static bool TryGetGUIDFromAssetPath(const string& assetPath, string& guid);

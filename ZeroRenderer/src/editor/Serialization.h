@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "Scene.h"
 #include "MatMeta.h"
+#include "ShaderMeta.h"
 using namespace std;
 
 namespace Serialization {
@@ -27,6 +28,11 @@ namespace Serialization {
 
 	void MatMeta_SerializeTo(MatMeta* matMeta, const string& path);
 	void MatMeta_DeserializeFrom(MatMeta* matMeta, const string& path);
+
+	void ShaderMeta_SerializeTo(ShaderMeta* shaderMeta, const string& path);
+	void ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const string& path);
+
+
 
 }
 

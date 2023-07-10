@@ -12,7 +12,7 @@
 
 #include "TextureMetadata.h"
 #include "MatMeta.h"
-#include "ShaderMetadata.h"
+#include "ShaderMeta.h"
 #include "TextureSlotCollection.h"
 #include "Serialization.h"
 
@@ -64,14 +64,14 @@ void Database::ImportAssets(const string& dir) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
 				string metaPath = assetPath + FileSuffix::SUFFIX_META;
 				if (!FileHelper::FileExist(metaPath)) {
-					ShaderMetadata shaderMeta = ShaderMetadata();
+					ShaderMeta shaderMeta = ShaderMeta();
 					shaderMeta.guid = guid;
 					shaderMeta.useLightingMVP = false;
-					shaderMeta.SerializeTo(metaPath);
+					ShaderMeta_SerializeTo(&shaderMeta, metaPath);
 				}
 				else {
-					ShaderMetadata shaderMeta = ShaderMetadata();
-					shaderMeta.DeserializeFrom(metaPath);
+					ShaderMeta shaderMeta = ShaderMeta();
+					ShaderMeta_DeserializeFrom(&shaderMeta, metaPath);
 					guid = shaderMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
@@ -226,17 +226,17 @@ bool Database::SetMat_ShaderGUID(const string& matPath, const string& shaderPath
 	return true;
 }
 
-void Database::ClearInvalidMeta() {
-	ClearInvalidMeta("asset");
+void Database::ClearMetaFile() {
+	ClearMetaFile("asset");
 }
 
-void Database::ClearInvalidMeta(const string& dir) {
+void Database::ClearMetaFile(const string& dir) {
 	fs::directory_iterator dirIt = fs::directory_iterator(dir);
 	for (const auto& entry : dirIt) {
 		fs::path path = entry.path();
 		string pathStr = path.string();
 		if (entry.is_directory()) {
-			ClearInvalidMeta(pathStr);
+			ClearMetaFile(pathStr);
 		}
 		else {
 			string extensionStr = path.extension().string();

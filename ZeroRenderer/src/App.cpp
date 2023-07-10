@@ -262,7 +262,7 @@ int main() {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// - Project UI Panel
+		// - Project Panel
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POSITION);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
 		ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
@@ -276,6 +276,15 @@ int main() {
 
 		if (_curProjectChoosedNode != nullptr) {
 			ImGui_ShowProjectDetailsPanel(_curProjectChoosedNode);
+		}
+		ImGui::End();
+
+		// - Editor Panel
+		ImGui::SetNextWindowPos(ImVec2(0,0));
+		ImGui::SetNextWindowSize(ImVec2(100,100));
+		ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+		if (ImGui::Button("ClearInvalid")) {
+			Database::ClearMetaFile();
 		}
 		ImGui::End();
 

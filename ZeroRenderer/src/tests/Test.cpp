@@ -16,7 +16,7 @@ namespace test {
 
 	void TestMenu::OnImGuiRender() {
 		if (ImGui::Button("Clear Database")) {
-			Database::ClearInvalidMeta();
+			Database::ClearMetaFile();
 		}
 
 		for (auto& test : m_Tests) {

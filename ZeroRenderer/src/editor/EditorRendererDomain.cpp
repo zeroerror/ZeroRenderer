@@ -1,11 +1,13 @@
 #include "EditorRendererDomain.h"
 #include "GLDebug.h"
 #include "Database.h"
-#include "ShaderMetadata.h"
+#include "ShaderMeta.h"
 #include "FileSuffix.h"
-
+#include "Serialization.h"
 #include <assimp/postprocess.h>
 #include <src/vendor/glm/gtx/string_cast.hpp>
+
+using namespace Serialization;
 
 void EditorRendererDomain::Inject(EditorContext* ctxt) {
 	this->editorContext = ctxt;
@@ -182,9 +184,9 @@ bool EditorRendererDomain::TryLoadMaterialByAssetPath(const string& path, Materi
 		string shaderPath;
 		if (Database::TryGetAssetPathFromGUID(shaderGUID, shaderPath)) {
 			Shader* shader = new Shader(shaderPath);
-			ShaderMetadata shaderMetadata = ShaderMetadata();
-			shaderMetadata.DeserializeFrom(shaderPath + FileSuffix::SUFFIX_META);
-			shader->useLightingMVP = shaderMetadata.useLightingMVP;
+			ShaderMeta shaderMeta= ShaderMeta();
+			ShaderMeta_DeserializeFrom(&shaderMeta,shaderPath + FileSuffix::SUFFIX_META);
+			shader->useLightingMVP = shaderMeta.useLightingMVP;
 			material->shader = shader;
 			shaderRepo->TryAddShader(shaderGUID, material->shader);
 		}
