@@ -14,6 +14,7 @@
 #include "MatMeta.h"
 #include "ShaderMetadata.h"
 #include "TextureSlotCollection.h"
+#include "Serialization.h"
 
 using namespace Serialization;
 using namespace std;
@@ -83,11 +84,11 @@ void Database::ImportAssets(const string& dir) {
 				if (!FileHelper::FileExist(metaPath)) {
 					MatMeta matMeta = MatMeta();
 					matMeta.guid = guid;
-					Serialization::MatMeta_SerializeTo(matMeta, metaPath);
+					MatMeta_SerializeTo(&matMeta, metaPath);
 				}
 				else {
 					MatMeta matMeta = MatMeta();
-					Serialization::MatMeta_DeserializeFrom(matMeta, metaPath);
+					MatMeta_DeserializeFrom(&matMeta, metaPath);
 					guid = matMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
@@ -162,7 +163,7 @@ void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const
 	MatMeta matMeta = MatMeta();
 	string matMetaPath = matPath + FileSuffix::SUFFIX_META;
 	matMeta.guid = GenerateGUIDFromAssetPath(matPath);
-	Serialization::MatMeta_SerializeTo(matMeta, matMetaPath);
+	Serialization::MatMeta_SerializeTo(&matMeta, matMetaPath);
 	std::cout << "Database: Generate mat meta " << matMetaPath << std::endl;
 
 	objMeta.meshNames.push_back(meshName);
@@ -246,7 +247,7 @@ void Database::ClearInvalidMeta(const string& dir) {
 	}
 }
 
-string Database::GenerateGUIDFromAssetPath(const string& assetPath) {
+string Database::GenerateGUIDFromAssetPath(string& assetPath) {
 	FileHelper::NormalizePath(assetPath);
 	std::hash<string> hasher;
 	stringstream ss;
