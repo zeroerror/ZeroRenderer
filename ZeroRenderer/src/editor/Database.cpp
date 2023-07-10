@@ -84,11 +84,11 @@ void Database::ImportAssets(const string& dir) {
 				if (!FileHelper::FileExist(metaPath)) {
 					MatMeta matMeta = MatMeta();
 					matMeta.guid = guid;
-					MatMeta_SerializeTo(&matMeta, assetPath);
+					MatMeta_SerializeTo(&matMeta, metaPath);
 				}
 				else {
 					MatMeta matMeta = MatMeta();
-					MatMeta_DeserializeFrom(&matMeta, assetPath);
+					MatMeta_DeserializeFrom(&matMeta, metaPath);
 					guid = matMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);

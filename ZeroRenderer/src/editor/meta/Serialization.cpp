@@ -185,7 +185,7 @@ void Serialization::SceneMeta_SerializeTo(SceneMeta* sceneMeta, const string& pa
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
-	FileHelper::WriteCharsTo(path + "." + FileSuffix::SUFFIX_META, charResult);
+	FileHelper::WriteCharsTo(path, charResult);
 	delete charResult;
 	cout << "Scene Meta::Serialize | guid: " << guid << std::endl;
 }
@@ -215,7 +215,7 @@ void Serialization::MatMeta_SerializeTo(MatMeta* matMeta, const std::string& pat
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
-	FileHelper::WriteCharsTo(path + "." + FileSuffix::SUFFIX_META, charResult);
+	FileHelper::WriteCharsTo(path, charResult);
 	cout << "Material Meta::Serialize | guid: " << matMeta->guid << endl;
 }
 
