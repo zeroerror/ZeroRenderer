@@ -24,7 +24,7 @@ void EditorRendererDomain::DrawModel(const Model* model) {
 	else {
 		vector<Mesh*>* allMeshes = model->allMeshes;
 		for (auto mesh : *allMeshes) {
-			Material* meshMaterial = mesh->material;
+			Material* meshMaterial = mesh->meshRenderer->material;
 
 			Shader* meshShader = meshMaterial->shader;
 			meshShader = meshShader != nullptr ? meshShader : modelShader;
@@ -35,8 +35,8 @@ void EditorRendererDomain::DrawModel(const Model* model) {
 			if (meshDiffuseTexture != nullptr) meshDiffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
 			if (meshSpecularTexture != nullptr)meshSpecularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 
-			IndexBuffer* ib = mesh->ib;
-			mesh->va->Bind();
+			IndexBuffer* ib = mesh->meshRenderer->ib;
+			mesh->meshRenderer->va->Bind();
 			ib->Bind();
 			GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
 		}
@@ -57,8 +57,8 @@ void EditorRendererDomain::DrawModel(const Model* model, const Material* materia
 			if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
 			if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 
-			IndexBuffer* ib = mesh->ib;
-			mesh->va->Bind();
+			IndexBuffer* ib = mesh->meshRenderer->ib;
+			mesh->meshRenderer->va->Bind();
 			ib->Bind();
 			GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
 		}
@@ -219,17 +219,30 @@ void EditorRendererDomain::LoadDefaultScene() {
 	unsigned int scrWidth = 1920;
 	unsigned int scrHeight = 1080;
 
+	Material* defaultMaterial = new Material();
+	TryLoadMaterialByAssetPath("asset/material/default.mat", defaultMaterial);
+	Material* defaultLightMaterial = new Material();
+	TryLoadMaterialByAssetPath("asset/material/defaultLight.mat", defaultLightMaterial);
+	Material* lightCubeMaterial = new Material();
+	TryLoadMaterialByAssetPath("asset/material/lightCube.mat", lightCubeMaterial);
+	Material* depthMapMaterial = new Material();
+	TryLoadMaterialByAssetPath("asset/material/depthMap.mat", depthMapMaterial);
+
 	// ======================== Scene
 	Scene* scene = new Scene();
 
-	Camera3D* camera = scene->camera;
+	GameObject* cameraGO = new GameObject();
+	cameraGO->name = "Camera";
+	Camera3D* camera = cameraGO->AddComponent<Camera3D>();
 	camera->scrWidth = scrWidth;
 	camera->scrHeight = scrHeight;
 	camera->transform->SetPosition(glm::vec3(0, 10, -10));
 	camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
+	scene->gameObjects.push_back(cameraGO);
 
-	// Light 
-	DirectLight* directLight = new DirectLight();
+	GameObject* directLightGO = new GameObject();
+	directLightGO->name = "DirectLight";
+	DirectLight* directLight = cameraGO->AddComponent<DirectLight>();
 	directLight->scrWidth = scrWidth;
 	directLight->scrHeight = scrHeight;
 	directLight->shadowType = ShadowType::Hard;
@@ -241,59 +254,75 @@ void EditorRendererDomain::LoadDefaultScene() {
 	directLight->nearPlane = camera->nearPlane;
 	directLight->farPlane = camera->farPlane;
 	directLight->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	scene->directLight = directLight;
-
-	Material* defaultMaterial = new Material();
-	TryLoadMaterialByAssetPath("asset/material/default.mat", defaultMaterial);
-	Material* defaultLightMaterial = new Material();
-	TryLoadMaterialByAssetPath("asset/material/defaultLight.mat", defaultLightMaterial);
-	Material* lightCubeMaterial = new Material();
-	TryLoadMaterialByAssetPath("asset/material/lightCube.mat", lightCubeMaterial);
-	Material* depthMapMaterial = new Material();
-	TryLoadMaterialByAssetPath("asset/material/depthMap.mat", depthMapMaterial);
-
-	// Create a central light source cube
-	scene->lightCube = Cube::CreateCube(0.2f, 0.2f, 1.0f);
-	scene->lightCube->material = lightCubeMaterial;
+	scene->gameObjects.push_back(directLightGO);
 
 	// Create a depth map 2D image
-	scene->depthMapImage = Rectangle::CreateRectangle(16.0f, 9.0f);
-	scene->depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 20.0f));
-	scene->depthMapImage->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
-	scene->depthMapImage->material = depthMapMaterial;
+	GameObject* depthMapImageGO = new GameObject();
+	depthMapImageGO->name = "DepthMapImage";
+	Rectangle* depthMapImage = cameraGO->AddComponent<Rectangle>();
+	scene->gameObjects.push_back(depthMapImageGO);
+	depthMapImage = Rectangle::CreateRectangle(16.0f, 9.0f);
+	depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 20.0f));
+	depthMapImage->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+	depthMapImage->material = depthMapMaterial;
+
+	// Create a central light source cube
+	GameObject* lightCubeGO = new GameObject();
+	lightCubeGO->name = "LightCube";
+	Cube* lightCube = lightCubeGO->AddComponent<Cube>();
+	lightCube->Ctor(0.2f, 0.2f, 1.0f);
+	lightCube->material = lightCubeMaterial;
 
 	// Create the ground
-	Cube* groundCube = Cube::CreateCube(20.0f, 0.1f, 30.0f);
+	GameObject* groundCubeGO = new GameObject();
+	groundCubeGO->name = "GroundCube";
+	Cube* groundCube = lightCubeGO->AddComponent<Cube>();
+	groundCube->Ctor(20.0f, 0.1f, 30.0f);
 	groundCube->transform->SetPosition(glm::vec3(0.0f, -0.05f, 0.0f));
 	groundCube->material = defaultLightMaterial;
-	scene->cubes->push_back(groundCube);
+	scene->gameObjects.push_back(groundCubeGO);
 
 	// Create walls
-	Cube* wall1 = Cube::CreateCube(1.0f, 5.0f, 10.0f);
+	GameObject* wall1GO = new GameObject();
+	wall1GO->name = "Wall1";
+	Cube* wall1 = lightCubeGO->AddComponent<Cube>();
+	wall1->Ctor(1.0f, 5.0f, 10.0f);
 	wall1->transform->SetPosition(glm::vec3(-8.0f, 2.5f, 0.0f));
 	wall1->material = defaultLightMaterial;
-	scene->cubes->push_back(wall1);
+	scene->gameObjects.push_back(wall1GO);
 
-	Cube* wall2 = Cube::CreateCube(10.0f, 5.0f, 1.0f);
+	GameObject* wall2GO = new GameObject();
+	wall2GO->name = "wall2";
+	Cube* wall2 = lightCubeGO->AddComponent<Cube>();
+	wall2->Ctor(10.0f, 5.0f, 1.0f);
 	wall2->transform->SetPosition(glm::vec3(0.0f, 2.5f, -8.0f));
 	wall2->material = defaultLightMaterial;
-	scene->cubes->push_back(wall2);
+	scene->gameObjects.push_back(wall2GO);
 
 	// Create obstacles
-	Cube* obstacle1 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
+	GameObject* obstacle1GO = new GameObject();
+	obstacle1GO->name = "obstacle1";
+	Cube* obstacle1 = lightCubeGO->AddComponent<Cube>();
+	obstacle1->Ctor(2.0f, 2.0f, 2.0f);
 	obstacle1->transform->SetPosition(glm::vec3(-4.0f, 1.0f, 4.0f));
 	obstacle1->material = defaultLightMaterial;
-	scene->cubes->push_back(obstacle1);
+	scene->gameObjects.push_back(obstacle1GO);
 
-	Cube* obstacle2 = Cube::CreateCube(2.0f, 2.0f, 2.0f);
+	GameObject* obstacle2GO = new GameObject();
+	obstacle2GO->name = "obstacle2";
+	Cube* obstacle2 = lightCubeGO->AddComponent<Cube>();
+	obstacle2->Ctor(2.0f, 2.0f, 2.0f);
 	obstacle2->transform->SetPosition(glm::vec3(4.0f, 1.0f, -4.0f));
 	obstacle2->material = defaultLightMaterial;
-	scene->cubes->push_back(obstacle2);
+	scene->gameObjects.push_back(obstacle2GO);
 
-	Cube* obstacle3 = Cube::CreateCube(3.0f, 1.0f, 2.0f);
+	GameObject* obstacle3GO = new GameObject();
+	obstacle3GO->name = "obstacle3";
+	Cube* obstacle3 = lightCubeGO->AddComponent<Cube>();
+	obstacle3->Ctor(3.0f, 1.0f, 2.0f);
 	obstacle3->transform->SetPosition(glm::vec3(6.0f, 0.5f, 6.0f));
 	obstacle3->material = defaultLightMaterial;
-	scene->cubes->push_back(obstacle3);
+	scene->gameObjects.push_back(obstacle3GO);
 
 	// ========================== Load Model
 	Model* model;
@@ -301,13 +330,19 @@ void EditorRendererDomain::LoadDefaultScene() {
 		model->transform->SetPosition(glm::vec3(5.0f, 0.0f, 0.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		model->material = defaultLightMaterial;
-		scene->models->push_back(model);
+
+		GameObject* modelPrefab = new GameObject();
+		// Todo: Model to prefab
+		scene->gameObjects.push_back(modelPrefab);
 	}
 	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
 		model->transform->SetPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
 		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
 		model->material = defaultLightMaterial;
-		scene->models->push_back(model);
+
+		GameObject* modelPrefab = new GameObject();
+		// Todo: Model to prefab
+		scene->gameObjects.push_back(modelPrefab);
 	}
 
 	editorContext->currentScene = scene;
@@ -348,10 +383,10 @@ Mesh* EditorRendererDomain::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, c
 	Mesh* mesh = new Mesh();
 
 	string materialGUID = objMeta.materialGUIDs[materialIndex++];
-	mesh->materialGUID = materialGUID;
-	TryLoadMaterialByGUID(materialGUID, mesh->material);
+	mesh->meshRenderer->materialGUID = materialGUID;
+	TryLoadMaterialByGUID(materialGUID, mesh->meshRenderer->material);
 
-	vector<Vertex*>* vertices = mesh->vertices;
+	vector<Vertex*>* vertices = mesh->meshFilter->vertices;
 
 	for (unsigned int i = 0; i < aiMesh->mNumVertices; i++) {
 		aiVector3D aPosition = aiMesh->mVertices[i];
@@ -378,14 +413,13 @@ Mesh* EditorRendererDomain::ProcessMesh(aiMesh* aiMesh, const aiScene* aScene, c
 		vertices->push_back(vertex);
 	}
 
-	vector<unsigned int>* indices = mesh->indices;
+	vector<unsigned int>* indices = mesh->meshFilter->indices;
 	for (unsigned int i = 0; i < aiMesh->mNumFaces; i++) {
 		aiFace face = aiMesh->mFaces[i];
 		for (unsigned int j = 0; j < face.mNumIndices; j++) {
 			indices->push_back(face.mIndices[j]);
 		}
 	}
-
 
 	mesh->GenerateRenderer();
 

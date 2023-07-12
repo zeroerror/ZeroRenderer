@@ -4,23 +4,33 @@
 using namespace Serialization;
 
 Scene::Scene() {
-	camera = new Camera3D();
-	directLight = new DirectLight();
-	depthMapImage = new Rectangle();
-	lightCube = new Cube();
-	cubes = new vector<Cube*>();
-	models = new vector<Model*>();
+	//camera = new Camera3D();
+	//directLight = new DirectLight();
+	//depthMapImage = new Rectangle();
+	//lightCube = new Cube();
+	//cubes = new vector<Cube*>();
+	//models = new vector<Model*>();
 }
 
 Scene::~Scene() {
-	delete camera;
-	delete directLight;
-	delete lightCube;
-	delete depthMapImage;
-	for (auto cube : *cubes) {
-		delete cube;
+	//delete camera;
+	//delete directLight;
+	//delete lightCube;
+	//delete depthMapImage;
+	//for (auto cube : *cubes) {
+	//	delete cube;
+	//}
+	//for (auto model : *models) {
+	//	delete model;
+	//}
+}
+
+GameObject* Scene::Find(const string& name) {
+	for (auto go : gameObjects) {
+		if (go->name == name) {
+			return go;
+		}
 	}
-	for (auto model : *models) {
-		delete model;
-	}
+
+	return nullptr;
 }

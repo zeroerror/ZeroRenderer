@@ -20,17 +20,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
-    <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\editor\domain\EditorRendererDomain.cpp" />
     <ClCompile Include="src\editor\EditorContext.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
     <ClCompile Include="src\editor\generic\Mat.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
+    <ClCompile Include="src\mesh\MeshFilter.cpp" />
+    <ClCompile Include="src\mesh\MeshRenderer.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
     <ClCompile Include="src\model\Model.cpp" />
-    <ClCompile Include="src\mesh\Mesh.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\geometry\Cube.cpp" />
     <ClCompile Include="src\component\Camera3D.cpp" />
@@ -75,6 +77,9 @@
     <ClInclude Include="src\editor\meta\ShaderMeta.h" />
     <ClInclude Include="src\editor\meta\TextureMeta.h" />
     <ClInclude Include="src\generic\CameraType.h" />
+    <ClInclude Include="src\mesh\Mesh.h" />
+    <ClInclude Include="src\mesh\MeshFilter.h" />
+    <ClInclude Include="src\mesh\MeshRenderer.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\Scene.h" />
     <ClInclude Include="src\editor\Database.h" />
@@ -85,7 +90,6 @@
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
     <ClInclude Include="src\model\Model.h" />
-    <ClInclude Include="src\mesh\Mesh.h" />
     <ClInclude Include="src\geometry\Rectangle.h" />
     <ClInclude Include="src\geometry\Cube.h" />
     <ClInclude Include="src\component\Camera3D.h" />

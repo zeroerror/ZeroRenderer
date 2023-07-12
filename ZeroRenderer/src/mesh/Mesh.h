@@ -1,29 +1,17 @@
 #pragma once
-#include <string>
-#include <vector>
-#include "Vertex.h"
-#include "VertexArray.h"
-#include "IndexBuffer.h"
-#include "Material.h"
+#include "MeshFilter.h"
+#include "MeshRenderer.h"
 
 using namespace std;
 
 class Mesh {
 
 public:
-	string materialGUID;
-
-	std::vector<Vertex*>* vertices;
-    std::vector<unsigned int>* indices;
-	Material* material;
-	VertexArray* va;
-	VertexBuffer* vb;
-	VertexBufferLayout* vbLayout;
-	IndexBuffer* ib;
+    MeshFilter *meshFilter;
+    MeshRenderer *meshRenderer;
 
 	Mesh();
 	~Mesh();
-
 	void GenerateRenderer();
 };
 

@@ -5,8 +5,10 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Material.h"
+#include "Component.h"
 
-class Cube {
+// todo spilt to mesh filter and renderer
+class Cube :public Component {
 
 public:
 	Cube();

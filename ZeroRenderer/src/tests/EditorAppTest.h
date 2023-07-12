@@ -24,19 +24,22 @@
 #include "EditorContext.h"
 #include "EditorRendererDomain.h"
 
+using namespace std;
+
 namespace test {
 
 	class EditorAppTest:public Test {
 	public:
 		// ---- Scene
 		Scene* scene;
-		// ---- Scene(TO BE REMOVE)
-		std::vector<Cube*>* cubes;
-		std::vector<Model*>* models;
+
+		// ---- GameObject's Component's Pointers From Scene
 		Rectangle* depthMapImage;
 		Cube* lightCube;
 		Camera3D* sceneCamera;
 		DirectLight* directLight;
+		vector<Cube*> cubes;
+		vector<Model*> models;
 
 		GLFWwindow* window;
 		ImGuiContext* imguiContext;

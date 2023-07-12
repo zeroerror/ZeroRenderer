@@ -6,9 +6,9 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "GLDebug.h"
-#include "EdtorAppTest.h"
+#include "EditorAppTest.h"
 #include "FileHelper.h"
-#include "MaterialMetadata.h"
+#include "MatMeta.h"
 #include "TextureMeta.h"
 
 int main() {

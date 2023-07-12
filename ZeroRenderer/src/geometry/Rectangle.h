@@ -5,15 +5,16 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Material.h"
+#include "Component.h"
 
-class Rectangle {
+class Rectangle :public Component {
 
 public:
 	Rectangle();
 	~Rectangle();
 	void Ctor(float width, float height);
 
-	static Rectangle* CreateRectangle(const float& width, const float& height );
+	static Rectangle* CreateRectangle(const float& width, const float& height);
 
 public:
 	Transform* transform;

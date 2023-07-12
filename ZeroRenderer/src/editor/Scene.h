@@ -15,13 +15,7 @@ public:
 
 	vector<GameObject*> gameObjects;
 
-	// todo remove
-	Camera3D* camera;
-	DirectLight* directLight;
-	Rectangle* depthMapImage;
-	Cube* lightCube;
-	vector<Cube*>* cubes;
-	vector<Model*>* models;
+	GameObject* Find(const string& name);
 
 };
 

@@ -31,7 +31,7 @@ void Model::BatchMeshes() {
 	unsigned int vertexCount = 0;
 
 	for (auto mesh : *allMeshes) {
-		vector<Vertex*>* vertices = mesh->vertices;
+		vector<Vertex*>* vertices = mesh->meshFilter->vertices;
 		for (auto vertex : *vertices) {
 			glm::vec3 position = vertex->position;
 			glm::vec2 texCoords = vertex->texCoords;
@@ -42,7 +42,7 @@ void Model::BatchMeshes() {
 			vertexData.push_back(texCoords.x);
 			vertexData.push_back(texCoords.y);
 		}
-		vector<unsigned int>* indices = mesh->indices;
+		vector<unsigned int>* indices = mesh->meshFilter->indices;
 		for (auto indice : *indices) {
 			indiceArray.push_back(indice + vertexCount);
 		}

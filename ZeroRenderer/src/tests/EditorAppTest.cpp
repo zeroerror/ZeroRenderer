@@ -58,13 +58,11 @@ namespace test {
 		editorRendererDomain->LoadDefaultScene();
 		// ======================== TO BE REMOVE ========================
 		scene = editorContext->currentScene;
-		cubes = scene->cubes;
-		models = scene->models;
-		directLight = scene->directLight;
+		directLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
 		directLight->shadowType = ShadowType::Hard;
-		lightCube = scene->lightCube;
-		depthMapImage = scene->depthMapImage;
-		sceneCamera = scene->camera;
+		lightCube = scene->Find("LightCube")->GetComponent<Cube>();
+		depthMapImage = scene->Find("DepthMapImage")->GetComponent<Rectangle>();
+		sceneCamera = scene->Find("SceneCamera")->GetComponent<Camera3D>();
 		cameraController = Camera3DController();
 		cameraController.Inject(sceneCamera, window);
 		shaderRepo = editorContext->GetShaderRepo();
@@ -78,7 +76,7 @@ namespace test {
 		glfwSetWindowUserPointer(window, this);
 		glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
 			EditorAppTest* camera3DCubeTest = static_cast<EditorAppTest*>(glfwGetWindowUserPointer(window));
-			Transform* camTrans = camera3DCubeTest->scene->camera->transform;
+			Transform* camTrans = camera3DCubeTest->scene->Find("SceneCamera")->GetComponent<Camera3D>()->transform;
 			glm::vec3 pos = camTrans->GetPosition();
 			glm::vec3 forward = camTrans->GetForward();
 			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
@@ -102,14 +100,10 @@ namespace test {
 			cameraController.Update(deltaTime);
 		}
 
-		Camera3D* camera = scene->camera;
-		DirectLight* directLight = scene->directLight;
-		Cube* lightCube = scene->lightCube;
-
-		camera->Update(deltaTime);
+		sceneCamera->Update(deltaTime);
 
 		// - Light Position Control - For Debug
-		glm::vec3 forward = -camera->transform->GetForward();
+		glm::vec3 forward = -sceneCamera->transform->GetForward();
 		forward.y = 0;
 		forward = glm::normalize(forward);
 		glm::vec3 right = glm::cross(glm::vec3(0, -1, 0), forward);
@@ -176,7 +170,6 @@ namespace test {
 	void EditorAppTest::OnRender() {
 		Repaint();
 
-		DirectLight* directLight = scene->directLight;
 		if (directLight->shadowType != ShadowType::None) {
 			ShaderMapping();
 			Repaint();
@@ -190,7 +183,7 @@ namespace test {
 	}
 
 	void EditorAppTest::RenderScene() {
-		for (auto cube : *cubes) {
+		for (auto cube : cubes) {
 			Material* material = cube->material;
 			VertexArray* va = cube->va;
 			IndexBuffer* ib = cube->ib;
@@ -224,7 +217,7 @@ namespace test {
 		glm::vec3 lightColor = directLight->color;
 		glm::vec3 lightDirection = -directLight->GetLightDirection();
 
-		for (auto model : *models) {
+		for (auto model : models) {
 			editorRendererDomain->DrawModel(model);
 		}
 	}
@@ -240,7 +233,7 @@ namespace test {
 			std::cout << "  ########################## Framebuffer is not complete!" << std::endl;
 		}
 		else {
-			for (auto cube : *cubes) {
+			for (auto cube : cubes) {
 				Material* material = cube->material;
 				VertexArray* va = cube->va;
 				IndexBuffer* ib = cube->ib;
@@ -251,7 +244,7 @@ namespace test {
 			}
 
 			// - Model
-			for (auto model : *models) {
+			for (auto model : models) {
 				Material* material;
 				if (editorRendererDomain->TryLoadMaterialByAssetPath("asset/material/default.mat", material)) {
 					editorRendererDomain->DrawModel(model, material);
@@ -260,7 +253,7 @@ namespace test {
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, scene->camera->scrWidth, scene->camera->scrHeight);
+		glViewport(0, 0, sceneCamera->scrWidth, sceneCamera->scrHeight);
 	}
 
 	void EditorAppTest::RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix) {

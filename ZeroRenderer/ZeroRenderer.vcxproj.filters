@@ -29,7 +29,6 @@
     <ClCompile Include="src\component\DirectLight.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\tests\EditorAppTest.cpp" />
-    <ClCompile Include="src\mesh\Mesh.cpp" />
     <ClCompile Include="src\renderer\Vertex.cpp" />
     <ClCompile Include="src\model\Model.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
@@ -40,8 +39,11 @@
     <ClCompile Include="src\editor\EditorContext.cpp" />
     <ClCompile Include="src\editor\domain\EditorRendererDomain.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
-    <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\mesh\MeshFilter.cpp" />
+    <ClCompile Include="src\mesh\MeshRenderer.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -363,7 +365,6 @@
     <ClInclude Include="src\generic\ShadowType.h" />
     <ClInclude Include="src\geometry\Rectangle.h" />
     <ClInclude Include="src\tests\EditorAppTest.h" />
-    <ClInclude Include="src\mesh\Mesh.h" />
     <ClInclude Include="src\renderer\Vertex.h" />
     <ClInclude Include="src\model\Model.h" />
     <ClInclude Include="src\editor\Database.h" />
@@ -382,6 +383,9 @@
     <ClInclude Include="src\component\Component.h" />
     <ClInclude Include="src\editor\meta\Serialization.h" />
     <ClInclude Include="src\editor\meta\SceneMeta.h" />
+    <ClInclude Include="src\mesh\MeshFilter.h" />
+    <ClInclude Include="src\mesh\MeshRenderer.h" />
+    <ClInclude Include="src\mesh\Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />
