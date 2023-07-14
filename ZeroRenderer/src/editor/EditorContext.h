@@ -2,7 +2,8 @@
 #include "MaterialRepo.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
-#include "Camera3D.h"
+#include "MeshRepo.h"
+#include "Camera.h"
 #include "DirectLight.h"
 #include "Scene.h"
 
@@ -15,8 +16,9 @@ public:
 	MaterialRepo* GetMaterialRepo();
 	ShaderRepo* GetShaderRepo();
 	TextureRepo* GetTextureRepo();
+	MeshRepo* GetMeshRepo();
 
-	Camera3D* sceneViewCamera;
+	Camera* sceneViewCamera;
 	DirectLight* sceneDirectLight;
 	Scene* currentScene;
 
@@ -24,6 +26,7 @@ private:
 	MaterialRepo* _materialRepo;
 	ShaderRepo* _shaderRepo;
 	TextureRepo* _textureRepo;
+	MeshRepo* _meshRepo;
 
 };
 

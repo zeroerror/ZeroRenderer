@@ -1,10 +1,14 @@
 #include "Mesh.h"
 
 Mesh::Mesh() {
-	meshFilter = new MeshFilter();
-	meshRenderer= new MeshRenderer();
+    vertices = new vector<Vertex*>();
+    indices = new vector<unsigned int>();
 }
 
-void Mesh::GenerateRenderer() {
-	meshRenderer->GenerateRenderer(meshFilter);
+Mesh::~Mesh() {
+    for (int i = 0; i < vertices->size(); i++) {
+        delete vertices->at(i);
+    }
+    delete vertices;
+    delete indices;
 }

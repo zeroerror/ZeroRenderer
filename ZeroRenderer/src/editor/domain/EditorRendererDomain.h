@@ -2,8 +2,8 @@
 #include "EditorContext.h"
 #include "Model.h"
 #include "Mesh.h"
-#include "Model.h"
 #include "ObjMeta.h"
+#include "PrefabMeta.h"
 #include "TextureSlotCollection.h"
 
 #include <assimp/Importer.hpp>
@@ -15,22 +15,25 @@ class EditorRendererDomain {
 
 public:
 	void Inject(EditorContext* ctxt);
+	void Init();
+	void ProcessModel(const string& path);
+	void ProcessMeshes(const aiScene* aScene, PrefabMeta& prefabMeta);
 
-	void DrawModel(const Model* model);
-	void DrawModel(const Model* model, const Material* material);
+	// void DrawMesh(const MeshFilter* meshFilter,const MeshRenderer* meshRenderer);
+	//void DrawModel(const Model* model);
+	//void DrawModel(const Model* model, const Material* material);
 	void BindShader(const Model* model, Shader* shader);
 
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
-	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
+	//bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 
 	bool TryLoadModel(const string& path, Model*& model);
-	void ProcessNode(aiNode* aiNode, const aiScene* aiScene, const ObjMeta& objMeta, vector<Mesh*>* allMeshes, size_t& materialIndex);
-	Mesh* ProcessMesh(aiMesh* aMesh, const aiScene* aiScene, const ObjMeta& objMeta, size_t& materialIndex);
+	SkinMeshRenderer* LoadSkinMeshRenderer(const aiScene* aScene, PrefabMeta& prefabMeta);
 
-	void LoadDefaultScene();
+	//void LoadDefaultSceneMeta();
 
 private:
-	void _DrawModel(const Model* model, const Camera3D* camera, const DirectLight* light);
+	//void _DrawModel(const Model* model, const Camera* camera, const DirectLight* light);
 
 };
 

@@ -4,7 +4,7 @@
 
 Model::Model() {
 	transform = new Transform();
-	allMeshes = new vector<Mesh*>();
+	skinMeshRenderer = new SkinMeshRenderer();
 
 	va_batched = new VertexArray();
 	vb_batched = new VertexBuffer();
@@ -16,13 +16,10 @@ Model::Model() {
 
 Model::~Model() {
 	delete transform;
-	// Consider Reuse
-	delete allMeshes;
 	delete va_batched;
 	delete vb_batched;
 	delete vbLayout_batched;
 	delete ib_batched;
-	// Consider Reuse
 }
 
 void Model::BatchMeshes() {
@@ -30,8 +27,8 @@ void Model::BatchMeshes() {
 	vector<unsigned int> indiceArray;
 	unsigned int vertexCount = 0;
 
-	for (auto mesh : *allMeshes) {
-		vector<Vertex*>* vertices = mesh->meshFilter->vertices;
+	for (auto meshFilter : *skinMeshRenderer->meshFilters) {
+		vector<Vertex*>* vertices = meshFilter->mesh->vertices;
 		for (auto vertex : *vertices) {
 			glm::vec3 position = vertex->position;
 			glm::vec2 texCoords = vertex->texCoords;
@@ -42,7 +39,7 @@ void Model::BatchMeshes() {
 			vertexData.push_back(texCoords.x);
 			vertexData.push_back(texCoords.y);
 		}
-		vector<unsigned int>* indices = mesh->meshFilter->indices;
+		vector<unsigned int>* indices = meshFilter->mesh->indices;
 		for (auto indice : *indices) {
 			indiceArray.push_back(indice + vertexCount);
 		}

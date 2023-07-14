@@ -8,7 +8,7 @@
 #include "GLDebug.h"
 #include "EditorAppTest.h"
 #include "FileHelper.h"
-#include "MatMeta.h"
+#include "MaterialMeta.h"
 #include "TextureMeta.h"
 
 int main() {

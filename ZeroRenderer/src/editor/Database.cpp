@@ -11,7 +11,6 @@
 #include <assimp/postprocess.h>
 
 #include "TextureMeta.h"
-#include "MatMeta.h"
 #include "ShaderMeta.h"
 #include "TextureSlotCollection.h"
 #include "Serialization.h"
@@ -34,26 +33,26 @@ void Database::ImportAssets() {
 void Database::ImportAssets(const string& dir) {
 	fs::directory_iterator dirIt = fs::directory_iterator(dir);
 	for (const auto& entry : dirIt) {
-		fs::path path = entry.path();
-		string pathStr = path.string();
 		if (entry.is_directory()) {
+			fs::path path = entry.path();
+			string pathStr = path.string();
 			std::cout << "Directory ------------------- " << pathStr << std::endl;
 			ImportAssets(pathStr);
 		}
 		else {
+			fs::path path = entry.path();
 			string assetPath = path.string();
 			string extensionStr = path.extension().string();
 			if (extensionStr == FileSuffix::SUFFIX_PNG) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				string metaPath = assetPath + FileSuffix::SUFFIX_META;
-				if (!FileHelper::FileExist(metaPath)) {
+				if (!FileHelper::FileExist(assetPath)) {
 					TextureMeta texMeta = TextureMeta();
 					texMeta.guid = guid;
-					TextureMeta_SerializeTo(texMeta, metaPath);
+					TextureMeta_SerializeTo(texMeta, assetPath);
 				}
 				else {
 					TextureMeta texMeta = TextureMeta();
-					TextureMeta_DeserializeFrom(&texMeta, metaPath);
+					TextureMeta_DeserializeFrom(&texMeta, assetPath);
 					guid = texMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
@@ -62,16 +61,15 @@ void Database::ImportAssets(const string& dir) {
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SHADER) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				string metaPath = assetPath + FileSuffix::SUFFIX_META;
-				if (!FileHelper::FileExist(metaPath)) {
+				if (!FileHelper::FileExist(assetPath)) {
 					ShaderMeta shaderMeta = ShaderMeta();
 					shaderMeta.guid = guid;
 					shaderMeta.useLightingMVP = false;
-					ShaderMeta_SerializeTo(&shaderMeta, metaPath);
+					ShaderMeta_SerializeTo(&shaderMeta, assetPath);
 				}
 				else {
 					ShaderMeta shaderMeta = ShaderMeta();
-					ShaderMeta_DeserializeFrom(&shaderMeta, metaPath);
+					ShaderMeta_DeserializeFrom(&shaderMeta, assetPath);
 					guid = shaderMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
@@ -80,16 +78,15 @@ void Database::ImportAssets(const string& dir) {
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_MAT) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				string metaPath = assetPath + FileSuffix::SUFFIX_META;
-				if (!FileHelper::FileExist(metaPath)) {
-					MatMeta matMeta = MatMeta();
-					matMeta.guid = guid;
-					MatMeta_SerializeTo(&matMeta, metaPath);
+				if (!FileHelper::FileExist(assetPath)) {
+					MaterialMeta materialMeta = MaterialMeta();
+					materialMeta.guid = guid;
+					MaterialMeta_SerializeTo(materialMeta, assetPath);
 				}
 				else {
-					MatMeta matMeta = MatMeta();
-					MatMeta_DeserializeFrom(&matMeta, metaPath);
-					guid = matMeta.guid;
+					MaterialMeta materialMeta = MaterialMeta();
+					MaterialMeta_DeserializeFrom(&materialMeta, assetPath);
+					guid = materialMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
@@ -100,15 +97,14 @@ void Database::ImportAssets(const string& dir) {
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SCENE) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				string metaPath = assetPath + FileSuffix::SUFFIX_META;
-				if (!FileHelper::FileExist(metaPath)) {
+				if (!FileHelper::FileExist(assetPath)) {
 					SceneMeta sceneMeta = SceneMeta();
 					sceneMeta.guid = guid;
-					SceneMeta_SerializeTo(sceneMeta, metaPath);
+					SceneMeta_SerializeTo(sceneMeta, assetPath);
 				}
 				else {
 					SceneMeta sceneMeta = SceneMeta();
-					SceneMeta_DeserializeFrom(&sceneMeta, metaPath);
+					SceneMeta_DeserializeFrom(&sceneMeta, assetPath);
 					guid = sceneMeta.guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
@@ -129,8 +125,14 @@ void Database::ImportModel(string& assetPath) {
 		return;
 	}
 
+	// Obj meta
 	ObjMeta objMeta = ObjMeta();
 	objMeta.guid = guid;
+
+	// Obj -> Prefab
+	PrefabMeta prefabMeta = PrefabMeta();
+	prefabMeta.AddComponentMeta<TransformMeta>();
+	prefabMeta.AddComponentMeta<SkinMeshRendererMeta>();
 
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(assetPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -143,53 +145,63 @@ void Database::ImportModel(string& assetPath) {
 	if (pos == string::npos) pos = assetPath.find_last_of("\\");
 	if (pos != string::npos) {
 		string dir = assetPath.substr(0, pos + 1);
-		ImportModel_Node(scene->mRootNode, scene, dir, objMeta);
+		ImportModel_Node(scene->mRootNode, scene, dir, objMeta, prefabMeta);
 	}
 
-	ObjMeta_SerializeTo(objMeta, objMetaPath);
-	std::cout << " +++ Database: Import " << objMetaPath << " guid - " << guid << std::endl;
+	ObjMeta_SerializeTo(objMeta, assetPath);
+
+	pos = assetPath.find_last_of(".");
+	string assetPathWithoutSuffix = assetPath.substr(0, pos);
+	PrefabMeta_SerializeTo(prefabMeta, assetPathWithoutSuffix);
 }
 
-void Database::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const string& dir, ObjMeta& objMeta) {
+void Database::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta) {
 	for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
-		aiMesh* mesh = aScene->mMeshes[aNode->mMeshes[i]];
-		ImportModel_Node_Mesh(mesh, aScene, dir, objMeta);
+		unsigned int meshIndex = aNode->mMeshes[i];
+		aiMesh* mesh = aScene->mMeshes[meshIndex];
+		ImportModel_Node_Mesh(mesh, aScene, meshIndex, dir, objMeta, prefabMeta);
 	}
 	for (unsigned int i = 0; i < aNode->mNumChildren; i++) {
 		aiNode* childNode = aNode->mChildren[i];
-		ImportModel_Node(childNode, aScene, dir, objMeta);
+		ImportModel_Node(childNode, aScene, dir, objMeta, prefabMeta);
 	}
 }
 
-void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const  string& dir, ObjMeta& objMeta) {
-	if (aMesh->mMaterialIndex < 0) {
-		return;
-	}
+void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta) {
+	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
+
+	// MeshFilterMeta
+	MeshFilterMeta* meshFilterMeta = new MeshFilterMeta();
+	string meshPath = dir + aMesh->mName.C_Str();
+	meshFilterMeta->modelGUID = objMeta.guid;
+	meshFilterMeta->meshIndex = meshIndex;
+	skinMeshRendererMeta->meshFilterMetas.push_back(meshFilterMeta);
+
+	// MeshFilterMeta
+	MeshRendererMeta* meshRendererMeta = new MeshRendererMeta();
+	skinMeshRendererMeta->meshRendererMetas.push_back(meshRendererMeta);
+	meshRendererMeta->materialGUID = "";
+
+	if (aMesh->mMaterialIndex < 0) return;
 
 	aiMaterial* aiMaterial = aScene->mMaterials[aMesh->mMaterialIndex];
 	string meshName = aMesh->mName.C_Str();
 
-	Mat mat = Mat();
-	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_DIFFUSE, dir, mat);
-	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_SPECULAR, dir, mat);
-	string matPath = dir + meshName + ".mat";
-	mat.SerializeTo(matPath);
-	std::cout << "Database: Generate mat " << matPath << std::endl;
+	MaterialMeta materialMeta = MaterialMeta();
+	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_DIFFUSE, dir, materialMeta);
+	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_SPECULAR, dir, materialMeta);
+	string matPath = dir + meshName;
+	string materialGUID = GenerateGUIDFromAssetPath(matPath);
+	materialMeta.guid = materialGUID;
+	Serialization::MaterialMeta_SerializeTo(materialMeta, matPath);
 
-	MatMeta matMeta = MatMeta();
-	string matMetaPath = matPath + FileSuffix::SUFFIX_META;
-	matMeta.guid = GenerateGUIDFromAssetPath(matPath);
-	Serialization::MatMeta_SerializeTo(&matMeta, matMetaPath);
-	std::cout << "Database: Generate mat meta " << matMetaPath << std::endl;
+	meshRendererMeta->materialGUID = materialGUID;
 
-	objMeta.meshNames.push_back(meshName);
-	objMeta.materialGUIDs.push_back(matMeta.guid);
-
-	InsertToMap_GUID2AssetPath(matMeta.guid, matPath);
-	InsertToMap_AssetPath2GUID(matPath, matMeta.guid);
+	InsertToMap_GUID2AssetPath(materialGUID, matPath);
+	InsertToMap_AssetPath2GUID(matPath, materialGUID);
 }
 
-void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, Mat& mat) {
+void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& materialMeta) {
 	unsigned int textureCount = aMat->GetTextureCount(aTextureType);
 	for (unsigned int i = 0; i < textureCount; i++) {
 		aiString str;
@@ -200,10 +212,10 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 			texGUID = GenerateGUIDFromAssetPath(texPath);
 		}
 		if (aTextureType == aiTextureType_DIFFUSE) {
-			mat.diffuseTextureGUID = texGUID;
+			materialMeta.diffuseTextureGUID = texGUID;
 		}
 		else if (aTextureType == aiTextureType_SPECULAR) {
-			mat.specularTextureGUID = texGUID;
+			materialMeta.specularTextureGUID = texGUID;
 		}
 
 		InsertToMap_GUID2AssetPath(texGUID, texPath);
@@ -211,35 +223,16 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 	}
 }
 
-bool Database::SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot) {
-	if (!AssetPathExist(texturePath)) return false;
-	if (!AssetPathExist(matPath)) return false;
-
-	string texGUID;
-	if (!TryGetGUIDFromAssetPath(texturePath, texGUID)) {
-		return false;
-	}
-
-	Mat mat = Mat();
-	mat.DeserializeFrom(matPath);
-	if (textureSlot == TEX_SLOT_DIFFUSE_MAP)mat.diffuseTextureGUID = texGUID;
-	mat.SerializeTo(matPath);
-	return true;
+PrefabMeta Database::CreateModelPrefab(const Model& model, const string& path) {
+	PrefabMeta prefabMeta = PrefabMeta();
+	/////////////////////////////////////////////////////////// todo
+	return prefabMeta;
 }
 
-bool Database::SetMat_ShaderGUID(const string& matPath, const string& shaderPath) {
-	if (!AssetPathExist(matPath)) return false;
-
-	string shaderGUID;
-	if (!TryGetGUIDFromAssetPath(shaderPath, shaderGUID)) {
-		return false;
-	}
-
-	Mat mat = Mat();
-	mat.DeserializeFrom(matPath);
-	mat.shaderGUID = shaderGUID;
-	mat.SerializeTo(matPath);
-	return true;
+PrefabMeta Database::CreateGameobjectPrefab(const GameObject& gameObject, const string& path) {
+	PrefabMeta prefabMeta = PrefabMeta();
+	/////////////////////////////////////////////////////////// todo
+	return prefabMeta;
 }
 
 void Database::ClearMetaFile() {
@@ -261,6 +254,37 @@ void Database::ClearMetaFile(const string& dir) {
 			}
 		}
 	}
+}
+
+bool Database::SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot) {
+	if (!AssetPathExist(texturePath)) return false;
+	if (!AssetPathExist(matPath)) return false;
+
+	string texGUID;
+	if (!TryGetGUIDFromAssetPath(texturePath, texGUID)) {
+		return false;
+	}
+
+	MaterialMeta materialMeta = MaterialMeta();
+	MaterialMeta_DeserializeFrom(&materialMeta, matPath);
+	if (textureSlot == TEX_SLOT_DIFFUSE_MAP)materialMeta.diffuseTextureGUID = texGUID;
+	MaterialMeta_SerializeTo(materialMeta, matPath);
+	return true;
+}
+
+bool Database::SetMat_ShaderGUID(const string& matPath, const string& shaderPath) {
+	if (!AssetPathExist(matPath)) return false;
+
+	string shaderGUID;
+	if (!TryGetGUIDFromAssetPath(shaderPath, shaderGUID)) {
+		return false;
+	}
+
+	MaterialMeta mat = MaterialMeta();
+	MaterialMeta_DeserializeFrom(&mat, matPath);
+	mat.shaderGUID = shaderGUID;
+	MaterialMeta_SerializeTo(mat, matPath);
+	return true;
 }
 
 string Database::GenerateGUIDFromAssetPath(string& assetPath) {

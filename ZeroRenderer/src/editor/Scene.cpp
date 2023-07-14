@@ -4,7 +4,7 @@
 using namespace Serialization;
 
 Scene::Scene() {
-	//camera = new Camera3D();
+	//camera = new Camera();
 	//directLight = new DirectLight();
 	//depthMapImage = new Rectangle();
 	//lightCube = new Cube();

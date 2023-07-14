@@ -9,8 +9,8 @@
 #include <assimp/postprocess.h>
 
 #include "Test.h"
-#include "Camera3D.h"
-#include "Camera3DController.h"
+#include "Camera.h"
+#include "CameraController.h"
 #include "Cube.h"
 #include "Rectangle.h"
 #include "ShaderRepo.h"
@@ -36,7 +36,7 @@ namespace test {
 		// ---- GameObject's Component's Pointers From Scene
 		Rectangle* depthMapImage;
 		Cube* lightCube;
-		Camera3D* sceneCamera;
+		Camera* sceneCamera;
 		DirectLight* directLight;
 		vector<Cube*> cubes;
 		vector<Model*> models;
@@ -47,7 +47,7 @@ namespace test {
 		int shadowMapWidth;
 		int shadowMapHeight;
 
-		Camera3DController cameraController;
+		CameraController cameraController;
 		bool cameraControllerEnabled;
 		GLuint depthTextureRID;
 		GLuint framebuffer;

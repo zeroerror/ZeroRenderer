@@ -1,7 +1,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Component.h"
-#include "Camera3D.h"
+#include "Camera.h"
 
 GameObject::GameObject() {
 	_transform = new Transform();

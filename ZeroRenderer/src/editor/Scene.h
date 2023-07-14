@@ -3,7 +3,7 @@
 #include "Cube.h"
 #include "Model.h"
 #include "Rectangle.h"
-#include "Camera3D.h"
+#include "Camera.h"
 #include "GameObject.h"
 using namespace std;
 

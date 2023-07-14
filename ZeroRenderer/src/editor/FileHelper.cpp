@@ -1,22 +1,26 @@
 #include "FileHelper.h"
+#include "FileSuffix.h"
 #include <fstream>
 #include <iostream>
+#include <filesystem>
+using namespace filesystem;
+namespace fs = filesystem;
 
 bool FileHelper::FileExist(const string& path) {
 	std::ifstream is(path);
-	return is.good();
+	bool isGood = is.good();
+	is.close();
+	return isGood;
 }
 
 void FileHelper::CreateFile(const string& path) {
-	if (FileExist(path)) {
-		return;
-	}
 }
 
-void FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
+bool FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
 	std::ifstream is(path);
 	if (!is.good()) {
-		return;
+		is.close();
+		return false;
 	}
 
 	char ch;
@@ -25,6 +29,8 @@ void FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
 		chars[index++] = static_cast<unsigned char>(ch);
 	}
 	is.close();
+
+	return true;
 }
 
 void FileHelper::WriteCharsTo(const string& path, const unsigned char* chars) {
@@ -45,9 +51,7 @@ void FileHelper::WriteCharsTo(const string& path, const unsigned char* chars) {
 
 
 void FileHelper::DeleteFile(const string& filePath) {
-	if (!FileExist(filePath)) {
-		return;
-	}
+	if (!FileExist(filePath))return;
 
 	std::remove(filePath.c_str());
 	std::cout << "Delete File: " << filePath << std::endl;
@@ -84,6 +88,82 @@ void FileHelper::NormalizePath(string& path) {
 	for (char& c : path) {
 		if (c == '\\') {
 			c = '/';
+		}
+	}
+}
+
+void FileHelper::ForeachFilePath(const string& path, void(*callback)(const string& path)) {
+	if (!FileExist(path))return;
+
+	directory_iterator dirIt = directory_iterator(path);
+	for (const auto& entry : dirIt) {
+		if (entry.is_directory()) {
+			fs::path path = entry.path();
+			string pathStr = path.string();
+			ForeachFilePath(pathStr, callback);
+		}
+		else {
+			fs::path path = entry.path();
+			string pathStr = path.string();
+			callback(pathStr);
+		}
+	}
+}
+
+void FileHelper::ForeachFilePath(const string& path, const unsigned int& suffixFlag, void(*callback)(const string& path)) {
+	if (!fs::is_directory(path)) {
+		string suffix = path.substr(path.find_last_of('.'));
+		if (FileSuffix::FileSuffix_Contains(suffixFlag, suffix)) {
+			callback(path);
+		}
+		return;
+	}
+
+	directory_iterator dirIt = directory_iterator(path);
+	for (const auto& entry : dirIt) {
+		if (entry.is_directory()) {
+			fs::path path = entry.path();
+			string pathStr = path.string();
+			ForeachFilePath(pathStr, suffixFlag, callback);
+		}
+		else {
+			fs::path path = entry.path();
+			string pathStr = path.string();
+			size_t pos = pathStr.find_last_of('.');
+			if (pos == string::npos) continue;
+			string suffix = pathStr.substr(pos);
+			if (FileSuffix::FileSuffix_Contains(suffixFlag, suffix)) {
+				callback(pathStr);
+			}
+		}
+	}
+}
+
+void FileHelper::GetFilePaths(const string& path, const unsigned int& suffixFlag, vector<string>& filePaths) {
+	if (!fs::is_directory(path)) {
+		string suffix = path.substr(path.find_last_of('.'));
+		if (FileSuffix::FileSuffix_Contains(suffixFlag, suffix)) {
+			filePaths.push_back(path);
+		}
+		return;
+	}
+
+	directory_iterator dirIt = directory_iterator(path);
+	for (const auto& entry : dirIt) {
+		if (entry.is_directory()) {
+			fs::path path = entry.path();
+			string pathStr = path.string();
+			GetFilePaths(pathStr, suffixFlag, filePaths);
+		}
+		else {
+			fs::path path = entry.path();
+			string pathStr = path.string();
+			size_t pos = pathStr.find_last_of('.');
+			if (pos == string::npos) continue;
+			string suffix = pathStr.substr(pos);
+			if (FileSuffix::FileSuffix_Contains(suffixFlag, suffix)) {
+				filePaths.push_back(pathStr);
+			}
 		}
 	}
 }

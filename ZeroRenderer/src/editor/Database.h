@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Mat.h"
-#include "Material.h"
+#include "Model.h"
 #include "ObjMeta.h"
-#include "TextureSlotCollection.h"
+#include "PrefabMeta.h"
+#include "MaterialMeta.h"
+#include "SkinMeshRendererMeta.h"
 
 #include <unordered_map>
 #include <string>
@@ -66,16 +67,20 @@ class Database {
 public:
 	static void ImportAssets();
 	static void ImportAssets(const string& path);
-	static void ImportModel(string& path);
-	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMeta& objMeta);
-	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const string& dir, ObjMeta& objMeta);
-	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, Mat& matMeta);
 
-	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
-	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
+	static void ImportModel(string& path);
+	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
+	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
+	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& matMeta);
+
+	static PrefabMeta CreateModelPrefab(const Model& model, const string& path);
+	static PrefabMeta CreateGameobjectPrefab(const GameObject& gameObject, const string& path);
 
 	static void ClearMetaFile();
 	static void ClearMetaFile(const string& path);
+
+	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
+	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
 
 	static string GenerateGUIDFromAssetPath(string& assetPath);
 	static bool TryGetGUIDFromAssetPath(const string& assetPath, string& guid);

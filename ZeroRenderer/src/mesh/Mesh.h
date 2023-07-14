@@ -1,17 +1,17 @@
 #pragma once
-#include "MeshFilter.h"
-#include "MeshRenderer.h"
-
+#include "Vertex.h"
+#include <string>
+#include <vector>
 using namespace std;
 
 class Mesh {
 
 public:
-    MeshFilter *meshFilter;
-    MeshRenderer *meshRenderer;
+	string meshName;
+	vector<Vertex*>* vertices;
+	vector<unsigned int>* indices;
 
 	Mesh();
 	~Mesh();
-	void GenerateRenderer();
 };
 

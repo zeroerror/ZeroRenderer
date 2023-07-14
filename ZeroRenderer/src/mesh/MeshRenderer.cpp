@@ -12,12 +12,19 @@ MeshRenderer::MeshRenderer() {
 	material = nullptr;
 }
 
+MeshRenderer::~MeshRenderer() {
+	delete va;
+	delete vb;
+	delete ib;
+	delete vbLayout;
+}
+
 void MeshRenderer::GenerateRenderer(const MeshFilter* meshFilter) {
 	vector<float> vertexData;
 	vector<unsigned int> indiceArray;
 
-	vector<Vertex*>* vertices = meshFilter->vertices;
-	vector<unsigned int>* indices = meshFilter->indices;
+	vector<Vertex*>* vertices = meshFilter->mesh->vertices;
+	vector<unsigned int>* indices = meshFilter->mesh->indices;
 	for (auto vertex : *vertices) {
 		glm::vec3 position = vertex->position;
 		glm::vec2 texCoords = vertex->texCoords;

@@ -4,7 +4,8 @@ EditorContext::EditorContext() {
 	_materialRepo = new MaterialRepo();
 	_shaderRepo = new ShaderRepo();
 	_textureRepo = new TextureRepo();
-	sceneViewCamera = new Camera3D();
+	_meshRepo = new MeshRepo();
+	sceneViewCamera = new Camera();
 }
 
 EditorContext::~EditorContext() {
@@ -17,5 +18,7 @@ EditorContext::~EditorContext() {
 MaterialRepo* EditorContext::GetMaterialRepo() { return _materialRepo; }
 ShaderRepo* EditorContext::GetShaderRepo() { return _shaderRepo; }
 TextureRepo* EditorContext::GetTextureRepo() { return _textureRepo; }
+MeshRepo* EditorContext::GetMeshRepo() { return _meshRepo; }
+
 
 

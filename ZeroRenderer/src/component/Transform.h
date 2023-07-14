@@ -10,27 +10,29 @@ class GameObject;
 #include <sstream>
 
 using namespace std;
+using namespace glm;
 
 class Transform : public Component {
 public:
 	Transform();
 	~Transform();
 
-	glm::vec3 position;
-	glm::quat rotation;
+	vec3 position;
+	quat rotation;
+	vec3 scale;
 
-	glm::vec3 GetPosition() const;
-	void SetPosition(const glm::vec3& newPosition);
+	vec3 GetPosition() const;
+	void SetPosition(const vec3& newPosition);
 
-	glm::quat GetRotation() const;
-	void SetRotation(const glm::quat& newRotation);
+	quat GetRotation() const;
+	void SetRotation(const quat& newRotation);
 
-	glm::vec3 GetForward() const;
-	glm::vec3 GetUp() const;
-	glm::vec3 GetRight() const;
+	vec3 GetForward() const;
+	vec3 GetUp() const;
+	vec3 GetRight() const;
 
 private:
-	glm::vec3 m_forward;
-	glm::vec3 m_up;
-	glm::vec3 m_right;
+	vec3 m_forward;
+	vec3 m_up;
+	vec3 m_right;
 };

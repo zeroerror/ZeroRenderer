@@ -1,17 +1,23 @@
-#pragma once
+#pragma once 
 
-#include <glm/ext/vector_float4.hpp>
+#include <glm/vec4.hpp>
 #include <string>
-using namespace std;
 
-class Mat {
+using namespace std;
+using namespace glm;
+
+class MaterialMeta {
+
 
 public:
 	string shaderGUID;
 	string diffuseTextureGUID;
 	string specularTextureGUID;
-	
-	glm::vec4 diffuseColor;
+
+	vec4 diffuseColor;
 	float specularIntensity;
 	float shininess;
+
+	string guid;
+
 };

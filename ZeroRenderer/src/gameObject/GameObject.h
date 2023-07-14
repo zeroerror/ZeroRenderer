@@ -5,7 +5,7 @@ class Component;
 
 #include <vector>
 #include <sstream>
-#include "Camera3D.h"
+#include "Camera.h"
 #include "DirectLight.h"
 
 using namespace std;
@@ -18,6 +18,7 @@ public:
 
 	string name;
 	Transform* transform() { return _transform; };
+	
 	vector<Component*> GetAllComponents();
 
 	template <typename T, typename = enable_if_t<is_base_of<Component, T>::value>>

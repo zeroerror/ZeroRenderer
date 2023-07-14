@@ -11,7 +11,7 @@
 #include <assimp/postprocess.h>
 
 #include "GLDebug.h"
-#include "Camera3DController.h"
+#include "CameraController.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
 #include "SpotLight.h"
@@ -55,15 +55,15 @@ namespace test {
 		InitShadowMaping();
 
 		// ======================== Load Default Scene
-		editorRendererDomain->LoadDefaultScene();
+		//editorRendererDomain->LoadDefaultSceneMeta();
 		// ======================== TO BE REMOVE ========================
 		scene = editorContext->currentScene;
 		directLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
 		directLight->shadowType = ShadowType::Hard;
 		lightCube = scene->Find("LightCube")->GetComponent<Cube>();
 		depthMapImage = scene->Find("DepthMapImage")->GetComponent<Rectangle>();
-		sceneCamera = scene->Find("SceneCamera")->GetComponent<Camera3D>();
-		cameraController = Camera3DController();
+		sceneCamera = scene->Find("SceneCamera")->GetComponent<Camera>();
+		cameraController = CameraController();
 		cameraController.Inject(sceneCamera, window);
 		shaderRepo = editorContext->GetShaderRepo();
 		textureRepo = editorContext->GetTextureRepo();
@@ -75,11 +75,11 @@ namespace test {
 		// ======================== Device Input - Mouse
 		glfwSetWindowUserPointer(window, this);
 		glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
-			EditorAppTest* camera3DCubeTest = static_cast<EditorAppTest*>(glfwGetWindowUserPointer(window));
-			Transform* camTrans = camera3DCubeTest->scene->Find("SceneCamera")->GetComponent<Camera3D>()->transform;
+			EditorAppTest* cameraCubeTest = static_cast<EditorAppTest*>(glfwGetWindowUserPointer(window));
+			Transform* camTrans = cameraCubeTest->scene->Find("SceneCamera")->GetComponent<Camera>()->transform;
 			glm::vec3 pos = camTrans->GetPosition();
 			glm::vec3 forward = camTrans->GetForward();
-			pos += forward * static_cast<float>(yoffset * camera3DCubeTest->moveSpeed);
+			pos += forward * static_cast<float>(yoffset * cameraCubeTest->moveSpeed);
 			camTrans->SetPosition(pos);
 		});
 	}
@@ -218,7 +218,7 @@ namespace test {
 		glm::vec3 lightDirection = -directLight->GetLightDirection();
 
 		for (auto model : models) {
-			editorRendererDomain->DrawModel(model);
+			//editorRendererDomain->DrawModel(model);
 		}
 	}
 
@@ -246,9 +246,9 @@ namespace test {
 			// - Model
 			for (auto model : models) {
 				Material* material;
-				if (editorRendererDomain->TryLoadMaterialByAssetPath("asset/material/default.mat", material)) {
-					editorRendererDomain->DrawModel(model, material);
-				}
+				//if (editorRendererDomain->TryLoadMaterialByAssetPath("asset/material/default.mat", material)) {
+				//	//editorRendererDomain->DrawModel(model, material);
+				//}
 			}
 		}
 

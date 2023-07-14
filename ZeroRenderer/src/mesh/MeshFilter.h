@@ -1,23 +1,10 @@
 #pragma once
-#include <string>
-#include <vector>
-#include "Vertex.h"
-#include "VertexArray.h"
-#include "IndexBuffer.h"
-#include "Material.h"
+#include "Mesh.h"
+#include "Component.h"
 
-using namespace std;
-
-class MeshFilter {
+class MeshFilter :public Component {
 
 public:
-	string materialGUID;
-
-	std::vector<Vertex*>* vertices;
-    std::vector<unsigned int>* indices;
-
-	MeshFilter();
-	~MeshFilter();
-	
+	Mesh* mesh;
 };
 

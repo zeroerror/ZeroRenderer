@@ -5,24 +5,27 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Material.h"
+#include "Component.h"
 #include "MeshFilter.h"
 
 using namespace std;
 
-class MeshRenderer {
+class MeshRenderer :public Component {
 
 public:
 	string materialGUID;
 
+
+	// gl
 	Material* material;
 	VertexArray* va;
 	VertexBuffer* vb;
 	VertexBufferLayout* vbLayout;
 	IndexBuffer* ib;
+	void GenerateRenderer(const MeshFilter* meshFilter);
 
 	MeshRenderer();
 	~MeshRenderer();
 
-	void GenerateRenderer(const MeshFilter* meshFilter);
 };
 

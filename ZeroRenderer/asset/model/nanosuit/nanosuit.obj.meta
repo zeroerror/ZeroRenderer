@@ -1,19 +1,1 @@
 guid: 3d7168e8f3a8700a
-materials: {
-	699cdea50bc3d311
-	e6f09c112bbdc18b
-	5b26cb4fefc8f640
-	4638d47e3399cdd3
-	3f2a5fb7ff65d765
-	a7117f206cb7c0c3
-	bf38f2cd3e20d266
-}
-meshNames: {
-	Visor
-	Legs
-	hands
-	Lights
-	Arms
-	Helmet
-	Body
-}
