@@ -43,6 +43,7 @@
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\repo\MeshRepo.cpp" />
     <ClCompile Include="src\editor\meta\SkinMeshRendererMeta.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />

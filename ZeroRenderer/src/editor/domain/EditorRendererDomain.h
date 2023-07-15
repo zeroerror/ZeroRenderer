@@ -1,7 +1,6 @@
 #pragma once
 #include "EditorContext.h"
 #include "Model.h"
-#include "Mesh.h"
 #include "ObjMeta.h"
 #include "PrefabMeta.h"
 #include "TextureSlotCollection.h"

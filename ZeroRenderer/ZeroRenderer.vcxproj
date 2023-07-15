@@ -26,6 +26,7 @@
     <ClCompile Include="src\editor\FileHelper.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
     <ClCompile Include="src\editor\meta\SkinMeshRendererMeta.cpp" />
+    <ClCompile Include="src\mesh\Mesh.cpp" />
     <ClCompile Include="src\mesh\MeshRenderer.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />

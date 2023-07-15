@@ -185,6 +185,21 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 }
 #pragma endregion
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main() {
 	// Import Database
 	Database::ImportAssets();
