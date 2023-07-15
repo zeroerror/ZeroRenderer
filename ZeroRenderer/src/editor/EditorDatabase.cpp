@@ -16,6 +16,7 @@
 #include "Serialization.h"
 #include "Serialization.h"
 #include "EditorModelManager.h"
+#include "EditorDefaultConfig.h"
 
 using namespace Serialization;
 using namespace std;
@@ -136,8 +137,8 @@ void EditorDatabase::ImportModel(string& assetPath) {
 	prefabMeta.AddComponentMeta<TransformMeta>();
 	prefabMeta.AddComponentMeta<SkinMeshRendererMeta>();
 
-	const aiScene *aScene = nullptr;
-	if(!EditorModelManager::TryLoadModel(assetPath, aScene)){
+	const aiScene* aScene = nullptr;
+	if (!EditorModelManager::TryLoadModel(assetPath, aScene)) {
 		return;
 	}
 
@@ -223,18 +224,6 @@ void EditorDatabase::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureTy
 	}
 }
 
-PrefabMeta EditorDatabase::CreateModelPrefab(const string& path) {
-	PrefabMeta prefabMeta = PrefabMeta();
-	/////////////////////////////////////////////////////////// todo
-	return prefabMeta;
-}
-
-PrefabMeta EditorDatabase::CreateGameobjectPrefab(const GameObject& gameObject, const string& path) {
-	PrefabMeta prefabMeta = PrefabMeta();
-	/////////////////////////////////////////////////////////// todo
-	return prefabMeta;
-}
-
 void EditorDatabase::ClearMetaFile() {
 	ClearMetaFile("asset");
 }
@@ -287,13 +276,13 @@ bool EditorDatabase::SetMat_ShaderGUID(const string& matPath, const string& shad
 	return true;
 }
 
-string EditorDatabase::GenerateGUIDFromAssetPath(string& assetPath) {
-	FileHelper::NormalizePath(assetPath);
+string EditorDatabase::GenerateGUIDFromAssetPath(const string& assetPath) {
+	string norAssetPath = FileHelper::NormalizedPath(assetPath);
 	std::hash<string> hasher;
 	stringstream ss;
 
 	// 生成路径的哈希值
-	std::size_t pathHash = hasher(assetPath);
+	std::size_t pathHash = hasher(norAssetPath);
 	ss << std::hex << pathHash;
 
 	return ss.str();
@@ -410,3 +399,141 @@ void EditorDatabase::InsertToMap_GUID2AssetPath(const string& guid, string& asse
 	FileHelper::NormalizePath(assetPath);
 	m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
 }
+
+void EditorDatabase::GenerateDefaultSceneMeta() {
+	unsigned int scrWidth = 1920;
+	unsigned int scrHeight = 1080;
+
+	string defaultScenePath = "asset/DefaultScene" + FileSuffix::SUFFIX_SCENE;
+	string defaultSceneMetaPath = defaultScenePath + FileSuffix::SUFFIX_META;
+	string sceneGUID = GenerateGUIDFromAssetPath(defaultScenePath);
+	SceneMeta sceneMeta = SceneMeta();
+	sceneMeta.guid = sceneGUID;
+
+	string defaultMatGUID = GenerateGUIDFromAssetPath("asset/material/default.mat");
+	string defaultLightMatGUID = GenerateGUIDFromAssetPath("asset/material/defaultLight.mat");
+	string lightCubeMatGUID = GenerateGUIDFromAssetPath("asset/material/lightCube.mat");
+	string depthMapMatGUID = GenerateGUIDFromAssetPath("asset/material/depthMap.mat");
+
+	// ======================== Scene
+	GameObjectMeta* cameraGOMeta = new GameObjectMeta();
+	cameraGOMeta->name = "Camera";
+	CameraMeta* cameraMeta = cameraGOMeta->AddComponentMeta<CameraMeta>();
+	cameraMeta->scrWidth = scrWidth;
+	cameraMeta->scrHeight = scrHeight;
+	cameraGOMeta->transformMeta.position = vec3(0, 10, -10);
+	cameraGOMeta->transformMeta.rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
+	sceneMeta.gameObjectMetas.push_back(cameraGOMeta);
+
+	MeshFilterMeta* meshFilterMeta;
+	MeshRendererMeta* meshRendererMeta;
+
+	//GameObjectMeta* directLightGOMeta = new GameObjectMeta();
+	//directLightGOMeta->name = "DirectLight";
+	//DirectLightMeta* directLight = cameraGOMeta->AddComponentMeta<DirectLightMeta>();
+	//directLight->scrWidth = scrWidth;
+	//directLight->scrHeight = scrHeight;
+	//directLight->shadowType = ShadowType::Hard;
+	//directLight->transform->SetPosition(vec3(0, 10.0f, 0));
+	//directLight->transform->SetRotation(quat(vec3(0, 0.5f, 0)));
+	//directLight->fov = cameraMeta->fov;
+	//directLight->scrWidth = cameraMeta->scrWidth;
+	//directLight->scrHeight = cameraMeta->scrHeight;
+	//directLight->nearPlane = cameraMeta->nearPlane;
+	//directLight->farPlane = cameraMeta->farPlane;
+	//directLight->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	//scene->gameObjectMetas.push_back(directLightGOMeta);
+
+	// Create a depth map 2D image. 
+	//GameObjectMeta* depthMapImageGOMeta = new GameObjectMeta();
+	//depthMapImageGOMeta->name = "DepthMapImage";
+	//depthMapImageGOMeta->transformMeta.position = vec3(0.0f, 10.0f, 20.0f);
+	//depthMapImageGOMeta->transformMeta.rotation = vec3(0.0f, radians(180.0f), 0.0f);
+	//meshFilterMeta = cameraGOMeta->AddComponentMeta<MeshFilterMeta>();
+	//meshRendererMeta = cameraGOMeta->AddComponentMeta<MeshRendererMeta>();
+	//meshRendererMeta->materialGUID = depthMapMatGUID;
+	//sceneMeta.gameObjectMetas.push_back(depthMapImageGOMeta);
+
+	//// ---- Create a central light source cube
+	//GameObjectMeta* lightCubeGOMeta = new GameObjectMeta();
+	//lightCubeGOMeta->name = "LightCube";
+	//lightCubeGOMeta->transformMeta.scale = vec3(0.2f, 0.2f, 1.0f);
+	//meshFilterMeta = lightCubeGOMeta->AddComponentMeta<MeshFilterMeta>();
+	//meshRendererMeta = lightCubeGOMeta->AddComponentMeta<MeshRendererMeta>();
+	//meshRendererMeta->materialGUID = lightCubeMatGUID;
+	//sceneMeta.gameObjectMetas.push_back(lightCubeGOMeta);
+
+	// ---- Create the ground
+	GameObjectMeta* groundCubeGOMeta = new GameObjectMeta();
+	groundCubeGOMeta->name = "GroundCube";
+	groundCubeGOMeta->transformMeta.position = vec3(0.0f, -0.05f, 0.0f);
+	groundCubeGOMeta->transformMeta.scale = vec3(20.0f, 0.1f, 30.0f);
+
+	meshFilterMeta = groundCubeGOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshRendererMeta = groundCubeGOMeta->AddComponentMeta<MeshRendererMeta>();
+	meshRendererMeta->materialGUID = defaultLightMatGUID;
+
+	sceneMeta.gameObjectMetas.push_back(groundCubeGOMeta);
+
+	// ---- Create wall 1
+	GameObjectMeta* wall1GOMeta = new GameObjectMeta();
+	wall1GOMeta->name = "Wall1";
+	wall1GOMeta->transformMeta.position = vec3(-8.0f, 2.5f, 0.0f);
+	wall1GOMeta->transformMeta.scale = vec3(1.0f, 5.0f, 10.0f);
+	sceneMeta.gameObjectMetas.push_back(wall1GOMeta);
+
+	meshFilterMeta = wall1GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshRendererMeta = wall1GOMeta->AddComponentMeta<MeshRendererMeta>();
+	meshRendererMeta->materialGUID = defaultLightMatGUID;
+
+	// ---- Create wall 2
+	GameObjectMeta* wall2GOMeta = new GameObjectMeta();
+	wall2GOMeta->name = "Wall2";
+	wall2GOMeta->transformMeta.position = vec3(0.0f, 2.5f, -8.0f);
+	wall2GOMeta->transformMeta.scale = vec3(10.0f, 5.0f, 1.0f);
+
+	meshFilterMeta = wall2GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshRendererMeta = wall2GOMeta->AddComponentMeta<MeshRendererMeta>();
+	meshRendererMeta->materialGUID = defaultLightMatGUID;
+
+	sceneMeta.gameObjectMetas.push_back(wall2GOMeta);
+
+	// Create obstacles 1
+	GameObjectMeta* obstacle1GOMeta = new GameObjectMeta();
+	obstacle1GOMeta->name = "obstacle1";
+	obstacle1GOMeta->transformMeta.position = vec3(-4.0f, 1.0f, 4.0f);
+	obstacle1GOMeta->transformMeta.scale = vec3(2.0f, 2.0f, 2.0f);
+
+	meshFilterMeta = obstacle1GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshRendererMeta = obstacle1GOMeta->AddComponentMeta<MeshRendererMeta>();
+	meshRendererMeta->materialGUID = defaultLightMatGUID;
+
+	sceneMeta.gameObjectMetas.push_back(obstacle1GOMeta);
+
+	// Create obstacles 2
+	GameObjectMeta* obstacle2GOMeta = new GameObjectMeta();
+	obstacle2GOMeta->name = "obstacle2";
+	obstacle2GOMeta->transformMeta.position = vec3(4.0f, 1.0f, -4.0f);
+	obstacle2GOMeta->transformMeta.scale = vec3(2.0f, 2.0f, 2.0f);
+
+	meshFilterMeta = obstacle2GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshRendererMeta = obstacle2GOMeta->AddComponentMeta<MeshRendererMeta>();
+	meshRendererMeta->materialGUID = defaultLightMatGUID;
+
+	sceneMeta.gameObjectMetas.push_back(obstacle2GOMeta);
+
+	// Create obstacles 3
+	GameObjectMeta* obstacle3GOMeta = new GameObjectMeta();
+	obstacle3GOMeta->name = "obstacle3";
+	obstacle3GOMeta->transformMeta.position = vec3(6.0f, 0.5f, 6.0f);
+	obstacle3GOMeta->transformMeta.scale = vec3(3.0f, 1.0f, 2.0f);
+
+	meshFilterMeta = obstacle3GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshRendererMeta = obstacle3GOMeta->AddComponentMeta<MeshRendererMeta>();
+	meshRendererMeta->materialGUID = defaultLightMatGUID;
+
+	sceneMeta.gameObjectMetas.push_back(obstacle3GOMeta);
+
+	SceneMeta_SerializeTo(sceneMeta, EditorDefaultConfig::DefaultScenePath());
+}
+

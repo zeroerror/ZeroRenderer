@@ -35,6 +35,9 @@ void EditorRendererDomain::Init() {
 	for (auto path : filePaths) {
 		ProcessModel(path);
 	}
+
+	// Generate default scene.
+	EditorDatabase::GenerateDefaultSceneMeta();
 }
 
 void EditorRendererDomain::ProcessModel(const string& path) {
@@ -153,7 +156,7 @@ void EditorRendererDomain::BindShader(const Transform* transform, Shader* shader
 	if (shader == nullptr) {
 		return;
 	}
-	vec3 modelPos =transform->GetPosition();
+	vec3 modelPos = transform->GetPosition();
 	qua modelRot = transform->GetRotation();
 
 	DirectLight* light = editorContext->sceneDirectLight;
@@ -181,6 +184,15 @@ void EditorRendererDomain::BindShader(const Transform* transform, Shader* shader
 	shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
 	shader->SetUniform1f("u_nearPlane", camera->nearPlane);
 	shader->SetUniform1f("u_farPlane", camera->farPlane);
+}
+
+bool EditorRendererDomain::TryLoadMaterialByAssetPath(const string& path, Material*& material) {
+	string guid;
+	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, guid)) {
+		return false;
+	}
+
+	return TryLoadMaterialByGUID(guid, material);
 }
 
 bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& material) {
@@ -245,147 +257,6 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 
 	return 	materialRepo->TryAddMaterial(guid, material);
 }
-
-//void EditorRendererDomain::LoadDefaultSceneMeta() {
-//	unsigned int scrWidth = 1920;
-//	unsigned int scrHeight = 1080;
-//
-//	Material* defaultMaterial = new Material();
-//	TryLoadMaterialByAssetPath("asset/material/default.mat", defaultMaterial);
-//	Material* defaultLightMaterial = new Material();
-//	TryLoadMaterialByAssetPath("asset/material/defaultLight.mat", defaultLightMaterial);
-//	Material* lightCubeMaterial = new Material();
-//	TryLoadMaterialByAssetPath("asset/material/lightCube.mat", lightCubeMaterial);
-//	Material* depthMapMaterial = new Material();
-//	TryLoadMaterialByAssetPath("asset/material/depthMap.mat", depthMapMaterial);
-//
-//	// ======================== Scene
-//	Scene* scene = new Scene();
-//
-//	GameObject* cameraGO = new GameObject();
-//	cameraGO->name = "Camera";
-//	Camera* camera = cameraGO->AddComponent<Camera>();
-//	camera->scrWidth = scrWidth;
-//	camera->scrHeight = scrHeight;
-//	camera->transform->SetPosition(vec3(0, 10, -10));
-//	camera->transform->SetRotation(quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f))));
-//	scene->gameObjects.push_back(cameraGO);
-//
-//	GameObject* directLightGO = new GameObject();
-//	directLightGO->name = "DirectLight";
-//	DirectLight* directLight = cameraGO->AddComponent<DirectLight>();
-//	directLight->scrWidth = scrWidth;
-//	directLight->scrHeight = scrHeight;
-//	directLight->shadowType = ShadowType::Hard;
-//	directLight->transform->SetPosition(vec3(0, 10.0f, 0));
-//	directLight->transform->SetRotation(quat(vec3(0, 0.5f, 0)));
-//	directLight->fov = camera->fov;
-//	directLight->scrWidth = camera->scrWidth;
-//	directLight->scrHeight = camera->scrHeight;
-//	directLight->nearPlane = camera->nearPlane;
-//	directLight->farPlane = camera->farPlane;
-//	directLight->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-//	scene->gameObjects.push_back(directLightGO);
-//
-//	// Create a depth map 2D image
-//	GameObject* depthMapImageGO = new GameObject();
-//	depthMapImageGO->name = "DepthMapImage";
-//	Rectangle* depthMapImage = cameraGO->AddComponent<Rectangle>();
-//	scene->gameObjects.push_back(depthMapImageGO);
-//	depthMapImage = Rectangle::CreateRectangle(16.0f, 9.0f);
-//	depthMapImage->transform->SetPosition(vec3(0.0f, 10.0f, 20.0f));
-//	depthMapImage->transform->SetRotation(vec3(0.0f, radians(180.0f), 0.0f));
-//	depthMapImage->material = depthMapMaterial;
-//
-//	// Create a central light source cube
-//	GameObject* lightCubeGO = new GameObject();
-//	lightCubeGO->name = "LightCube";
-//	Cube* lightCube = lightCubeGO->AddComponent<Cube>();
-//	lightCube->Ctor(0.2f, 0.2f, 1.0f);
-//	lightCube->material = lightCubeMaterial;
-//
-//	// Create the ground
-//	GameObject* groundCubeGO = new GameObject();
-//	groundCubeGO->name = "GroundCube";
-//	Cube* groundCube = lightCubeGO->AddComponent<Cube>();
-//	groundCube->Ctor(20.0f, 0.1f, 30.0f);
-//	groundCube->transform->SetPosition(vec3(0.0f, -0.05f, 0.0f));
-//	groundCube->material = defaultLightMaterial;
-//	scene->gameObjects.push_back(groundCubeGO);
-//
-//	// Create walls
-//	GameObject* wall1GO = new GameObject();
-//	wall1GO->name = "Wall1";
-//	Cube* wall1 = lightCubeGO->AddComponent<Cube>();
-//	wall1->Ctor(1.0f, 5.0f, 10.0f);
-//	wall1->transform->SetPosition(vec3(-8.0f, 2.5f, 0.0f));
-//	wall1->material = defaultLightMaterial;
-//	scene->gameObjects.push_back(wall1GO);
-//
-//	GameObject* wall2GO = new GameObject();
-//	wall2GO->name = "wall2";
-//	Cube* wall2 = lightCubeGO->AddComponent<Cube>();
-//	wall2->Ctor(10.0f, 5.0f, 1.0f);
-//	wall2->transform->SetPosition(vec3(0.0f, 2.5f, -8.0f));
-//	wall2->material = defaultLightMaterial;
-//	scene->gameObjects.push_back(wall2GO);
-//
-//	// Create obstacles
-//	GameObject* obstacle1GO = new GameObject();
-//	obstacle1GO->name = "obstacle1";
-//	Cube* obstacle1 = lightCubeGO->AddComponent<Cube>();
-//	obstacle1->Ctor(2.0f, 2.0f, 2.0f);
-//	obstacle1->transform->SetPosition(vec3(-4.0f, 1.0f, 4.0f));
-//	obstacle1->material = defaultLightMaterial;
-//	scene->gameObjects.push_back(obstacle1GO);
-//
-//	GameObject* obstacle2GO = new GameObject();
-//	obstacle2GO->name = "obstacle2";
-//	Cube* obstacle2 = lightCubeGO->AddComponent<Cube>();
-//	obstacle2->Ctor(2.0f, 2.0f, 2.0f);
-//	obstacle2->transform->SetPosition(vec3(4.0f, 1.0f, -4.0f));
-//	obstacle2->material = defaultLightMaterial;
-//	scene->gameObjects.push_back(obstacle2GO);
-//
-//	GameObject* obstacle3GO = new GameObject();
-//	obstacle3GO->name = "obstacle3";
-//	Cube* obstacle3 = lightCubeGO->AddComponent<Cube>();
-//	obstacle3->Ctor(3.0f, 1.0f, 2.0f);
-//	obstacle3->transform->SetPosition(vec3(6.0f, 0.5f, 6.0f));
-//	obstacle3->material = defaultLightMaterial;
-//	scene->gameObjects.push_back(obstacle3GO);
-//
-//	// ========================== Load Model
-//	GameObject* modelsGO = new GameObject();
-//	modelsGO->name = "Models";
-//
-//	Model* model;
-//	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
-//		model->transform->SetPosition(vec3(5.0f, 0.0f, 0.0f));
-//		model->transform->SetRotation(quat(vec3(radians(0.0f), radians(180.0f), radians(0.0f))));
-//		model->material = defaultLightMaterial;
-//
-//		GameObject* modelPrefab = new GameObject();
-//		// Todo: Model to prefabMeta
-//		scene->gameObjects.push_back(modelPrefab);
-//	}
-//	GameObject* modelGO1 = GameObject_SerializeTo
-//		modelGO1->name = "Model1";
-//
-//	GameObject* modelGO2 = new GameObject();
-//	modelGO2->name = "Model2";
-//	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
-//		model->transform->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
-//		model->transform->SetRotation(quat(vec3(radians(0.0f), radians(180.0f), radians(0.0f))));
-//		model->material = defaultLightMaterial;
-//
-//		GameObject* modelPrefab = new GameObject();
-//		// Todo: Model to prefabMeta
-//		scene->gameObjects.push_back(modelPrefab);
-//	}
-//
-//	editorContext->currentScene = scene;
-//}
 
 SkinMeshRenderer* EditorRendererDomain::LoadSkinMeshRenderer(const aiScene* aScene, PrefabMeta& prefabMeta) {
 	SkinMeshRenderer* skinMeshRenderer = new SkinMeshRenderer();
@@ -500,10 +371,53 @@ void EditorRendererDomain::BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRende
 
 	skinMeshRenderer->isBatched = true;
 	cout << "Model BatchSkinMeshRenderer: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << endl;
-}
+} 
 
 void EditorRendererDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
 	skinMeshRenderer->va_batched->Bind();
 	skinMeshRenderer->ib_batched->Bind();
 	glDrawElements(GL_TRIANGLES, skinMeshRenderer->ib_batched->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
+
+void EditorRendererDomain::LoadScene(const string& path) {
+	SceneRepo* sceneRepo = editorContext->GetSceneRepo();
+	Scene* scene;
+	if (!sceneRepo->TryGetScene(path, scene)) {
+		scene = new Scene();
+		sceneRepo->TryAddScene(path, scene);
+	}
+
+	SceneMeta sceneMeta;
+	SceneMeta_DeserializeFrom(&sceneMeta, path);
+	sceneMeta.ToScene(*scene);
+
+	for (auto go : scene->gameObjects) {
+		vector<SkinMeshRenderer*>& skinMeshRenderers = go->GetAllComponents<SkinMeshRenderer>();
+		for (auto skinMeshRenderer : skinMeshRenderers) {
+			DrawSkinMeshRenderer(skinMeshRenderer);
+		}
+	}
+}
+
+void EditorRendererDomain::DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer) {
+	auto meshRenderers = skinMeshRenderer->meshRenderers;
+	for (auto meshRenderer : *meshRenderers) {
+		DrawMeshRenderer(meshRenderer);
+	}
+}
+
+void EditorRendererDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer) {
+	const Transform* transfrom = meshRenderer->transform;
+	Material* material;
+	if (TryLoadMaterialByGUID(meshRenderer->materialGUID, material)) {
+		BindShader(transfrom, material->shader);
+		if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
+		if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
+	}
+
+	IndexBuffer* ib = meshRenderer->ib;
+	meshRenderer->va->Bind();
+	ib->Bind();
+	GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+}
+

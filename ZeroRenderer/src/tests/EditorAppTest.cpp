@@ -61,7 +61,6 @@ namespace test {
 		directLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
 		directLight->shadowType = ShadowType::Hard;
 		lightCube = scene->Find("LightCube")->GetComponent<Cube>();
-		depthMapImage = scene->Find("DepthMapImage")->GetComponent<Rectangle>();
 		sceneCamera = scene->Find("SceneCamera")->GetComponent<Camera>();
 		cameraController = CameraController();
 		cameraController.Inject(sceneCamera, window);

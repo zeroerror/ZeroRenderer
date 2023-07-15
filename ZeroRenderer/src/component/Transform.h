@@ -21,7 +21,7 @@ public:
 	quat rotation;
 	vec3 scale;
 
-	vec3 GetPosition() const;
+	vec3 GetPosition()const;
 	void SetPosition(const vec3& newPosition);
 
 	quat GetRotation() const;

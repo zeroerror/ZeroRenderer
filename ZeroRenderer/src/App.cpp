@@ -4,8 +4,6 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <stb_image/stb_image.h>
-#include <stack>
-#include <src/editor/Scene.h>
 
 #include "EditorDatabase.h"
 #include "Serialization.h"
@@ -19,16 +17,24 @@ EditorContext* editorContext;
 EditorRendererDomain* editorRendererDomain;
 
 // ********************** EDITOR USER CONFIG **********************
-const int EDITOR_WINDOW_WIDTH = 1920;
-const int EDITOR_WINDOW_HEIGHT = 1080;
+static const int EDITOR_WINDOW_WIDTH = 1920;
+static const int EDITOR_WINDOW_HEIGHT = 1080;
 
-const ImVec2 EDITOR_WINDOW_PROJECT_POSITION = ImVec2(0, EDITOR_WINDOW_HEIGHT * (1.8f / 3.0f));
-const int EDITOR_WINDOW_PROJECT_WIDTH = EDITOR_WINDOW_WIDTH;
-const int EDITOR_WINDOW_PROJECT_HEIGHT = EDITOR_WINDOW_HEIGHT / 3.0f;
-const int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH = EDITOR_WINDOW_PROJECT_WIDTH / 4.0f;
-const int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
-const int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH = EDITOR_WINDOW_WIDTH - EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
-const int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
+static const ImVec2 EDITOR_WINDOW_TITLE_BAR_POSITION = ImVec2(0, 0);
+static const int EDITOR_WINDOW_TITLE_BAR_WIDTH = EDITOR_WINDOW_WIDTH;
+static const int EDITOR_WINDOW_TITLE_BAR_HEIGHT = 1.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
+
+static const ImVec2 EDITOR_WINDOW_SCENE_POSITION = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT);
+static const int EDITOR_WINDOW_SCENE_WIDTH = EDITOR_WINDOW_WIDTH;
+static const int EDITOR_WINDOW_SCENE_HEIGHT = 6.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
+
+static const ImVec2 EDITOR_WINDOW_PROJECT_POSITION = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT + EDITOR_WINDOW_SCENE_HEIGHT);
+static const int EDITOR_WINDOW_PROJECT_WIDTH = EDITOR_WINDOW_WIDTH;
+static const int EDITOR_WINDOW_PROJECT_HEIGHT = 3.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
+static const int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH = EDITOR_WINDOW_PROJECT_WIDTH / 4.0f;
+static const int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
+static const int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH = EDITOR_WINDOW_WIDTH - EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
+static const int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
 
 enum EditorPanelFlags_ {
 	EditorPanelFlags_None = 0,
@@ -186,24 +192,18 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 #pragma endregion
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+void GL_CLEANUP() {
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+	glfwTerminate();
+}
 
 int main() {
-	// Import EditorDatabase
+	EditorDatabase::ClearMetaFile();
+	// Import Editor Database
 	EditorDatabase::ImportAssets();
-
 	_rootNode = EditorDatabase::GetRootAssetTreeNode();
 	_rootNode->isExpanded = true;
 
@@ -213,13 +213,13 @@ int main() {
 	editorRendererDomain->Inject(editorContext);
 	editorRendererDomain->Init();
 
-	// Initialize GLFW and create a window
+	// Init GL
 	glfwInit();
 	GLFWwindow* window = glfwCreateWindow(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, "Zero Engine v0.0.1", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 	glewInit();
 
-	// Initialize ImGui
+	// Init ImGui
 	ImGui::CreateContext();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
@@ -270,12 +270,12 @@ int main() {
 		}
 		glfwPollEvents();
 
-		// Start a new ImGui frame
+		// - Start a new ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// - Project Panel
+		// - Editor Project Panel
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POSITION);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
 		ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
@@ -292,13 +292,22 @@ int main() {
 		}
 		ImGui::End();
 
-		// - Editor Panel
-		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(100, 100));
+		// - Editor Title Bar
+		ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POSITION);
+		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
 		ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 		if (ImGui::Button("ClearInvalid")) {
 			EditorDatabase::ClearMetaFile();
 		}
+		ImGui::End();
+
+		// - Editor Scene Panel
+		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POSITION);
+		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
+		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+
+		editorRendererDomain->LoadScene("asset/DefaultScene.scene");
+
 		ImGui::End();
 
 		// Rendering ImGui
@@ -311,11 +320,7 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-	glfwTerminate();
+	GL_CLEANUP();
 
 	return 0;
 }

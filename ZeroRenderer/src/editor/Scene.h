@@ -1,7 +1,6 @@
 #pragma once
 #include "DirectLight.h"
 #include "Cube.h"
-#include "Rectangle.h"
 #include "Camera.h"
 #include "GameObject.h"
 using namespace std;

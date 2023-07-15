@@ -1,0 +1,101 @@
+GameObjects: 
+GameObject:
+name: Camera
+componentType: ComponentType_Transform
+position: 0 10 -10
+rotation: 0 0 0 1
+---componentEnd
+componentType: ComponentType_Camera
+scrWidth: 1920
+scrHeight: 1080
+fov: -4.31602e+08
+nearPlane: -4.31602e+08
+farPlane: -4.31602e+08
+orthoSize: -4.31602e+08
+---componentEnd
+======gameObjectEnd
+GameObject:
+name: GroundCube
+componentType: ComponentType_Transform
+position: 0 -0.05 0
+rotation: 0 0 0 1
+---componentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -842150451
+---componentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+---componentEnd
+======gameObjectEnd
+GameObject:
+name: Wall1
+componentType: ComponentType_Transform
+position: -8 2.5 0
+rotation: 0 0 0 1
+---componentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -842150451
+---componentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+---componentEnd
+======gameObjectEnd
+GameObject:
+name: Wall2
+componentType: ComponentType_Transform
+position: 0 2.5 -8
+rotation: 0 0 0 1
+---componentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -842150451
+---componentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+---componentEnd
+======gameObjectEnd
+GameObject:
+name: obstacle1
+componentType: ComponentType_Transform
+position: -4 1 4
+rotation: 0 0 0 1
+---componentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -842150451
+---componentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+---componentEnd
+======gameObjectEnd
+GameObject:
+name: obstacle2
+componentType: ComponentType_Transform
+position: 4 1 -4
+rotation: 0 0 0 1
+---componentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -842150451
+---componentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+---componentEnd
+======gameObjectEnd
+GameObject:
+name: obstacle3
+componentType: ComponentType_Transform
+position: 6 0.5 6
+rotation: 0 0 0 1
+---componentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -842150451
+---componentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+---componentEnd
+======gameObjectEnd
+---

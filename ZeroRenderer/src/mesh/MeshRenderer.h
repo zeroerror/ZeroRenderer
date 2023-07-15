@@ -15,9 +15,7 @@ class MeshRenderer :public Component {
 public:
 	string materialGUID;
 
-
 	// gl
-	Material* material;
 	VertexArray* va;
 	VertexBuffer* vb;
 	VertexBufferLayout* vbLayout;

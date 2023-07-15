@@ -1,7 +1,10 @@
 #pragma once
+#include "GameObjectMeta.h"
+
+#include "GameObject.h"
 #include "TransformMeta.h"
 #include "ComponentMeta.h"
-#include "GameObjectMeta.h"
+
 #include <vector>
 
 using namespace std;
@@ -9,13 +12,9 @@ using namespace std;
 class GameObjectMeta
 {
 public:
-	GameObjectMeta() {}
-	~GameObjectMeta(){
-		for (auto comMeta : componentMetas) {
-			delete comMeta;
-		}
-	}
-	
+	GameObjectMeta();
+	~GameObjectMeta();
+
 	string name;
 	TransformMeta transformMeta;
 	vector<ComponentMeta*> componentMetas;
@@ -29,13 +28,18 @@ public:
 
 	template <typename T, typename = enable_if_t<is_base_of<ComponentMeta, T>::value>>
 	T* GetComponentMeta() {
+		T t = T();
+		ComponentMeta comMeta = static_cast<ComponentMeta>(t);
+		ComponentType_ comType = comMeta.componentType;
 		for (auto comMeta : componentMetas) {
-			if (typeid(comMeta) == typeid(T)) {
+			if (comType == comMeta->componentType) {
 				return static_cast<T*>(comMeta);
 			}
 		}
 
 		return nullptr;
 	}
+
+	void ToGameObject(GameObject& gameObject);
 };
 

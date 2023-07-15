@@ -8,7 +8,7 @@ class GameObject;
 
 using namespace std;
 
-enum ComponentType_ {
+enum ComponentType_ :int {
 	ComponentType_None,
 	ComponentType_Transform,
 	ComponentType_Camera,

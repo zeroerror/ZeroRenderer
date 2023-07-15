@@ -24,11 +24,15 @@ public:
 	void BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 	void BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 
+	void LoadScene(const string& path);
+	
+	void DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer);
+	void DrawMeshRenderer(const MeshRenderer* meshRenderer);
+
 	// void DrawMesh(const MeshFilter* meshFilter,const MeshRenderer* meshRenderer);
 	//void DrawModel(const Model* model);
 	//void DrawModel(const Model* model, const Material* material);
-	//void LoadDefaultSceneMeta();
-	//bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
+	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 
 private:
 	//void _DrawModel(const Model* model, const Camera* camera, const DirectLight* light);

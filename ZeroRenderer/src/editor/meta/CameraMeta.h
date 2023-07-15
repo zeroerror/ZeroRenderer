@@ -1,16 +1,22 @@
 #pragma once
 #include "ComponentMeta.h"
-#include "CameraType.h"
+#include "Camera.h"
 
 class CameraMeta :public ComponentMeta
 {
 public:
+
+	CameraMeta();
+	~CameraMeta();
+	
 	CameraType cameraType;
-	float scrWidth;
-	float scrHeight;
-	float fov;
 	float nearPlane;
 	float farPlane;
+	float fov;
+	float scrWidth;
+	float scrHeight;
 	float orthoSize;
+
+	void ToCamera(Camera* camera);
 };
 

@@ -12,7 +12,6 @@
 #include "Camera.h"
 #include "CameraController.h"
 #include "Cube.h"
-#include "Rectangle.h"
 #include "ShaderRepo.h"
 #include "TextureRepo.h"
 #include "Material.h"
@@ -33,7 +32,6 @@ namespace test {
 		Scene* scene;
 
 		// ---- GameObject's Component's Pointers From Scene
-		Rectangle* depthMapImage;
 		Cube* lightCube;
 		Camera* sceneCamera;
 		DirectLight* directLight;

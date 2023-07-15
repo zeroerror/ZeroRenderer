@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjMeta.h"
+#include "SceneMeta.h"
 #include "PrefabMeta.h"
 #include "MaterialMeta.h"
 #include "SkinMeshRendererMeta.h"
@@ -72,16 +73,13 @@ public:
 	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
 	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& matMeta);
 
-	static PrefabMeta CreateModelPrefab(const string& path);
-	static PrefabMeta CreateGameobjectPrefab(const GameObject& gameObject, const string& path);
-
 	static void ClearMetaFile();
 	static void ClearMetaFile(const string& path);
 
 	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
 	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
 
-	static string GenerateGUIDFromAssetPath(string& assetPath);
+	static string GenerateGUIDFromAssetPath(const string& assetPath);
 	static bool TryGetGUIDFromAssetPath(const string& assetPath, string& guid);
 	static bool TryGetAssetPathFromGUID(const string& guid, string& assetPath);
 
@@ -91,6 +89,8 @@ public:
 	static vector<string> GetAllAssetPaths();
 	static AssetTreeNode* GetRootAssetTreeNode();
 	static void MoveFile(const string& fromPath, const string& toPath);
+
+	static void GenerateDefaultSceneMeta();
 
 private:
 	static std::unordered_map<string, string> m_assetPath2GUID;

@@ -6,18 +6,25 @@
 using namespace filesystem;
 namespace fs = filesystem;
 
+unsigned int FileHelper::GetFileCharSize(const string& path) {
+	ifstream file(path, ios::ate | ios::binary);
+	if (!file.is_open()) {
+		return 0;
+	}
+	streampos fileSize = file.tellg();
+	return static_cast<unsigned int>(fileSize);
+}
+
+
 bool FileHelper::FileExist(const string& path) {
-	std::ifstream is(path);
-	bool isGood = is.good();
-	is.close();
-	return isGood;
+	return filesystem::exists(path);
 }
 
 void FileHelper::CreateFile(const string& path) {
 }
 
 bool FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
-	std::ifstream is(path);
+	ifstream is(path);
 	if (!is.good()) {
 		is.close();
 		return false;
@@ -34,9 +41,9 @@ bool FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
 }
 
 void FileHelper::WriteCharsTo(const string& path, const unsigned char* chars) {
-	std::ofstream os(path);
+	ofstream os(path);
 	if (!os.good()) {
-		std::cout << " ****************** FileHelper::WriteCharsTo | file create failed! " << std::endl;
+		cout << " ****************** FileHelper::WriteCharsTo | file create failed! " << endl;
 		return;
 	}
 
@@ -53,11 +60,11 @@ void FileHelper::WriteCharsTo(const string& path, const unsigned char* chars) {
 void FileHelper::DeleteFile(const string& filePath) {
 	if (!FileExist(filePath))return;
 
-	std::remove(filePath.c_str());
-	std::cout << "Delete File: " << filePath << std::endl;
+	remove(filePath.c_str());
+	cout << "Delete File: " << filePath << endl;
 }
 
-bool FileHelper::PathEquals(const std::string& path1, const std::string& path2) {
+bool FileHelper::PathEquals(const string& path1, const string& path2) {
 	string::size_type p1 = 0;
 	string::size_type p2 = 0;
 

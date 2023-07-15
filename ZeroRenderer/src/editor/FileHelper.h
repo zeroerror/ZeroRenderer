@@ -6,6 +6,7 @@ using namespace std;
 class FileHelper {
 
 public:
+	static unsigned int GetFileCharSize(const string& path);
 	static bool FileExist(const string& path);
 	static void CreateFile(const string& path);
 	static bool ReadCharsFrom(const string& path, unsigned char* chars);
