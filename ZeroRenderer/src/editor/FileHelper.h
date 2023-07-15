@@ -12,6 +12,7 @@ public:
 	static void WriteCharsTo(const string& path, const unsigned char* chars);
 	static void DeleteFile(const string& filePath);
 	static bool PathEquals(const string& path1, const string& path2);
+	static string NormalizedPath(const string& path);
 	static void NormalizePath(string& path);
 	static void ForeachFilePath(const string& path, void(*callback)(const string& path));
 	static void ForeachFilePath(const string& path, const unsigned int& suffixFlag, void(*callback)(const string& path));

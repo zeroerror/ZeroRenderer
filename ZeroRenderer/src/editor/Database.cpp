@@ -14,6 +14,8 @@
 #include "ShaderMeta.h"
 #include "TextureSlotCollection.h"
 #include "Serialization.h"
+#include "Serialization.h"
+#include "EditorModelManager.h"
 
 using namespace Serialization;
 using namespace std;
@@ -129,15 +131,13 @@ void Database::ImportModel(string& assetPath) {
 	ObjMeta objMeta = ObjMeta();
 	objMeta.guid = guid;
 
-	// Obj -> Prefab
+	// Create Prefab Meta
 	PrefabMeta prefabMeta = PrefabMeta();
 	prefabMeta.AddComponentMeta<TransformMeta>();
 	prefabMeta.AddComponentMeta<SkinMeshRendererMeta>();
 
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(assetPath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		std::cout << "  *********************************** Database::LoadAssetModel " << importer.GetErrorString() << std::endl;
+	const aiScene *aScene = nullptr;
+	if(!EditorModelManager::TryLoadModel(assetPath, aScene)){
 		return;
 	}
 
@@ -145,7 +145,7 @@ void Database::ImportModel(string& assetPath) {
 	if (pos == string::npos) pos = assetPath.find_last_of("\\");
 	if (pos != string::npos) {
 		string dir = assetPath.substr(0, pos + 1);
-		ImportModel_Node(scene->mRootNode, scene, dir, objMeta, prefabMeta);
+		ImportModel_Node(aScene->mRootNode, aScene, dir, objMeta, prefabMeta);
 	}
 
 	ObjMeta_SerializeTo(objMeta, assetPath);
@@ -223,7 +223,7 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 	}
 }
 
-PrefabMeta Database::CreateModelPrefab(const Model& model, const string& path) {
+PrefabMeta Database::CreateModelPrefab(const string& path) {
 	PrefabMeta prefabMeta = PrefabMeta();
 	/////////////////////////////////////////////////////////// todo
 	return prefabMeta;

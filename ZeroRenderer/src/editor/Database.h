@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Model.h"
 #include "ObjMeta.h"
 #include "PrefabMeta.h"
 #include "MaterialMeta.h"
@@ -73,7 +72,7 @@ public:
 	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
 	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& matMeta);
 
-	static PrefabMeta CreateModelPrefab(const Model& model, const string& path);
+	static PrefabMeta CreateModelPrefab(const string& path);
 	static PrefabMeta CreateGameobjectPrefab(const GameObject& gameObject, const string& path);
 
 	static void ClearMetaFile();

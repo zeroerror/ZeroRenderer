@@ -92,6 +92,17 @@ void FileHelper::NormalizePath(string& path) {
 	}
 }
 
+string FileHelper::NormalizedPath(const string& path) {
+	string norPath = path;
+	string::size_type len = path.length();
+	for (char& c : norPath) {
+		if (c == '\\') {
+			c = '/';
+		}
+	}
+	return norPath;
+}
+
 void FileHelper::ForeachFilePath(const string& path, void(*callback)(const string& path)) {
 	if (!FileExist(path))return;
 

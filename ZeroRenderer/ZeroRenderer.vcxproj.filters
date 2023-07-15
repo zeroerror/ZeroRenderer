@@ -30,7 +30,6 @@
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\tests\EditorAppTest.cpp" />
     <ClCompile Include="src\renderer\Vertex.cpp" />
-    <ClCompile Include="src\model\Model.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
@@ -44,6 +43,7 @@
     <ClCompile Include="src\repo\MeshRepo.cpp" />
     <ClCompile Include="src\editor\meta\SkinMeshRendererMeta.cpp" />
     <ClCompile Include="src\mesh\Mesh.cpp" />
+    <ClCompile Include="src\editor\manager\EditorModelManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\geometry\Cube.h" />
@@ -366,7 +366,6 @@
     <ClInclude Include="src\geometry\Rectangle.h" />
     <ClInclude Include="src\tests\EditorAppTest.h" />
     <ClInclude Include="src\renderer\Vertex.h" />
-    <ClInclude Include="src\model\Model.h" />
     <ClInclude Include="src\editor\Database.h" />
     <ClInclude Include="src\editor\Scene.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
@@ -396,6 +395,7 @@
     <ClInclude Include="src\repo\MeshRepo.h" />
     <ClInclude Include="src\editor\meta\SkinMeshRendererMeta.h" />
     <ClInclude Include="src\editor\meta\MaterialMeta.h" />
+    <ClInclude Include="src\editor\manager\EditorModelManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

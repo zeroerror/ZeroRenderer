@@ -7,12 +7,16 @@
 #include "Serialization.h"
 #include "SkinMeshRenderer.h"
 #include "SkinMeshRendererMeta.h"
+#include "EditorModelManager.h"
 
 #include <assimp/postprocess.h>
 #include <filesystem>
+#include <glm/gtx/quaternion.hpp>
 #include <src/vendor/glm/gtx/string_cast.hpp>
 
 using namespace Serialization;
+using namespace std;
+using namespace glm;
 using namespace filesystem;
 namespace fs = filesystem;
 
@@ -34,16 +38,14 @@ void EditorRendererDomain::Init() {
 }
 
 void EditorRendererDomain::ProcessModel(const string& path) {
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		cout << "  ################################# ERROR::ASSIMP::" << importer.GetErrorString() << endl;
+	const aiScene* aScene = nullptr;
+	if (!EditorModelManager::TryLoadModel(path, aScene)) {
 		return;
 	}
 
 	PrefabMeta prefabMeta = PrefabMeta();
 	PrefabMeta_DeserializeFrom(&prefabMeta, path);
-	ProcessMeshes(scene, prefabMeta);
+	ProcessMeshes(aScene, prefabMeta);
 }
 
 void EditorRendererDomain::ProcessMeshes(const aiScene* aScene, PrefabMeta& prefabMeta) {
@@ -64,7 +66,7 @@ void EditorRendererDomain::ProcessMeshes(const aiScene* aScene, PrefabMeta& pref
 			aiVector3D aNormal = aMesh->mNormals[i];
 			Vertex* vertex = new Vertex();
 			if (aMesh->mTextureCoords[0] != nullptr) {
-				glm::vec2 texCoord;
+				vec2 texCoord;
 				texCoord.x = aMesh->mTextureCoords[0][i].x;
 				texCoord.y = aMesh->mTextureCoords[0][i].y;
 				if (texCoord.x > 1.0f) {
@@ -147,21 +149,21 @@ void EditorRendererDomain::ProcessMeshes(const aiScene* aScene, PrefabMeta& pref
 //	}
 //}
 
-void EditorRendererDomain::BindShader(const Model* model, Shader* shader) {
+void EditorRendererDomain::BindShader(const Transform* transform, Shader* shader) {
 	if (shader == nullptr) {
 		return;
 	}
-	glm::vec3 modelPos = model->transform->GetPosition();
-	glm::qua modelRot = model->transform->GetRotation();
+	vec3 modelPos =transform->GetPosition();
+	qua modelRot = transform->GetRotation();
 
 	DirectLight* light = editorContext->sceneDirectLight;
-	glm::mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
-	glm::vec3 lightPos = light->transform->GetPosition();
-	glm::vec3 lightColor = light->color;
-	glm::vec3 lightDirection = -light->GetLightDirection();
+	mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
+	vec3 lightPos = light->transform->GetPosition();
+	vec3 lightColor = light->color;
+	vec3 lightDirection = -light->GetLightDirection();
 
 	Camera* camera = editorContext->sceneViewCamera;
-	glm::mat4 cameraMVPMatrix = shader->useLightingMVP ?
+	mat4 cameraMVPMatrix = shader->useLightingMVP ?
 		lightMVPMatrix : camera->GetMVPMatrix_Perspective(modelPos);
 
 	// TODO: BIND AND SET BY THE SHADER META DATA.
@@ -170,7 +172,7 @@ void EditorRendererDomain::BindShader(const Model* model, Shader* shader) {
 	shader->SetUniform1i("u_diffuseMap", TEX_SLOT_DIFFUSE_MAP);
 	shader->SetUniform1i("u_specularMap", TEX_SLOT_SPECULAR_MAP);
 	shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-	shader->SetUniformMat4f("u_modRotationMatrix", glm::toMat4(modelRot));
+	shader->SetUniformMat4f("u_modRotationMatrix", toMat4(modelRot));
 	shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
 
 	shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
@@ -265,8 +267,8 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	Camera* camera = cameraGO->AddComponent<Camera>();
 //	camera->scrWidth = scrWidth;
 //	camera->scrHeight = scrHeight;
-//	camera->transform->SetPosition(glm::vec3(0, 10, -10));
-//	camera->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(0.0f), glm::radians(0.0f))));
+//	camera->transform->SetPosition(vec3(0, 10, -10));
+//	camera->transform->SetRotation(quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f))));
 //	scene->gameObjects.push_back(cameraGO);
 //
 //	GameObject* directLightGO = new GameObject();
@@ -275,14 +277,14 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	directLight->scrWidth = scrWidth;
 //	directLight->scrHeight = scrHeight;
 //	directLight->shadowType = ShadowType::Hard;
-//	directLight->transform->SetPosition(glm::vec3(0, 10.0f, 0));
-//	directLight->transform->SetRotation(glm::quat(glm::vec3(0, 0.5f, 0)));
+//	directLight->transform->SetPosition(vec3(0, 10.0f, 0));
+//	directLight->transform->SetRotation(quat(vec3(0, 0.5f, 0)));
 //	directLight->fov = camera->fov;
 //	directLight->scrWidth = camera->scrWidth;
 //	directLight->scrHeight = camera->scrHeight;
 //	directLight->nearPlane = camera->nearPlane;
 //	directLight->farPlane = camera->farPlane;
-//	directLight->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+//	directLight->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 //	scene->gameObjects.push_back(directLightGO);
 //
 //	// Create a depth map 2D image
@@ -291,8 +293,8 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	Rectangle* depthMapImage = cameraGO->AddComponent<Rectangle>();
 //	scene->gameObjects.push_back(depthMapImageGO);
 //	depthMapImage = Rectangle::CreateRectangle(16.0f, 9.0f);
-//	depthMapImage->transform->SetPosition(glm::vec3(0.0f, 10.0f, 20.0f));
-//	depthMapImage->transform->SetRotation(glm::vec3(0.0f, glm::radians(180.0f), 0.0f));
+//	depthMapImage->transform->SetPosition(vec3(0.0f, 10.0f, 20.0f));
+//	depthMapImage->transform->SetRotation(vec3(0.0f, radians(180.0f), 0.0f));
 //	depthMapImage->material = depthMapMaterial;
 //
 //	// Create a central light source cube
@@ -307,7 +309,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	groundCubeGO->name = "GroundCube";
 //	Cube* groundCube = lightCubeGO->AddComponent<Cube>();
 //	groundCube->Ctor(20.0f, 0.1f, 30.0f);
-//	groundCube->transform->SetPosition(glm::vec3(0.0f, -0.05f, 0.0f));
+//	groundCube->transform->SetPosition(vec3(0.0f, -0.05f, 0.0f));
 //	groundCube->material = defaultLightMaterial;
 //	scene->gameObjects.push_back(groundCubeGO);
 //
@@ -316,7 +318,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	wall1GO->name = "Wall1";
 //	Cube* wall1 = lightCubeGO->AddComponent<Cube>();
 //	wall1->Ctor(1.0f, 5.0f, 10.0f);
-//	wall1->transform->SetPosition(glm::vec3(-8.0f, 2.5f, 0.0f));
+//	wall1->transform->SetPosition(vec3(-8.0f, 2.5f, 0.0f));
 //	wall1->material = defaultLightMaterial;
 //	scene->gameObjects.push_back(wall1GO);
 //
@@ -324,7 +326,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	wall2GO->name = "wall2";
 //	Cube* wall2 = lightCubeGO->AddComponent<Cube>();
 //	wall2->Ctor(10.0f, 5.0f, 1.0f);
-//	wall2->transform->SetPosition(glm::vec3(0.0f, 2.5f, -8.0f));
+//	wall2->transform->SetPosition(vec3(0.0f, 2.5f, -8.0f));
 //	wall2->material = defaultLightMaterial;
 //	scene->gameObjects.push_back(wall2GO);
 //
@@ -333,7 +335,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	obstacle1GO->name = "obstacle1";
 //	Cube* obstacle1 = lightCubeGO->AddComponent<Cube>();
 //	obstacle1->Ctor(2.0f, 2.0f, 2.0f);
-//	obstacle1->transform->SetPosition(glm::vec3(-4.0f, 1.0f, 4.0f));
+//	obstacle1->transform->SetPosition(vec3(-4.0f, 1.0f, 4.0f));
 //	obstacle1->material = defaultLightMaterial;
 //	scene->gameObjects.push_back(obstacle1GO);
 //
@@ -341,7 +343,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	obstacle2GO->name = "obstacle2";
 //	Cube* obstacle2 = lightCubeGO->AddComponent<Cube>();
 //	obstacle2->Ctor(2.0f, 2.0f, 2.0f);
-//	obstacle2->transform->SetPosition(glm::vec3(4.0f, 1.0f, -4.0f));
+//	obstacle2->transform->SetPosition(vec3(4.0f, 1.0f, -4.0f));
 //	obstacle2->material = defaultLightMaterial;
 //	scene->gameObjects.push_back(obstacle2GO);
 //
@@ -349,7 +351,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	obstacle3GO->name = "obstacle3";
 //	Cube* obstacle3 = lightCubeGO->AddComponent<Cube>();
 //	obstacle3->Ctor(3.0f, 1.0f, 2.0f);
-//	obstacle3->transform->SetPosition(glm::vec3(6.0f, 0.5f, 6.0f));
+//	obstacle3->transform->SetPosition(vec3(6.0f, 0.5f, 6.0f));
 //	obstacle3->material = defaultLightMaterial;
 //	scene->gameObjects.push_back(obstacle3GO);
 //
@@ -359,8 +361,8 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //
 //	Model* model;
 //	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
-//		model->transform->SetPosition(glm::vec3(5.0f, 0.0f, 0.0f));
-//		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+//		model->transform->SetPosition(vec3(5.0f, 0.0f, 0.0f));
+//		model->transform->SetRotation(quat(vec3(radians(0.0f), radians(180.0f), radians(0.0f))));
 //		model->material = defaultLightMaterial;
 //
 //		GameObject* modelPrefab = new GameObject();
@@ -373,8 +375,8 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //	GameObject* modelGO2 = new GameObject();
 //	modelGO2->name = "Model2";
 //	if (TryLoadModel("asset/model/nanosuit/nanosuit.obj", model)) {
-//		model->transform->SetPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
-//		model->transform->SetRotation(glm::quat(glm::vec3(glm::radians(0.0f), glm::radians(180.0f), glm::radians(0.0f))));
+//		model->transform->SetPosition(vec3(-5.0f, 0.0f, 0.0f));
+//		model->transform->SetRotation(quat(vec3(radians(0.0f), radians(180.0f), radians(0.0f))));
 //		model->material = defaultLightMaterial;
 //
 //		GameObject* modelPrefab = new GameObject();
@@ -384,25 +386,6 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 //
 //	editorContext->currentScene = scene;
 //}
-
-bool EditorRendererDomain::TryLoadModel(const string& path, Model*& model) {
-	model = nullptr;
-
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-		cout << "  ################################# ERROR::ASSIMP::" << importer.GetErrorString() << endl;
-		return false;
-	}
-
-	PrefabMeta prefabMeta = PrefabMeta();
-	PrefabMeta_DeserializeFrom(&prefabMeta, path);
-
-	model = new Model();
-	model->skinMeshRenderer = LoadSkinMeshRenderer(scene, prefabMeta);
-
-	return true;
-}
 
 SkinMeshRenderer* EditorRendererDomain::LoadSkinMeshRenderer(const aiScene* aScene, PrefabMeta& prefabMeta) {
 	SkinMeshRenderer* skinMeshRenderer = new SkinMeshRenderer();
@@ -431,7 +414,7 @@ SkinMeshRenderer* EditorRendererDomain::LoadSkinMeshRenderer(const aiScene* aSce
 			aiVector3D aNormal = aMesh->mNormals[i];
 			Vertex* vertex = new Vertex();
 			if (aMesh->mTextureCoords[0] != nullptr) {
-				glm::vec2 texCoord;
+				vec2 texCoord;
 				texCoord.x = aMesh->mTextureCoords[0][i].x;
 				texCoord.y = aMesh->mTextureCoords[0][i].y;
 				if (texCoord.x > 1.0f) {
@@ -478,4 +461,49 @@ SkinMeshRenderer* EditorRendererDomain::LoadSkinMeshRenderer(const aiScene* aSce
 	}
 
 	return skinMeshRenderer;
+}
+
+
+void EditorRendererDomain::BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
+	vector<float> vertexData;
+	vector<unsigned int> indiceArray;
+	unsigned int vertexCount = 0;
+
+	for (auto meshFilter : *skinMeshRenderer->meshFilters) {
+		vector<Vertex*>* vertices = meshFilter->mesh->vertices;
+		for (auto vertex : *vertices) {
+			vec3 position = vertex->position;
+			vec2 texCoords = vertex->texCoords;
+			vec3 normal = vertex->normal;
+			vertexData.push_back(position.x);
+			vertexData.push_back(position.y);
+			vertexData.push_back(position.z);
+			vertexData.push_back(texCoords.x);
+			vertexData.push_back(texCoords.y);
+		}
+		vector<unsigned int>* indices = meshFilter->mesh->indices;
+		for (auto indice : *indices) {
+			indiceArray.push_back(indice + vertexCount);
+		}
+
+		vertexCount += vertices->size();
+	}
+
+	VertexArray* va_batched = skinMeshRenderer->va_batched;
+	VertexBuffer* vb_batched = skinMeshRenderer->vb_batched;
+	IndexBuffer* ib_batched = skinMeshRenderer->ib_batched;
+	VertexBufferLayout* vbLayout_batched = skinMeshRenderer->vbLayout_batched;
+	va_batched->Bind();
+	vb_batched->Ctor(vertexData.data(), vertexData.size());
+	va_batched->AddBuffer(vb_batched, vbLayout_batched);
+	ib_batched->Ctor(indiceArray.data(), indiceArray.size());
+
+	skinMeshRenderer->isBatched = true;
+	cout << "Model BatchSkinMeshRenderer: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << endl;
+}
+
+void EditorRendererDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
+	skinMeshRenderer->va_batched->Bind();
+	skinMeshRenderer->ib_batched->Bind();
+	glDrawElements(GL_TRIANGLES, skinMeshRenderer->ib_batched->GetCount(), GL_UNSIGNED_INT, nullptr);
 }

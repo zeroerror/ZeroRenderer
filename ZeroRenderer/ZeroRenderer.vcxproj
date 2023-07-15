@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\editor\manager\EditorModelManager.cpp" />
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
     <ClCompile Include="src\editor\domain\EditorRendererDomain.cpp" />
     <ClCompile Include="src\editor\EditorContext.cpp" />
@@ -31,7 +32,6 @@
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
     <ClCompile Include="src\editor\Database.cpp" />
-    <ClCompile Include="src\model\Model.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\geometry\Cube.cpp" />
     <ClCompile Include="src\component\Camera.cpp" />
@@ -64,6 +64,7 @@
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\editor\manager\EditorModelManager.h" />
     <ClInclude Include="src\editor\meta\CameraMeta.h" />
     <ClInclude Include="src\editor\meta\ComponentMeta.h" />
     <ClInclude Include="src\editor\meta\GameObjectMeta.h" />
@@ -98,7 +99,6 @@
     <ClInclude Include="Dependencies\GLEW\include\GL\wglew.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
-    <ClInclude Include="src\model\Model.h" />
     <ClInclude Include="src\geometry\Rectangle.h" />
     <ClInclude Include="src\geometry\Cube.h" />
     <ClInclude Include="src\component\Camera.h" />
@@ -796,7 +796,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\editor;$(SolutionDir)src\editor\meta;$(SolutionDir)src\editor\domain;$(SolutionDir)src\editor\generic;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\model;$(SolutionDir)src\mesh;$(SolutionDir)src\material;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\editor;$(SolutionDir)src\editor\meta;$(SolutionDir)src\editor\manager;$(SolutionDir)src\editor\domain;$(SolutionDir)src\editor\generic;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\model;$(SolutionDir)src\mesh;$(SolutionDir)src\material;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
