@@ -31,7 +31,7 @@
     <ClCompile Include="src\mesh\MeshRenderer.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
-    <ClCompile Include="src\editor\Database.cpp" />
+    <ClCompile Include="src\editor\EditorDatabase.cpp" />
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\geometry\Cube.cpp" />
     <ClCompile Include="src\component\Camera.cpp" />
@@ -92,7 +92,7 @@
     <ClInclude Include="src\mesh\SkinMeshRenderer.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\Scene.h" />
-    <ClInclude Include="src\editor\Database.h" />
+    <ClInclude Include="src\editor\EditorDatabase.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\glew.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\glxew.h" />

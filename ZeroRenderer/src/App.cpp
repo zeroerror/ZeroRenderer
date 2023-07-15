@@ -7,7 +7,7 @@
 #include <stack>
 #include <src/editor/Scene.h>
 
-#include "Database.h"
+#include "EditorDatabase.h"
 #include "Serialization.h"
 #include "EditorRendererDomain.h"
 
@@ -201,10 +201,10 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 
 
 int main() {
-	// Import Database
-	Database::ImportAssets();
+	// Import EditorDatabase
+	EditorDatabase::ImportAssets();
 
-	_rootNode = Database::GetRootAssetTreeNode();
+	_rootNode = EditorDatabase::GetRootAssetTreeNode();
 	_rootNode->isExpanded = true;
 
 	// Init Editor Context
@@ -297,7 +297,7 @@ int main() {
 		ImGui::SetNextWindowSize(ImVec2(100, 100));
 		ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 		if (ImGui::Button("ClearInvalid")) {
-			Database::ClearMetaFile();
+			EditorDatabase::ClearMetaFile();
 		}
 		ImGui::End();
 

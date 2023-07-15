@@ -1,5 +1,5 @@
 #include "TextureRepo.h"
-#include "Database.h"
+#include "EditorDatabase.h"
 
 TextureRepo::TextureRepo() {
 	allTextures_sortedByPath = std::unordered_map<std::string, Texture*>();
@@ -17,14 +17,14 @@ TextureRepo::~TextureRepo() {
 }
 
 bool TextureRepo::TryAddTexture(const std::string& guid, Texture*& texture) {
-	if(!Database::GUIDExist(guid)) {
+	if(!EditorDatabase::GUIDExist(guid)) {
 		return false;
 	}
 
 	allTextures_sortedByGUID.insert(std::pair<std::string, Texture*>(guid, texture));
 	
 	string path;
-	if (Database::TryGetAssetPathFromGUID(guid, path)) {
+	if (EditorDatabase::TryGetAssetPathFromGUID(guid, path)) {
 		allTextures_sortedByPath.insert(std::pair<std::string, Texture*>(path, texture));
 	}
 

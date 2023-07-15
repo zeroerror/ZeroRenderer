@@ -1,4 +1,4 @@
-#include "Database.h"
+#include "EditorDatabase.h"
 
 #include <vector>
 #include <random>
@@ -21,18 +21,18 @@ using namespace Serialization;
 using namespace std;
 namespace fs = filesystem;
 
-std::unordered_map<string, string> Database::m_assetPath2GUID;
-std::unordered_map<string, string> Database::m_guid2AssetPath;
+std::unordered_map<string, string> EditorDatabase::m_assetPath2GUID;
+std::unordered_map<string, string> EditorDatabase::m_guid2AssetPath;
 
-void Database::ImportAssets() {
-	std::cout << "  +++++++++++++++++++++++++++++++++++++++ Database ImportAssets Start +++++++++++++++++++++++++++++++++++++++  " << std::endl;
+void EditorDatabase::ImportAssets() {
+	std::cout << "  +++++++++++++++++++++++++++++++++++++++ EditorDatabase ImportAssets Start +++++++++++++++++++++++++++++++++++++++  " << std::endl;
 	m_assetPath2GUID = std::unordered_map<string, string>();
 	m_guid2AssetPath = std::unordered_map<string, string>();
 	ImportAssets("asset");
-	std::cout << "  +++++++++++++++++++++++++++++++++++++++ Database ImportAssets Completed +++++++++++++++++++++++++++++++++++++++ \n" << std::endl;
+	std::cout << "  +++++++++++++++++++++++++++++++++++++++ EditorDatabase ImportAssets Completed +++++++++++++++++++++++++++++++++++++++ \n" << std::endl;
 }
 
-void Database::ImportAssets(const string& dir) {
+void EditorDatabase::ImportAssets(const string& dir) {
 	fs::directory_iterator dirIt = fs::directory_iterator(dir);
 	for (const auto& entry : dirIt) {
 		if (entry.is_directory()) {
@@ -59,7 +59,7 @@ void Database::ImportAssets(const string& dir) {
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ Database: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SHADER) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
@@ -76,7 +76,7 @@ void Database::ImportAssets(const string& dir) {
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ Database: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_MAT) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
@@ -92,10 +92,10 @@ void Database::ImportAssets(const string& dir) {
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ Database: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_OBJ) {
-				Database::ImportModel(assetPath);
+				EditorDatabase::ImportModel(assetPath);
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SCENE) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
@@ -111,13 +111,13 @@ void Database::ImportAssets(const string& dir) {
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ Database: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
 			}
 		}
 	}
 }
 
-void Database::ImportModel(string& assetPath) {
+void EditorDatabase::ImportModel(string& assetPath) {
 	string guid = GenerateGUIDFromAssetPath(assetPath);
 	InsertToMap_AssetPath2GUID(assetPath, guid);
 	InsertToMap_GUID2AssetPath(guid, assetPath);
@@ -155,7 +155,7 @@ void Database::ImportModel(string& assetPath) {
 	PrefabMeta_SerializeTo(prefabMeta, assetPathWithoutSuffix);
 }
 
-void Database::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta) {
+void EditorDatabase::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta) {
 	for (unsigned int i = 0; i < aNode->mNumMeshes; i++) {
 		unsigned int meshIndex = aNode->mMeshes[i];
 		aiMesh* mesh = aScene->mMeshes[meshIndex];
@@ -167,7 +167,7 @@ void Database::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const stri
 	}
 }
 
-void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta) {
+void EditorDatabase::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta) {
 	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
 
 	// MeshFilterMeta
@@ -201,7 +201,7 @@ void Database::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene, const
 	InsertToMap_AssetPath2GUID(matPath, materialGUID);
 }
 
-void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& materialMeta) {
+void EditorDatabase::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& materialMeta) {
 	unsigned int textureCount = aMat->GetTextureCount(aTextureType);
 	for (unsigned int i = 0; i < textureCount; i++) {
 		aiString str;
@@ -223,23 +223,23 @@ void Database::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTe
 	}
 }
 
-PrefabMeta Database::CreateModelPrefab(const string& path) {
+PrefabMeta EditorDatabase::CreateModelPrefab(const string& path) {
 	PrefabMeta prefabMeta = PrefabMeta();
 	/////////////////////////////////////////////////////////// todo
 	return prefabMeta;
 }
 
-PrefabMeta Database::CreateGameobjectPrefab(const GameObject& gameObject, const string& path) {
+PrefabMeta EditorDatabase::CreateGameobjectPrefab(const GameObject& gameObject, const string& path) {
 	PrefabMeta prefabMeta = PrefabMeta();
 	/////////////////////////////////////////////////////////// todo
 	return prefabMeta;
 }
 
-void Database::ClearMetaFile() {
+void EditorDatabase::ClearMetaFile() {
 	ClearMetaFile("asset");
 }
 
-void Database::ClearMetaFile(const string& dir) {
+void EditorDatabase::ClearMetaFile(const string& dir) {
 	fs::directory_iterator dirIt = fs::directory_iterator(dir);
 	for (const auto& entry : dirIt) {
 		fs::path path = entry.path();
@@ -256,7 +256,7 @@ void Database::ClearMetaFile(const string& dir) {
 	}
 }
 
-bool Database::SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot) {
+bool EditorDatabase::SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot) {
 	if (!AssetPathExist(texturePath)) return false;
 	if (!AssetPathExist(matPath)) return false;
 
@@ -272,7 +272,7 @@ bool Database::SetMat_DiffuseTextureGUID(const string& matPath, const string& te
 	return true;
 }
 
-bool Database::SetMat_ShaderGUID(const string& matPath, const string& shaderPath) {
+bool EditorDatabase::SetMat_ShaderGUID(const string& matPath, const string& shaderPath) {
 	if (!AssetPathExist(matPath)) return false;
 
 	string shaderGUID;
@@ -287,7 +287,7 @@ bool Database::SetMat_ShaderGUID(const string& matPath, const string& shaderPath
 	return true;
 }
 
-string Database::GenerateGUIDFromAssetPath(string& assetPath) {
+string EditorDatabase::GenerateGUIDFromAssetPath(string& assetPath) {
 	FileHelper::NormalizePath(assetPath);
 	std::hash<string> hasher;
 	stringstream ss;
@@ -299,7 +299,7 @@ string Database::GenerateGUIDFromAssetPath(string& assetPath) {
 	return ss.str();
 }
 
-bool Database::TryGetAssetPathFromGUID(const string& guid, string& assetPath) {
+bool EditorDatabase::TryGetAssetPathFromGUID(const string& guid, string& assetPath) {
 	std::unordered_map<string, string>::iterator it = m_guid2AssetPath.find(guid);
 	if (it != m_guid2AssetPath.end()) {
 		assetPath = it->second;
@@ -309,7 +309,7 @@ bool Database::TryGetAssetPathFromGUID(const string& guid, string& assetPath) {
 	return false;
 }
 
-bool Database::TryGetGUIDFromAssetPath(const string& path, string& guid) {
+bool EditorDatabase::TryGetGUIDFromAssetPath(const string& path, string& guid) {
 	std::unordered_map<string, string>::iterator it;
 	for (it = m_assetPath2GUID.begin(); it != m_assetPath2GUID.end(); it++) {
 		string assetPath = it->first;
@@ -322,17 +322,17 @@ bool Database::TryGetGUIDFromAssetPath(const string& path, string& guid) {
 	return false;
 }
 
-bool Database::GUIDExist(const string& guid) {
+bool EditorDatabase::GUIDExist(const string& guid) {
 	unordered_map<string, string>::iterator it = m_guid2AssetPath.find(guid);
 	return it != m_guid2AssetPath.end();
 }
 
-bool Database::AssetPathExist(const string& path) {
+bool EditorDatabase::AssetPathExist(const string& path) {
 	unordered_map<string, string>::iterator it = m_assetPath2GUID.find(path);
 	return it != m_assetPath2GUID.end();
 }
 
-vector<string> Database::GetAllAssetPaths() {
+vector<string> EditorDatabase::GetAllAssetPaths() {
 	unordered_map<string, string>::iterator it = m_assetPath2GUID.begin();
 	vector<string> fileResources;
 	for (; it != m_assetPath2GUID.end(); it++) {
@@ -342,7 +342,7 @@ vector<string> Database::GetAllAssetPaths() {
 	return fileResources;
 }
 
-AssetTreeNode* Database::GetRootAssetTreeNode() {
+AssetTreeNode* EditorDatabase::GetRootAssetTreeNode() {
 	vector<string> allAssetPaths = GetAllAssetPaths();
 	AssetTreeNode* rootNode = new AssetTreeNode();
 	rootNode->assetPath = "asset";
@@ -355,7 +355,7 @@ AssetTreeNode* Database::GetRootAssetTreeNode() {
 	return rootNode;
 }
 
-void Database::FillToAssetTreeNode(AssetTreeNode* node, const string& path, size_t offset) {
+void EditorDatabase::FillToAssetTreeNode(AssetTreeNode* node, const string& path, size_t offset) {
 	offset = path.find('/', offset);
 	if (offset == string::npos) {
 		return;
@@ -394,19 +394,19 @@ void Database::FillToAssetTreeNode(AssetTreeNode* node, const string& path, size
 }
 
 
-void Database::MoveFile(const string& fromPath, const string& toPath) {
+void EditorDatabase::MoveFile(const string& fromPath, const string& toPath) {
 	string fromGUID;
 	if (!TryGetGUIDFromAssetPath(fromPath, fromGUID)) return;
 	string toGUID;
 	if (!TryGetGUIDFromAssetPath(toPath, toGUID))return;
 }
 
-void Database::InsertToMap_AssetPath2GUID(string& assetPath, const string& guid) {
+void EditorDatabase::InsertToMap_AssetPath2GUID(string& assetPath, const string& guid) {
 	FileHelper::NormalizePath(assetPath);
 	m_assetPath2GUID.insert(std::pair<string, string>(assetPath, guid));
 }
 
-void Database::InsertToMap_GUID2AssetPath(const string& guid, string& assetPath) {
+void EditorDatabase::InsertToMap_GUID2AssetPath(const string& guid, string& assetPath) {
 	FileHelper::NormalizePath(assetPath);
 	m_guid2AssetPath.insert(std::pair<string, string>(guid, assetPath));
 }

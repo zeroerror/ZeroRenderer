@@ -19,7 +19,6 @@
 #include "SpotLight.h"
 #include "DirectLight.h"
 #include "Mesh.h"
-#include "Model.h"
 #include "Scene.h"
 #include "EditorContext.h"
 #include "EditorRendererDomain.h"
@@ -39,7 +38,6 @@ namespace test {
 		Camera* sceneCamera;
 		DirectLight* directLight;
 		vector<Cube*> cubes;
-		vector<Model*> models;
 
 		GLFWwindow* window;
 		ImGuiContext* imguiContext;
@@ -77,7 +75,7 @@ namespace test {
 		void Repaint();
 		void RenderScene();
 		void RenderObject(Material* material, VertexArray* va, IndexBuffer* ib, const glm::vec3& pos, const glm::quat& rot, const glm::mat4& cameraMVPMatrix, const glm::mat4& lightMVPMatrix);
-		void ShaderMapping();
+		void ShadowMapping();
 		void Draw();
 	};
 

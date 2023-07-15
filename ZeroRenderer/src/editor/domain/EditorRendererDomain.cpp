@@ -1,6 +1,6 @@
 #include "EditorRendererDomain.h"
 #include "GLDebug.h"
-#include "Database.h"
+#include "EditorDatabase.h"
 #include "ShaderMeta.h"
 #include "FileSuffix.h"
 #include "FileHelper.h"
@@ -185,7 +185,7 @@ void EditorRendererDomain::BindShader(const Transform* transform, Shader* shader
 
 bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& material) {
 	string matPath;
-	if (!Database::TryGetAssetPathFromGUID(guid, matPath)) {
+	if (!EditorDatabase::TryGetAssetPathFromGUID(guid, matPath)) {
 		cout << " **************** Error: EditorRendererDomain::TryLoadMaterialByGUID: GUID no exist!: " << guid << endl;
 		return false;
 	}
@@ -204,7 +204,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 	ShaderRepo* shaderRepo = editorContext->GetShaderRepo();
 	if (!shaderRepo->TryGetShaderByGUID(shaderGUID, material->shader)) {
 		string shaderPath;
-		if (Database::TryGetAssetPathFromGUID(shaderGUID, shaderPath)) {
+		if (EditorDatabase::TryGetAssetPathFromGUID(shaderGUID, shaderPath)) {
 			material->shader = new Shader(shaderPath);
 			shaderRepo->TryAddShader(shaderGUID, material->shader);
 		}
@@ -218,7 +218,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 	string diffuseTextureGUID = materialMeta.diffuseTextureGUID;
 	if (!textureRepo->TryGetTextureByGUID(diffuseTextureGUID, material->diffuseTexture)) {
 		string texturePath;
-		if (Database::TryGetAssetPathFromGUID(diffuseTextureGUID, texturePath)) {
+		if (EditorDatabase::TryGetAssetPathFromGUID(diffuseTextureGUID, texturePath)) {
 			material->diffuseTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(diffuseTextureGUID, material->diffuseTexture);
 		}
@@ -230,7 +230,7 @@ bool EditorRendererDomain::TryLoadMaterialByGUID(const string& guid, Material*& 
 	string specularTextureGUID = materialMeta.specularTextureGUID;
 	if (!textureRepo->TryGetTextureByGUID(specularTextureGUID, material->specularTexture)) {
 		string texturePath;
-		if (Database::TryGetAssetPathFromGUID(specularTextureGUID, texturePath)) {
+		if (EditorDatabase::TryGetAssetPathFromGUID(specularTextureGUID, texturePath)) {
 			material->specularTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(specularTextureGUID, material->specularTexture);
 		}

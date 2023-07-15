@@ -61,7 +61,7 @@ struct AssetTreeNode {
 
 };
 
-class Database {
+class EditorDatabase {
 
 public:
 	static void ImportAssets();

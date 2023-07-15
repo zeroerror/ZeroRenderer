@@ -1,7 +1,7 @@
 #include "MaterialRepo.h"
 #include <iostream>
 
-#include "Database.h"
+#include "EditorDatabase.h"
 
 MaterialRepo::MaterialRepo() {
 	allMaterials_sortedByPath = std::unordered_map<std::string, Material*>();
@@ -16,14 +16,14 @@ MaterialRepo::~MaterialRepo() {
 }
 
 bool MaterialRepo::TryAddMaterial(const std::string& guid, Material*& material) {
-	if(!Database::GUIDExist(guid)) {
+	if(!EditorDatabase::GUIDExist(guid)) {
 		return false;
 	}
 
 	allMaterials_sortedByGUID.insert(std::pair<std::string, Material*>(guid, material));
 	
 	string path;
-	if (Database::TryGetAssetPathFromGUID(guid, path)) {
+	if (EditorDatabase::TryGetAssetPathFromGUID(guid, path)) {
 		allMaterials_sortedByPath.insert(std::pair<std::string, Material*>(path, material));
 	}
 

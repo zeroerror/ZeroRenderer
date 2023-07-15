@@ -17,7 +17,7 @@
 #include "SpotLight.h"
 #include "ShadowType.h"
 #include "CameraType.h"
-#include "Database.h"
+#include "EditorDatabase.h"
 
 namespace test {
 
@@ -38,16 +38,16 @@ namespace test {
 	}
 
 	void EditorAppTest::Init() {
-		// ======================== Database
-		Database::ImportAssets();
-		Database::SetMat_ShaderGUID("asset/material/default.mat", "asset/shader/Default.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/default.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
-		Database::SetMat_ShaderGUID("asset/material/defaultLight.mat", "asset/shader/DefaultLight.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/defaultLight.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
-		Database::SetMat_ShaderGUID("asset/material/depthMap.mat", "asset/shader/DepthMap.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/depthMap.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
-		Database::SetMat_ShaderGUID("asset/material/lightCube.mat", "asset/shader/Default.shader");
-		Database::SetMat_DiffuseTextureGUID("asset/material/lightCube.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
+		// ======================== EditorDatabase
+		EditorDatabase::ImportAssets();
+		EditorDatabase::SetMat_ShaderGUID("asset/material/default.mat", "asset/shader/Default.shader");
+		EditorDatabase::SetMat_DiffuseTextureGUID("asset/material/default.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
+		EditorDatabase::SetMat_ShaderGUID("asset/material/defaultLight.mat", "asset/shader/DefaultLight.shader");
+		EditorDatabase::SetMat_DiffuseTextureGUID("asset/material/defaultLight.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
+		EditorDatabase::SetMat_ShaderGUID("asset/material/depthMap.mat", "asset/shader/DepthMap.shader");
+		EditorDatabase::SetMat_DiffuseTextureGUID("asset/material/depthMap.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
+		EditorDatabase::SetMat_ShaderGUID("asset/material/lightCube.mat", "asset/shader/Default.shader");
+		EditorDatabase::SetMat_DiffuseTextureGUID("asset/material/lightCube.mat", "asset/texture/jerry.png", TEX_SLOT_DIFFUSE_MAP);
 
 		// ======================== GL
 		InitOpenGL();
@@ -171,7 +171,7 @@ namespace test {
 		Repaint();
 
 		if (directLight->shadowType != ShadowType::None) {
-			ShaderMapping();
+			ShadowMapping();
 			Repaint();
 		}
 
@@ -183,46 +183,40 @@ namespace test {
 	}
 
 	void EditorAppTest::RenderScene() {
-		for (auto cube : cubes) {
-			Material* material = cube->material;
-			VertexArray* va = cube->va;
-			IndexBuffer* ib = cube->ib;
-			glm::vec3 pos = cube->transform->GetPosition();
-			glm::quat rot = cube->transform->GetRotation();
-			glm::mat4 cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
-			glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
-			RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
-		}
+		// - GameObject
 
-		// - Light Cube
-		Material* material = lightCube->material;
-		VertexArray* va = lightCube->va;
-		IndexBuffer* ib = lightCube->ib;
-		glm::vec3 pos = lightCube->transform->GetPosition();
-		glm::quat rot = lightCube->transform->GetRotation();
-		glm::mat4 cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+		//for (auto cube : cubes) {
+		//	Material* material = cube->material;
+		//	VertexArray* va = cube->va;
+		//	IndexBuffer* ib = cube->ib;
+		//	glm::vec3 pos = cube->transform->GetPosition();
+		//	glm::quat rot = cube->transform->GetRotation();
+		//	glm::mat4 cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
+		//	glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
+		//	RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, lightMVPMatrix);
+		//}
 
-		// - Screen Cube 
-		material = depthMapImage->material;
-		va = depthMapImage->va;
-		ib = depthMapImage->ib;
-		pos = depthMapImage->transform->GetPosition();
-		rot = depthMapImage->transform->GetRotation();
-		cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
-		RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
+		//// - Light Cube
+		//Material* material = lightCube->material;
+		//VertexArray* va = lightCube->va;
+		//IndexBuffer* ib = lightCube->ib;
+		//glm::vec3 pos = lightCube->transform->GetPosition();
+		//glm::quat rot = lightCube->transform->GetRotation();
+		//glm::mat4 cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
+		//RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
-		// - Model
-		glm::vec3 lightPos = directLight->transform->GetPosition();
-		glm::vec3 lightColor = directLight->color;
-		glm::vec3 lightDirection = -directLight->GetLightDirection();
+		//// - Screen Cube 
+		//material = depthMapImage->material;
+		//va = depthMapImage->va;
+		//ib = depthMapImage->ib;
+		//pos = depthMapImage->transform->GetPosition();
+		//rot = depthMapImage->transform->GetRotation();
+		//cameraMVPMatrix = sceneCamera->GetMVPMatrix_Perspective(pos);
+		//RenderObject(material, va, ib, pos, rot, cameraMVPMatrix, cameraMVPMatrix);
 
-		for (auto model : models) {
-			//editorRendererDomain->DrawModel(model);
-		}
 	}
 
-	void EditorAppTest::ShaderMapping() {
+	void EditorAppTest::ShadowMapping() {
 		glViewport(0, 0, shadowMapWidth, shadowMapHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -233,23 +227,7 @@ namespace test {
 			std::cout << "  ########################## Framebuffer is not complete!" << std::endl;
 		}
 		else {
-			for (auto cube : cubes) {
-				Material* material = cube->material;
-				VertexArray* va = cube->va;
-				IndexBuffer* ib = cube->ib;
-				glm::vec3 pos = cube->transform->GetPosition();
-				glm::quat rot = cube->transform->GetRotation();
-				glm::mat4 lightMVPMatrix = directLight->GetMVPMatrix_Perspective(pos);
-				RenderObject(material, va, ib, pos, rot, lightMVPMatrix, lightMVPMatrix);
-			}
-
-			// - Model
-			for (auto model : models) {
-				Material* material;
-				//if (editorRendererDomain->TryLoadMaterialByAssetPath("asset/material/default.mat", material)) {
-				//	//editorRendererDomain->DrawModel(model, material);
-				//}
-			}
+			// todo : gameobject
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

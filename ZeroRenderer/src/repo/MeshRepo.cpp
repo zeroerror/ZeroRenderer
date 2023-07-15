@@ -1,5 +1,5 @@
 #include "MeshRepo.h"
-#include "Database.h"
+#include "EditorDatabase.h"
 #include <iostream>
 
 MeshRepo::MeshRepo() {
@@ -14,7 +14,7 @@ MeshRepo::~MeshRepo() {
 }
 
 bool MeshRepo::TryAddMesh(const string& modelGUID, const int& index, Mesh*& mesh) {
-	if (!Database::GUIDExist(modelGUID)) {
+	if (!EditorDatabase::GUIDExist(modelGUID)) {
 		return false;
 	}
 

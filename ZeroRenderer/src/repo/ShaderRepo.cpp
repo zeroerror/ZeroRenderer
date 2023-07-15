@@ -1,5 +1,5 @@
 #include "ShaderRepo.h"
-#include "Database.h"
+#include "EditorDatabase.h"
 #include <iostream>
 
 ShaderRepo::ShaderRepo() {
@@ -18,14 +18,14 @@ ShaderRepo::~ShaderRepo() {
 }
 
 bool ShaderRepo::TryAddShader(const std::string& guid, Shader*& shader) {
-	if(!Database::GUIDExist(guid)) {
+	if(!EditorDatabase::GUIDExist(guid)) {
 		return false;
 	}
 
 	allShaders_sortedByGUID.insert(std::pair<std::string, Shader*>(guid, shader));
 	
 	string path;
-	if (Database::TryGetAssetPathFromGUID(guid, path)) {
+	if (EditorDatabase::TryGetAssetPathFromGUID(guid, path)) {
 		allShaders_sortedByPath.insert(std::pair<std::string, Shader*>(path, shader));
 	}
 

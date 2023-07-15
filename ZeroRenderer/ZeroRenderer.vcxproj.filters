@@ -30,7 +30,7 @@
     <ClCompile Include="src\geometry\Rectangle.cpp" />
     <ClCompile Include="src\tests\EditorAppTest.cpp" />
     <ClCompile Include="src\renderer\Vertex.cpp" />
-    <ClCompile Include="src\editor\Database.cpp" />
+    <ClCompile Include="src\editor\EditorDatabase.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
     <ClCompile Include="src\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
@@ -366,7 +366,7 @@
     <ClInclude Include="src\geometry\Rectangle.h" />
     <ClInclude Include="src\tests\EditorAppTest.h" />
     <ClInclude Include="src\renderer\Vertex.h" />
-    <ClInclude Include="src\editor\Database.h" />
+    <ClInclude Include="src\editor\EditorDatabase.h" />
     <ClInclude Include="src\editor\Scene.h" />
     <ClInclude Include="src\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\FileHelper.h" />
