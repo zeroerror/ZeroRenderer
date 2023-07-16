@@ -23,16 +23,16 @@ public:
 		return (flag & Suffix2FlagMap.at(suffix)) != 0;
 	}
 
-	inline static unsigned int ToFileSuffixFlag(const string* suffixes, const unsigned int& count) {
+	inline static unsigned int ToFileSuffixFlag(vector<string>& suffixes) {
 		unsigned int flag = 0;
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < suffixes.size(); i++) {
 			if (Suffix2FlagMap.find(suffixes[i]) == Suffix2FlagMap.end()) {
 				continue;
 			}
 
 			flag |= Suffix2FlagMap.at(suffixes[i]);
 		}
-		
+
 		return flag;
 	}
 

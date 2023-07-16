@@ -5,7 +5,6 @@
     <ClCompile Include="src\component\CameraController.cpp" />
     <ClCompile Include="src\component\Transform.cpp" />
     <ClCompile Include="src\gameObject\GameObject.cpp" />
-    <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
@@ -54,7 +53,6 @@
     <ClInclude Include="src\component\DirectLight.h" />
     <ClInclude Include="src\component\Transform.h" />
     <ClInclude Include="src\gameObject\GameObject.h" />
-    <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\detail\_features.hpp" />
     <ClInclude Include="src\vendor\glm\detail\_fixes.hpp" />
     <ClInclude Include="src\vendor\glm\detail\_noise.hpp" />
@@ -398,6 +396,7 @@
     <ClInclude Include="src\editor\manager\EditorModelManager.h" />
     <ClInclude Include="src\repo\SceneRepo.h" />
     <ClInclude Include="src\editor\generic\EditorDefaultConfig.h" />
+    <ClInclude Include="src\editor\meta\PrefabInstanceMeta.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

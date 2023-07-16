@@ -12,11 +12,12 @@
 
 #include "TextureMeta.h"
 #include "ShaderMeta.h"
+#include "PrefabInstanceMeta.h"
 #include "TextureSlotCollection.h"
-#include "Serialization.h"
 #include "Serialization.h"
 #include "EditorModelManager.h"
 #include "EditorDefaultConfig.h"
+
 
 using namespace Serialization;
 using namespace std;
@@ -98,21 +99,24 @@ void EditorDatabase::ImportAssets(const string& dir) {
 			else if (extensionStr == FileSuffix::SUFFIX_OBJ) {
 				EditorDatabase::ImportModel(assetPath);
 			}
-			else if (extensionStr == FileSuffix::SUFFIX_SCENE) {
+			else if (extensionStr == FileSuffix::SUFFIX_PREFAB) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				if (!FileHelper::FileExist(assetPath)) {
-					SceneMeta sceneMeta = SceneMeta();
-					sceneMeta.guid = guid;
-					SceneMeta_SerializeTo(sceneMeta, assetPath);
-				}
-				else {
-					SceneMeta sceneMeta = SceneMeta();
-					SceneMeta_DeserializeFrom(&sceneMeta, assetPath);
-					guid = sceneMeta.guid;
-				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
 				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
+			}
+			else if (extensionStr == FileSuffix::SUFFIX_SCENE) {
+				SceneMeta sceneMeta = SceneMeta();
+				if (!FileHelper::FileExist(assetPath)) {
+					sceneMeta.guid = GenerateGUIDFromAssetPath(assetPath);
+					SceneMeta_SerializeTo(sceneMeta, assetPath);
+				}
+				else {
+					SceneMeta_DeserializeFrom(&sceneMeta, assetPath);
+				}
+				InsertToMap_AssetPath2GUID(assetPath, sceneMeta.guid);
+				InsertToMap_GUID2AssetPath(sceneMeta.guid, assetPath);
+				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << sceneMeta.guid << std::endl;
 			}
 		}
 	}
@@ -224,24 +228,19 @@ void EditorDatabase::ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureTy
 	}
 }
 
-void EditorDatabase::ClearMetaFile() {
-	ClearMetaFile("asset");
+void EditorDatabase::ClearFile(const unsigned int& suffixFlag) {
+	vector<string> filePaths;
+	FileHelper::GetFilePaths("asset", suffixFlag, filePaths);
+	for (auto path : filePaths) {
+		FileHelper::DeleteFile(path);
+	}
 }
 
-void EditorDatabase::ClearMetaFile(const string& dir) {
-	fs::directory_iterator dirIt = fs::directory_iterator(dir);
-	for (const auto& entry : dirIt) {
-		fs::path path = entry.path();
-		string pathStr = path.string();
-		if (entry.is_directory()) {
-			ClearMetaFile(pathStr);
-		}
-		else {
-			string extensionStr = path.extension().string();
-			if (extensionStr == FileSuffix::SUFFIX_META) {
-				FileHelper::DeleteFile(path.string());
-			}
-		}
+void EditorDatabase::ClearFile(const string& dir, const unsigned int& suffixFlag) {
+	vector<string> filePaths;
+	FileHelper::GetFilePaths(dir, suffixFlag, filePaths);
+	for (auto path : filePaths) {
+		FileHelper::DeleteFile(path);
 	}
 }
 
@@ -533,6 +532,15 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
 
 	sceneMeta.gameObjectMetas.push_back(obstacle3GOMeta);
+
+	string prefabGUID;
+	if (TryGetGUIDFromAssetPath("asset/model/nanosuit/nanosuit.prefab", prefabGUID)) {
+		PrefabInstanceMeta* prefabInstanceMeta = new PrefabInstanceMeta();
+		prefabInstanceMeta->guid = prefabGUID;
+		prefabInstanceMeta->transformMeta = TransformMeta();
+		prefabInstanceMeta->transformMeta.position = vec3(0, 0, 10);
+		sceneMeta.prefabInstanceMetas.push_back(prefabInstanceMeta);
+	}
 
 	SceneMeta_SerializeTo(sceneMeta, EditorDefaultConfig::DefaultScenePath());
 }

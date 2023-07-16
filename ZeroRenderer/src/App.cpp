@@ -8,6 +8,7 @@
 #include "EditorDatabase.h"
 #include "Serialization.h"
 #include "EditorRendererDomain.h"
+#include "FileSuffix.h"
 
 using namespace Serialization;
 using namespace glm;
@@ -201,7 +202,12 @@ void GL_CLEANUP() {
 }
 
 int main() {
-	EditorDatabase::ClearMetaFile();
+	vector<string> suffixes = vector<string>();
+	suffixes.push_back(FileSuffix::SUFFIX_META);
+	suffixes.push_back(FileSuffix::SUFFIX_SCENE);
+	unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
+	EditorDatabase::ClearFile(suffixFlag);
+
 	// Import Editor Database
 	EditorDatabase::ImportAssets();
 	_rootNode = EditorDatabase::GetRootAssetTreeNode();
@@ -214,7 +220,7 @@ int main() {
 	editorRendererDomain->Init();
 
 	// Init GL
-	glfwInit();
+	glfwInit(); 
 	GLFWwindow* window = glfwCreateWindow(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, "Zero Engine v0.0.1", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 	glewInit();
@@ -296,8 +302,11 @@ int main() {
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POSITION);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
 		ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-		if (ImGui::Button("ClearInvalid")) {
-			EditorDatabase::ClearMetaFile();
+		if (ImGui::Button("Clear META")) {
+			vector<string> suffixes = vector<string>();
+			suffixes.push_back(FileSuffix::SUFFIX_META);
+			unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
+			EditorDatabase::ClearFile(suffixFlag);
 		}
 		ImGui::End();
 

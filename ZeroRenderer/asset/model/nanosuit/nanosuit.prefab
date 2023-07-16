@@ -1,55 +1,57 @@
+--ComponentStart:
 componentType: ComponentType_Transform
 position: 0 0 0
 rotation: 0 0 0 1
----componentEnd
+--ComponentEnd
+--ComponentStart:
 componentType: ComponentType_SkinMeshRenderer
 componentType: ComponentType_MeshFilter
 modelGUID: 3d7168e8f3a8700a
 meshIndex: 0
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshFilter
 modelGUID: 3d7168e8f3a8700a
 meshIndex: 1
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshFilter
 modelGUID: 3d7168e8f3a8700a
 meshIndex: 2
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshFilter
 modelGUID: 3d7168e8f3a8700a
 meshIndex: 3
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshFilter
 modelGUID: 3d7168e8f3a8700a
 meshIndex: 4
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshFilter
 modelGUID: 3d7168e8f3a8700a
 meshIndex: 5
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshFilter
 modelGUID: 3d7168e8f3a8700a
 meshIndex: 6
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshRenderer
 materialGUID: 55ab7d2f08f5c15
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshRenderer
 materialGUID: 4b90b20c29274b83
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshRenderer
 materialGUID: cc1b753a10947c58
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshRenderer
 materialGUID: 962ec9a4aebb5c0b
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshRenderer
 materialGUID: 35d63cf429ce3591
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshRenderer
 materialGUID: c7bcdd64695192db
----componentEnd
+--ComponentEnd
 componentType: ComponentType_MeshRenderer
 materialGUID: a9e549dc7846d2ea
----componentEnd
----componentEnd
+--ComponentEnd
+--ComponentEnd

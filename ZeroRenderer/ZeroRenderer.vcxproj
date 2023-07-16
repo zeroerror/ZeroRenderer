@@ -55,7 +55,6 @@
     <ClCompile Include="src\renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\renderer\VertexBuffer.cpp" />
-    <ClCompile Include="src\tests\Test.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
@@ -75,6 +74,7 @@
     <ClInclude Include="src\editor\meta\MaterialMeta.h" />
     <ClInclude Include="src\editor\meta\MeshFilterMeta.h" />
     <ClInclude Include="src\editor\meta\MeshRendererMeta.h" />
+    <ClInclude Include="src\editor\meta\PrefabInstanceMeta.h" />
     <ClInclude Include="src\editor\meta\PrefabMeta.h" />
     <ClInclude Include="src\editor\meta\SceneMeta.h" />
     <ClInclude Include="src\editor\meta\Serialization.h" />
@@ -123,7 +123,6 @@
     <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\renderer\VertexBuffer.h" />
     <ClInclude Include="src\renderer\VertexBufferLayout.h" />
-    <ClInclude Include="src\tests\Test.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_vector_relational.hpp" />

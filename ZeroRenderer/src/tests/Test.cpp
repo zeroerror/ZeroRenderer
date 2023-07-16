@@ -16,7 +16,7 @@ namespace test {
 
 	void TestMenu::OnImGuiRender() {
 		if (ImGui::Button("Clear EditorDatabase")) {
-			EditorDatabase::ClearMetaFile();
+			EditorDatabase::ClearFile();
 		}
 
 		for (auto& test : m_Tests) {

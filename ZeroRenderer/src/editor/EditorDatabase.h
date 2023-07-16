@@ -73,8 +73,8 @@ public:
 	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
 	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& matMeta);
 
-	static void ClearMetaFile();
-	static void ClearMetaFile(const string& path);
+	static void ClearFile(const unsigned int& suffixFlag);
+	static void ClearFile(const string& path, const unsigned int& suffixFlag);
 
 	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
 	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);

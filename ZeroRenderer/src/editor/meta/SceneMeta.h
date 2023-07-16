@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObjectMeta.h"
+#include "PrefabInstanceMeta.h"
 #include "Scene.h"
 
 class SceneMeta
@@ -11,6 +12,7 @@ public:
 	std::string guid;
 
 	vector<GameObjectMeta*> gameObjectMetas;
+	vector<PrefabInstanceMeta*> prefabInstanceMetas;
 
 	void ToScene(Scene& scene);
 };

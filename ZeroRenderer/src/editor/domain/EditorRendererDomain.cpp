@@ -26,9 +26,9 @@ void EditorRendererDomain::Inject(EditorContext* ctxt) {
 
 void EditorRendererDomain::Init() {
 	// Load all models'meshes to mesh repo.
-	const size_t suffixCount = 1;
-	string suffixes[suffixCount] = { FileSuffix::SUFFIX_OBJ };
-	unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes, suffixCount);
+	vector<string> suffixes = vector<string>();
+	suffixes.push_back(FileSuffix::SUFFIX_OBJ);
+	unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
 
 	vector<string> filePaths;
 	FileHelper::GetFilePaths("asset", suffixFlag, filePaths);
@@ -54,6 +54,10 @@ void EditorRendererDomain::ProcessModel(const string& path) {
 void EditorRendererDomain::ProcessMeshes(const aiScene* aScene, PrefabMeta& prefabMeta) {
 	MeshRepo* meshRepo = editorContext->GetMeshRepo();
 	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
+	if (skinMeshRendererMeta == nullptr) {
+		return;
+	}
+
 	for (size_t i = 0; i < skinMeshRendererMeta->meshFilterMetas.size(); i++) {
 		MeshFilterMeta* meshFilterMeta = skinMeshRendererMeta->meshFilterMetas[i];
 		string modelGUID = meshFilterMeta->modelGUID;
@@ -371,7 +375,7 @@ void EditorRendererDomain::BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRende
 
 	skinMeshRenderer->isBatched = true;
 	cout << "Model BatchSkinMeshRenderer: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << endl;
-} 
+}
 
 void EditorRendererDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
 	skinMeshRenderer->va_batched->Bind();
