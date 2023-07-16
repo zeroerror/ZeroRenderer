@@ -5,9 +5,7 @@
 class CameraMeta :public ComponentMeta
 {
 public:
-
-	CameraMeta();
-	~CameraMeta();
+	CameraMeta() { componentType = ComponentType_Camera; }
 	
 	CameraType cameraType;
 	float nearPlane;
@@ -17,6 +15,5 @@ public:
 	float scrHeight;
 	float orthoSize;
 
-	void ToCamera(Camera* camera);
 };
 

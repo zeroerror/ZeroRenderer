@@ -24,6 +24,8 @@ public:
 	template <typename T, typename = enable_if_t<is_base_of<Component, T>::value>>
 	T* AddComponent() {
 		T* component = new T();
+		component->gameObject = this;
+		component->transform = this->_transform;
 		_components.push_back(component);
 		return component;
 	}
@@ -43,18 +45,15 @@ public:
 	}
 
 	template <typename T, typename = enable_if_t<is_base_of<Component, T>::value>>
-	vector<T*>& GetAllComponents() {
-		vector<T*> allComs = vector<T*>();
+	void GetAllComponents(vector<T*>& components) {
 		T t = T();
 		Component com = static_cast<Component>(t);
 		ComponentType_ comType = com.componentType;
 		for (auto com : _components) {
-			if (typeid(com) == typeid(T)) {
-				allComs.push_back(static_cast<T*>(com));
+			if (com->componentType == comType) {
+				components.push_back(static_cast<T*>(com));
 			}
 		}
-
-		return allComs;
 	}
 
 private:

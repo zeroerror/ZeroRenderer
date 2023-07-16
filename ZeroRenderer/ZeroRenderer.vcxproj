@@ -22,39 +22,39 @@
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\editor\generic\EditorDefaultConfig.cpp" />
     <ClCompile Include="src\editor\manager\EditorModelManager.cpp" />
-    <ClCompile Include="src\editor\meta\CameraMeta.cpp" />
     <ClCompile Include="src\editor\meta\GameObjectMeta.cpp" />
     <ClCompile Include="src\editor\meta\SceneMeta.cpp" />
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
-    <ClCompile Include="src\editor\domain\EditorRendererDomain.cpp" />
-    <ClCompile Include="src\editor\EditorContext.cpp" />
+    <ClCompile Include="src\runtime\component\Camera.cpp" />
+    <ClCompile Include="src\runtime\domain\RuntimeDomain.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
     <ClCompile Include="src\editor\meta\SkinMeshRendererMeta.cpp" />
     <ClCompile Include="src\editor\meta\TransformMeta.cpp" />
-    <ClCompile Include="src\mesh\Mesh.cpp" />
-    <ClCompile Include="src\mesh\MeshRenderer.cpp" />
-    <ClCompile Include="src\repo\MaterialRepo.cpp" />
+    <ClCompile Include="src\runtime\context\RuntimeContext.cpp" />
+    <ClCompile Include="src\runtime\mesh\Mesh.cpp" />
+    <ClCompile Include="src\runtime\mesh\MeshRenderer.cpp" />
+    <ClCompile Include="src\runtime\mesh\SkinMeshRenderer.cpp" />
+    <ClCompile Include="src\runtime\repo\MaterialRepo.cpp" />
     <ClCompile Include="src\editor\Scene.cpp" />
     <ClCompile Include="src\editor\EditorDatabase.cpp" />
-    <ClCompile Include="src\component\Camera.cpp" />
-    <ClCompile Include="src\component\CameraController.cpp" />
-    <ClCompile Include="src\component\DirectLight.cpp" />
-    <ClCompile Include="src\component\SpotLight.cpp" />
-    <ClCompile Include="src\component\Transform.cpp" />
+    <ClCompile Include="src\runtime\component\CameraController.cpp" />
+    <ClCompile Include="src\runtime\component\DirectLight.cpp" />
+    <ClCompile Include="src\runtime\component\SpotLight.cpp" />
+    <ClCompile Include="src\runtime\component\Transform.cpp" />
     <ClCompile Include="src\debug\GLDebug.cpp" />
-    <ClCompile Include="src\gameObject\GameObject.cpp" />
-    <ClCompile Include="src\renderer\Vertex.cpp" />
-    <ClCompile Include="src\repo\MeshRepo.cpp" />
-    <ClCompile Include="src\repo\SceneRepo.cpp" />
-    <ClCompile Include="src\repo\ShaderRepo.cpp" />
-    <ClCompile Include="src\repo\TextureRepo.cpp" />
-    <ClCompile Include="src\material\Material.cpp" />
-    <ClCompile Include="src\material\Shader.cpp" />
-    <ClCompile Include="src\material\Texture.cpp" />
-    <ClCompile Include="src\renderer\IndexBuffer.cpp" />
-    <ClCompile Include="src\renderer\VertexArray.cpp" />
-    <ClCompile Include="src\renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\runtime\gameObject\GameObject.cpp" />
+    <ClCompile Include="src\runtime\renderer\Vertex.cpp" />
+    <ClCompile Include="src\runtime\repo\MeshRepo.cpp" />
+    <ClCompile Include="src\runtime\repo\SceneRepo.cpp" />
+    <ClCompile Include="src\runtime\repo\ShaderRepo.cpp" />
+    <ClCompile Include="src\runtime\repo\TextureRepo.cpp" />
+    <ClCompile Include="src\runtime\material\Material.cpp" />
+    <ClCompile Include="src\runtime\material\Shader.cpp" />
+    <ClCompile Include="src\runtime\material\Texture.cpp" />
+    <ClCompile Include="src\runtime\renderer\IndexBuffer.cpp" />
+    <ClCompile Include="src\runtime\renderer\VertexArray.cpp" />
+    <ClCompile Include="src\runtime\renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
@@ -78,9 +78,9 @@
     <ClInclude Include="src\editor\meta\PrefabMeta.h" />
     <ClInclude Include="src\editor\meta\SceneMeta.h" />
     <ClInclude Include="src\editor\meta\Serialization.h" />
-    <ClInclude Include="src\component\Component.h" />
-    <ClInclude Include="src\editor\domain\EditorRendererDomain.h" />
-    <ClInclude Include="src\editor\EditorContext.h" />
+    <ClInclude Include="src\runtime\component\Camera.h" />
+    <ClInclude Include="src\runtime\component\Component.h" />
+    <ClInclude Include="src\runtime\domain\RuntimeDomain.h" />
     <ClInclude Include="src\editor\FileHelper.h" />
     <ClInclude Include="src\editor\generic\FileSuffix.h" />
     <ClInclude Include="src\editor\generic\Mat.h" />
@@ -90,11 +90,12 @@
     <ClInclude Include="src\editor\meta\TextureMeta.h" />
     <ClInclude Include="src\editor\meta\TransformMeta.h" />
     <ClInclude Include="src\generic\CameraType.h" />
-    <ClInclude Include="src\mesh\Mesh.h" />
-    <ClInclude Include="src\mesh\MeshFilter.h" />
-    <ClInclude Include="src\mesh\MeshRenderer.h" />
-    <ClInclude Include="src\mesh\SkinMeshRenderer.h" />
-    <ClInclude Include="src\repo\MaterialRepo.h" />
+    <ClInclude Include="src\runtime\mesh\Mesh.h" />
+    <ClInclude Include="src\runtime\mesh\MeshFilter.h" />
+    <ClInclude Include="src\runtime\mesh\MeshRenderer.h" />
+    <ClInclude Include="src\runtime\mesh\SkinMeshRenderer.h" />
+    <ClInclude Include="src\runtime\context\RuntimeContext.h" />
+    <ClInclude Include="src\runtime\repo\MaterialRepo.h" />
     <ClInclude Include="src\editor\Scene.h" />
     <ClInclude Include="src\editor\EditorDatabase.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h" />
@@ -103,26 +104,25 @@
     <ClInclude Include="Dependencies\GLEW\include\GL\wglew.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\GLFW\glfw3native.h" />
-    <ClInclude Include="src\component\Camera.h" />
-    <ClInclude Include="src\component\CameraController.h" />
-    <ClInclude Include="src\component\DirectLight.h" />
-    <ClInclude Include="src\component\SpotLight.h" />
-    <ClInclude Include="src\component\Transform.h" />
+    <ClInclude Include="src\runtime\component\CameraController.h" />
+    <ClInclude Include="src\runtime\component\DirectLight.h" />
+    <ClInclude Include="src\runtime\component\SpotLight.h" />
+    <ClInclude Include="src\runtime\component\Transform.h" />
     <ClInclude Include="src\debug\GLDebug.h" />
-    <ClInclude Include="src\gameObject\GameObject.h" />
+    <ClInclude Include="src\runtime\gameObject\GameObject.h" />
     <ClInclude Include="src\generic\ShadowType.h" />
-    <ClInclude Include="src\renderer\Vertex.h" />
-    <ClInclude Include="src\repo\MeshRepo.h" />
-    <ClInclude Include="src\repo\SceneRepo.h" />
-    <ClInclude Include="src\repo\ShaderRepo.h" />
-    <ClInclude Include="src\repo\TextureRepo.h" />
-    <ClInclude Include="src\material\Material.h" />
-    <ClInclude Include="src\material\Shader.h" />
-    <ClInclude Include="src\material\Texture.h" />
-    <ClInclude Include="src\renderer\IndexBuffer.h" />
-    <ClInclude Include="src\renderer\VertexArray.h" />
-    <ClInclude Include="src\renderer\VertexBuffer.h" />
-    <ClInclude Include="src\renderer\VertexBufferLayout.h" />
+    <ClInclude Include="src\runtime\renderer\Vertex.h" />
+    <ClInclude Include="src\runtime\repo\MeshRepo.h" />
+    <ClInclude Include="src\runtime\repo\SceneRepo.h" />
+    <ClInclude Include="src\runtime\repo\ShaderRepo.h" />
+    <ClInclude Include="src\runtime\repo\TextureRepo.h" />
+    <ClInclude Include="src\runtime\material\Material.h" />
+    <ClInclude Include="src\runtime\material\Shader.h" />
+    <ClInclude Include="src\runtime\material\Texture.h" />
+    <ClInclude Include="src\runtime\renderer\IndexBuffer.h" />
+    <ClInclude Include="src\runtime\renderer\VertexArray.h" />
+    <ClInclude Include="src\runtime\renderer\VertexBuffer.h" />
+    <ClInclude Include="src\runtime\renderer\VertexBufferLayout.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_vector_relational.hpp" />
@@ -797,10 +797,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\editor;$(SolutionDir)src\editor\meta;$(SolutionDir)src\editor\manager;$(SolutionDir)src\editor\domain;$(SolutionDir)src\editor\generic;$(SolutionDir)src\geometry;$(SolutionDir)src\component;$(SolutionDir)src\debug;$(SolutionDir)src\gameObject;$(SolutionDir)src\generic;$(SolutionDir)src\model;$(SolutionDir)src\mesh;$(SolutionDir)src\material;$(SolutionDir)src\renderer;$(SolutionDir)src\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\debug;$(SolutionDir)src\generic;$(SolutionDir)src\editor;$(SolutionDir)src\editor\meta;$(SolutionDir)src\editor\manager;$(SolutionDir)src\editor\domain;$(SolutionDir)src\editor\generic;$(SolutionDir)src\runtime\domain;$(SolutionDir)src\runtime\context;$(SolutionDir)src\runtime\geometry;$(SolutionDir)src\runtime\component;$(SolutionDir)src\runtime\gameObject;$(SolutionDir)src\runtime\model;$(SolutionDir)src\runtime\mesh;$(SolutionDir)src\runtime\material;$(SolutionDir)src\runtime\renderer;$(SolutionDir)src\runtime\repo;$(SolutionDir)src\tests;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

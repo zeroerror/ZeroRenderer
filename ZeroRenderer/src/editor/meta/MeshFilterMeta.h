@@ -13,6 +13,7 @@ public:
 
 	MeshFilterMeta() {
 		componentType = ComponentType_MeshFilter;
+		meshIndex = -1;
 	}
 };
 

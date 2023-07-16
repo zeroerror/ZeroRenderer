@@ -39,7 +39,5 @@ public:
 
 		return nullptr;
 	}
-
-	void ToGameObject(GameObject& gameObject);
 };
 

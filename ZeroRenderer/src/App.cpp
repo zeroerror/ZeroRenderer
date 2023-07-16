@@ -7,15 +7,15 @@
 
 #include "EditorDatabase.h"
 #include "Serialization.h"
-#include "EditorRendererDomain.h"
+#include <RuntimeDomain.h>
 #include "FileSuffix.h"
 
 using namespace Serialization;
 using namespace glm;
 
 // ********************** EDITOR Context **********************
-EditorContext* editorContext;
-EditorRendererDomain* editorRendererDomain;
+RuntimeContext* runtimeContext;
+RuntimeDomain* runtimeDomain;
 
 // ********************** EDITOR USER CONFIG **********************
 static const int EDITOR_WINDOW_WIDTH = 1920;
@@ -202,11 +202,11 @@ void GL_CLEANUP() {
 }
 
 int main() {
-	vector<string> suffixes = vector<string>();
-	suffixes.push_back(FileSuffix::SUFFIX_META);
-	suffixes.push_back(FileSuffix::SUFFIX_SCENE);
-	unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
-	EditorDatabase::ClearFile(suffixFlag);
+	//vector<string> suffixes = vector<string>();
+	//suffixes.push_back(FileSuffix::SUFFIX_META);
+	//suffixes.push_back(FileSuffix::SUFFIX_SCENE);
+	//unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
+	//EditorDatabase::ClearFile(suffixFlag);
 
 	// Import Editor Database
 	EditorDatabase::ImportAssets();
@@ -214,10 +214,10 @@ int main() {
 	_rootNode->isExpanded = true;
 
 	// Init Editor Context
-	editorContext = new EditorContext();
-	editorRendererDomain = new EditorRendererDomain();
-	editorRendererDomain->Inject(editorContext);
-	editorRendererDomain->Init();
+	runtimeContext = new RuntimeContext();
+	runtimeDomain = new RuntimeDomain();
+	runtimeDomain->Inject(runtimeContext);
+	runtimeDomain->Init();
 
 	// Init GL
 	glfwInit(); 
@@ -315,7 +315,7 @@ int main() {
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 
-		editorRendererDomain->LoadScene("asset/DefaultScene.scene");
+		runtimeDomain->LoadScene("asset/DefaultScene.scene");
 
 		ImGui::End();
 

@@ -13,6 +13,7 @@ public:
 	vector<ComponentMeta*> componentMetas;
 
 	string guid;
+	string name;
 
 	PrefabMeta() {
 		transformMeta = TransformMeta();

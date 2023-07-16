@@ -8,11 +8,11 @@
 #include "Camera.h"
 #include "DirectLight.h"
 
-class EditorContext {
+class RuntimeContext {
 
 public:
-	EditorContext();
-	~EditorContext();
+	RuntimeContext();
+	~RuntimeContext();
 
 	MaterialRepo* GetMaterialRepo();
 	ShaderRepo* GetShaderRepo();

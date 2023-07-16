@@ -13,7 +13,6 @@ public:
 
 	TransformMeta();
 	~TransformMeta();
-	void ToTransform(Transform* transform);
 
 	vec3 position;
 	quat rotation;

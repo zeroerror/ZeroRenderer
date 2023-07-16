@@ -9,6 +9,9 @@ using namespace std;
 class SkinMeshRenderer :public Component {
 
 public:
+	SkinMeshRenderer();
+	~SkinMeshRenderer();
+
 	vector<MeshFilter*>* meshFilters;
 	vector<MeshRenderer*>* meshRenderers;
 

@@ -10,9 +10,3 @@ TransformMeta::TransformMeta() {
 TransformMeta::~TransformMeta() {
 
 }
-
-void TransformMeta::ToTransform(Transform* transform) {
-	transform->SetPosition(position);
-	transform->SetRotation(rotation);
-	transform->scale = scale;
-}

@@ -228,7 +228,7 @@ void Serialization::ComponentMeta_SerializeTo(const ComponentMeta& componentMeta
 	ss << EditorDefaultConfig::DefaultComponentEndStr() << endl;
 }
 
-void Serialization::PrefabMeta_SerializeTo(PrefabMeta& prefabMeta, const string& path) {
+void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const string& path) {
 	stringstream ss;
 	for (auto comMeta : prefabMeta.componentMetas) {
 		ComponentMeta_SerializeTo(*comMeta, ss);
@@ -245,6 +245,7 @@ void Serialization::PrefabMeta_SerializeTo(PrefabMeta& prefabMeta, const string&
 	{
 		stringstream ss;
 		ss << "guid: " << prefabMeta.guid;
+		ss << "name: " << prefabMeta.name;
 
 		string result = ss.str();
 		size_t len = result.length() + 1;
@@ -257,7 +258,7 @@ void Serialization::PrefabMeta_SerializeTo(PrefabMeta& prefabMeta, const string&
 
 }
 
-void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta* prefabMeta, const string& path) {
+void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const string& path) {
 	string prefabPath = path.substr(0, path.find_last_of(".")) + FileSuffix::SUFFIX_PREFAB;
 	unsigned int charCount = FileHelper::GetFileCharSize(prefabPath);
 	if (charCount == 0) {
@@ -287,23 +288,23 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta* prefabMeta, const str
 		;
 		ComponentType_ comType = GetComponentType(key);
 		if (ComponentType_Transform == comType) {
-			TransformMeta transformMeta = prefabMeta->transformMeta;
+			TransformMeta transformMeta = prefabMeta.transformMeta;
 			TransformMeta_DeserializeFrom(&transformMeta, ss);
 		}
 		else if (ComponentType_Camera == comType) {
-			CameraMeta* cameraMeta = static_cast<CameraMeta*>(prefabMeta->AddComponentMeta<CameraMeta>());
+			CameraMeta* cameraMeta = static_cast<CameraMeta*>(prefabMeta.AddComponentMeta<CameraMeta>());
 			CameraMeta_DeserializeFrom(cameraMeta, ss);
 		}
 		else if (ComponentType_MeshFilter == comType) {
-			MeshFilterMeta* meshFilterMeta = static_cast<MeshFilterMeta*>(prefabMeta->AddComponentMeta<MeshFilterMeta>());
+			MeshFilterMeta* meshFilterMeta = static_cast<MeshFilterMeta*>(prefabMeta.AddComponentMeta<MeshFilterMeta>());
 			MeshFilterMeta_DeserializeFrom(meshFilterMeta, ss);
 		}
 		else if (ComponentType_MeshRenderer == comType) {
-			MeshRendererMeta* meshRendererMeta = static_cast<MeshRendererMeta*>(prefabMeta->AddComponentMeta<MeshRendererMeta>());
+			MeshRendererMeta* meshRendererMeta = static_cast<MeshRendererMeta*>(prefabMeta.AddComponentMeta<MeshRendererMeta>());
 			MeshRendererMeta_DeserializeFrom(meshRendererMeta, ss);
 		}
 		else if (ComponentType_SkinMeshRenderer == comType) {
-			SkinMeshRendererMeta* skinMeshRendererMeta = static_cast<SkinMeshRendererMeta*>(prefabMeta->AddComponentMeta<SkinMeshRendererMeta>());
+			SkinMeshRendererMeta* skinMeshRendererMeta = static_cast<SkinMeshRendererMeta*>(prefabMeta.AddComponentMeta<SkinMeshRendererMeta>());
 			SkinMeshRendererMeta_DeserializeFrom(skinMeshRendererMeta, ss);
 		}
 	}
@@ -320,14 +321,15 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta* prefabMeta, const str
 			if (!(iss >> key)) {
 				break;
 			}
-			if (key != "guid:") {
-				break;
-			}
-			if (!(iss >> key)) {
-				break;
+			if (key == "guid:") {
+				prefabMeta.guid = key.c_str();
+				continue;
 			}
 
-			prefabMeta->guid = key.c_str();
+			if(key=="name:"){
+				prefabMeta.name = key.c_str();
+				continue;
+			}
 		}
 	}
 }
@@ -417,20 +419,38 @@ void Serialization::SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string
 	while (getline(ss, line)) {
 		istringstream iss(line);
 		string key;
-		if (!(iss >> key))break;
+		if (!(iss >> key))continue;
+
 		if (key == EditorDefaultConfig::DefaultAllGameObjectsStartStr()) {
 			while (getline(ss, line)) {
 				iss = istringstream(line);
-				if (!(iss >> key)) {
+
+				if (!(iss >> key))continue;
+
+				if (key == EditorDefaultConfig::DefaultAllGameObjectsEndStr()) {
 					break;
 				}
+
 				if (key == EditorDefaultConfig::DefaultGameObjectStartStr()) {
 					GameObjectMeta* goMeta = new GameObjectMeta();
 					GameObjectMeta_DeserializeFrom(goMeta, ss);
 					sceneMeta->gameObjectMetas.push_back(goMeta);
+					continue;
 				}
-				else if (key == EditorDefaultConfig::DefaultGameObjectEndStr()) {
-					break;
+			}
+		}
+		else if (key == EditorDefaultConfig::DefaultAllPrefabInstancesStartStr()) {
+			while (getline(ss, line)) {
+				iss = istringstream(line);
+
+				if (!(iss >> key))continue;
+				if (key == EditorDefaultConfig::DefaultAllPrefabInstancesEndStr()) break;
+
+				if (key == EditorDefaultConfig::DefaultPrefabInstanceStartStr()) {
+					PrefabInstanceMeta* prefabInstanceMeta = new PrefabInstanceMeta();
+					PrefabInstanceMeta_DeserializeFrom(prefabInstanceMeta, ss);
+					sceneMeta->prefabInstanceMetas.push_back(prefabInstanceMeta);
+					continue;
 				}
 			}
 		}

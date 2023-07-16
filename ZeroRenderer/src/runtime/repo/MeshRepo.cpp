@@ -18,9 +18,15 @@ bool MeshRepo::TryAddMesh(const string& modelGUID, const int& index, Mesh*& mesh
 		return false;
 	}
 
+	if (TryGetMesh(modelGUID, index, mesh)) {
+		return false;
+	}
+
 	stringstream key;
 	key << modelGUID << index;
 	allMeshs.insert(pair<string, Mesh*>(key.str(), mesh));
+
+	cout << "MeshRepo::TryAddMesh() " << key.str() << endl;
 
 	return true;
 }

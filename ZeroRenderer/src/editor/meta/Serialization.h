@@ -32,8 +32,8 @@ namespace Serialization {
 
 	void ComponentMeta_SerializeTo(const ComponentMeta& componentMeta, stringstream& ss);
 
-	void PrefabMeta_SerializeTo(PrefabMeta& prefabMeta, const string& path);
-	void PrefabMeta_DeserializeFrom(PrefabMeta* prefabMeta, const string& path);
+	void PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const string& path);
+	void PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const string& path);
 	
 	void PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabInstanceMeta, stringstream& ss);
 	void PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefabInstanceMeta, stringstream& ss);

@@ -13,6 +13,4 @@ public:
 
 	vector<GameObjectMeta*> gameObjectMetas;
 	vector<PrefabInstanceMeta*> prefabInstanceMetas;
-
-	void ToScene(Scene& scene);
 };
