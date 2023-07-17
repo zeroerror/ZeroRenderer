@@ -10,7 +10,12 @@ using namespace std;
 void Serialization::GameObjectMeta_SerializeTo(const GameObjectMeta& gameObjectMeta, stringstream& ss) {
 	ss << EditorDefaultConfig::DefaultGameObjectStartStr() << endl;
 	ss << "name: " << gameObjectMeta.name << endl;
+	ss << endl;
+	ss << EditorDefaultConfig::DefaultComponentStartStr() << endl;
 	TransformMeta_SerializeTo(gameObjectMeta.transformMeta, ss);
+	ss << EditorDefaultConfig::DefaultComponentEndStr() << endl;
+	ss << endl;
+
 	for (auto comMeta : gameObjectMeta.componentMetas) {
 		ComponentMeta_SerializeTo(*comMeta, ss);
 	}
@@ -23,7 +28,7 @@ void Serialization::GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMet
 		istringstream iss(line);
 		string key;
 
-		if (!(iss >> key)) break;
+		if (!(iss >> key)) continue;
 		if (key == EditorDefaultConfig::DefaultGameObjectEndStr()) break;
 
 		if (key == "name:") {
@@ -32,8 +37,9 @@ void Serialization::GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMet
 			continue;
 		}
 
-		if (key == "componentType:") iss >> key;
+		if (key != "componentType:")continue;
 
+		iss >> key;
 		ComponentType_ comType = GetComponentType(key);
 		if (ComponentType_Transform == comType) {
 			TransformMeta_DeserializeFrom(&gameObjectMeta->transformMeta, ss);
@@ -45,6 +51,14 @@ void Serialization::GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMet
 			CameraMeta_DeserializeFrom(cameraMeta, ss);
 			continue;
 		}
+
+		if (ComponentType_DirectLight == comType) {
+			DirectLightMeta* directLightMeta = gameObjectMeta->AddComponentMeta<DirectLightMeta>();
+			DirectLightMeta_DeserializeFrom(directLightMeta, ss);
+			continue;
+		}
+
+		cout << "################ Don't know what this component type is!!! Please check!!! comType: " << comType << endl;
 	}
 }
 
@@ -130,6 +144,63 @@ void Serialization::CameraMeta_DeserializeFrom(CameraMeta* cameraMeta, stringstr
 		else if (key == "orthoSize:") {
 			iss >> key;
 			cameraMeta->orthoSize = atof(key.c_str());
+		}
+	}
+}
+
+void Serialization::DirectLightMeta_SerializeTo(const DirectLightMeta& directLightMeta, stringstream& ss) {
+	ss << "componentType: " << ComponentType_Names[directLightMeta.componentType] << endl;
+	ss << "color: " << directLightMeta.color.x << ' ' << directLightMeta.color.y << ' ' << directLightMeta.color.z << endl;
+	ss << "shadowType: " << static_cast<int>(directLightMeta.shadowType) << endl;
+	ss << "scrWidth: " << directLightMeta.scrWidth << endl;
+	ss << "scrHeight: " << directLightMeta.scrHeight << endl;
+	ss << "fov: " << directLightMeta.fov << endl;
+	ss << "nearPlane: " << directLightMeta.nearPlane << endl;
+	ss << "farPlane: " << directLightMeta.farPlane << endl;
+}
+
+void Serialization::DirectLightMeta_DeserializeFrom(DirectLightMeta* directLightMeta, stringstream& ss) {
+	string line;
+	while (getline(ss, line)) {
+		istringstream iss(line);
+		string key;
+		if (!(iss >> key)) {
+			break;
+		}
+		if (key == EditorDefaultConfig::DefaultComponentEndStr()) {
+			break;
+		}
+		if (key == "color:") {
+			iss >> key;
+			directLightMeta->color.x = atoi(key.c_str());
+			iss >> key;
+			directLightMeta->color.y = atoi(key.c_str());
+			iss >> key;
+			directLightMeta->color.z = atoi(key.c_str());
+		}
+		else if (key == "shadowType:") {
+			iss >> key;
+			directLightMeta->shadowType = (ShadowType)(atoi(key.c_str()));
+		}
+		else if (key == "scrWidth:") {
+			iss >> key;
+			directLightMeta->scrWidth = atof(key.c_str());
+		}
+		else if (key == "scrHeight:") {
+			iss >> key;
+			directLightMeta->scrHeight = atof(key.c_str());
+		}
+		else if (key == "fov:") {
+			iss >> key;
+			directLightMeta->fov = atof(key.c_str());
+		}
+		else if (key == "nearPlane:") {
+			iss >> key;
+			directLightMeta->nearPlane = atof(key.c_str());
+		}
+		else if (key == "farPlane:") {
+			iss >> key;
+			directLightMeta->farPlane = atof(key.c_str());
 		}
 	}
 }
@@ -222,10 +293,45 @@ void Serialization::ComponentMeta_SerializeTo(const ComponentMeta& componentMeta
 	ComponentType_ comType = componentMeta.componentType;
 	if (comType == ComponentType_Transform)TransformMeta_SerializeTo(static_cast<const TransformMeta&>(componentMeta), ss);
 	else if (comType == ComponentType_Camera)CameraMeta_SerializeTo(static_cast<const CameraMeta&>(componentMeta), ss);
+	else if (comType == ComponentType_DirectLight)DirectLightMeta_SerializeTo(static_cast<const DirectLightMeta&>(componentMeta), ss);
 	else if (comType == ComponentType_MeshFilter)MeshFilterMeta_SerializeTo(static_cast<const MeshFilterMeta&>(componentMeta), ss);
 	else if (comType == ComponentType_MeshRenderer)MeshRendererMeta_SerializeTo(static_cast<const MeshRendererMeta&>(componentMeta), ss);
 	else if (comType == ComponentType_SkinMeshRenderer)SkinMeshRendererMeta_SerializeTo(static_cast<const SkinMeshRendererMeta&>(componentMeta), ss);
 	ss << EditorDefaultConfig::DefaultComponentEndStr() << endl;
+}
+
+void Serialization::PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabInstanceMeta, stringstream& ss) {
+	ss << EditorDefaultConfig::DefaultPrefabInstanceStartStr() << endl;
+	ss << "guid: " << prefabInstanceMeta.guid << endl;
+	TransformMeta_SerializeTo(prefabInstanceMeta.transformMeta, ss);
+	ss << EditorDefaultConfig::DefaultPrefabInstanceEndStr() << endl;
+}
+
+void Serialization::PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefabInstanceMeta, stringstream& ss) {
+	string line;
+	while (getline(ss, line)) {
+		istringstream iss(line);
+		string key;
+
+		if (!(iss >> key)) continue;
+		if (key == EditorDefaultConfig::DefaultGameObjectEndStr()) break;
+
+		if (key == "guid:") {
+			iss >> key;
+			prefabInstanceMeta->guid = key;
+			continue;
+		}
+
+		if (key != "componentType:")continue;
+
+		iss >> key;
+
+		ComponentType_ comType = GetComponentType(key);
+		if (ComponentType_Transform == comType) {
+			TransformMeta_DeserializeFrom(&prefabInstanceMeta->transformMeta, ss);
+			continue;
+		}
+	}
 }
 
 void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const string& path) {
@@ -238,9 +344,8 @@ void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const s
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
-	string prefabPath = path + FileSuffix::SUFFIX_PREFAB;
-	FileHelper::WriteCharsTo(prefabPath, charResult);
-	ss << "Prefab Serialize : " << prefabPath << endl;
+	FileHelper::WriteCharsTo(path, charResult);
+	ss << "Prefab Serialize : " << path << endl;
 
 	{
 		stringstream ss;
@@ -251,7 +356,7 @@ void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const s
 		size_t len = result.length() + 1;
 		unsigned char* charResult = new unsigned char[len];
 		memcpy(charResult, result.c_str(), len);
-		string prefabMetaPath = prefabPath + FileSuffix::SUFFIX_META;
+		string prefabMetaPath = path + FileSuffix::SUFFIX_META;
 		FileHelper::WriteCharsTo(prefabMetaPath, charResult);
 		ss << "Prefab Meta Serialize : " << prefabMetaPath << endl;
 	}
@@ -259,8 +364,7 @@ void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const s
 }
 
 void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const string& path) {
-	string prefabPath = path.substr(0, path.find_last_of(".")) + FileSuffix::SUFFIX_PREFAB;
-	unsigned int charCount = FileHelper::GetFileCharSize(prefabPath);
+	unsigned int charCount = FileHelper::GetFileCharSize(path);
 	if (charCount == 0) {
 		cout << "############### no bytes. path: " << path << endl;
 		return;
@@ -268,7 +372,7 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const str
 
 	unsigned char* res = new unsigned char[charCount];
 
-	FileHelper::ReadCharsFrom(prefabPath, res);
+	FileHelper::ReadCharsFrom(path, res);
 	string str(reinterpret_cast<char*>(res));
 
 	stringstream ss(str);
@@ -310,7 +414,7 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const str
 	}
 
 	{
-		string metaPath = prefabPath + FileSuffix::SUFFIX_META;
+		string metaPath = path + FileSuffix::SUFFIX_META;
 		FileHelper::ReadCharsFrom(metaPath, res);
 		string str(reinterpret_cast<char*>(res));
 		stringstream ss(str);
@@ -326,44 +430,10 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const str
 				continue;
 			}
 
-			if(key=="name:"){
+			if (key == "name:") {
 				prefabMeta.name = key.c_str();
 				continue;
 			}
-		}
-	}
-}
-
-void Serialization::PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabInstanceMeta, stringstream& ss) {
-	ss << EditorDefaultConfig::DefaultPrefabInstanceStartStr() << endl;
-	ss << "guid: " << prefabInstanceMeta.guid << endl;
-	TransformMeta_SerializeTo(prefabInstanceMeta.transformMeta, ss);
-	ss << EditorDefaultConfig::DefaultPrefabInstanceEndStr() << endl;
-}
-
-void Serialization::PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefabInstanceMeta, stringstream& ss) {
-	string line;
-	while (getline(ss, line)) {
-		istringstream iss(line);
-		string key;
-
-		if (!(iss >> key)) break;
-		if (key == EditorDefaultConfig::DefaultGameObjectEndStr()) break;
-
-		if (key == "guid:") {
-			iss >> key;
-			prefabInstanceMeta->guid = key;
-			continue;
-		}
-
-		if (key != "componentType:")continue;
-
-		iss >> key;
-
-		ComponentType_ comType = GetComponentType(key);
-		if (ComponentType_Transform == comType) {
-			TransformMeta_DeserializeFrom(&prefabInstanceMeta->transformMeta, ss);
-			continue;
 		}
 	}
 }
@@ -491,8 +561,7 @@ void Serialization::MaterialMeta_SerializeTo(const MaterialMeta& materialMeta, c
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
-	string matPath = path + FileSuffix::SUFFIX_MAT;
-	FileHelper::WriteCharsTo(matPath, charResult);
+	FileHelper::WriteCharsTo(path, charResult);
 
 	{
 		stringstream ss;
@@ -501,24 +570,21 @@ void Serialization::MaterialMeta_SerializeTo(const MaterialMeta& materialMeta, c
 		size_t len = result.length() + 1;
 		unsigned char* charResult = new unsigned char[len];
 		memcpy(charResult, result.c_str(), len);
-		string matMetaPath = matPath + FileSuffix::SUFFIX_META;
+		string matMetaPath = path + FileSuffix::SUFFIX_META;
 		FileHelper::WriteCharsTo(matMetaPath, charResult);
 		cout << "Mat meta Serialize | guid: " << materialMeta.guid << endl;
 	}
 }
 
 void Serialization::MaterialMeta_DeserializeFrom(MaterialMeta* materialMeta, const string& path) {
-
-	string matPath = path + FileSuffix::SUFFIX_MAT;
-
-	unsigned int charCount = FileHelper::GetFileCharSize(matPath);
+	unsigned int charCount = FileHelper::GetFileCharSize(path);
 	if (charCount == 0) {
 		cout << "############### no bytes. path: " << path << endl;
 		return;
 	}
 
 	unsigned char* res = new unsigned char[charCount];
-	FileHelper::ReadCharsFrom(matPath, res);
+	FileHelper::ReadCharsFrom(path, res);
 	string str(reinterpret_cast<char*>(res));
 	stringstream ss(str);
 	string line;
@@ -558,7 +624,7 @@ void Serialization::MaterialMeta_DeserializeFrom(MaterialMeta* materialMeta, con
 
 		unsigned int charCount = FileHelper::GetFileCharSize(metaPath);
 		if (charCount == 0) {
-			cout << "############### no bytes. path: " << path << endl;
+			cout << "############### no bytes. path: " << metaPath << endl;
 			return;
 		}
 
@@ -589,7 +655,8 @@ void Serialization::ShaderMeta_SerializeTo(ShaderMeta* shaderMeta, const string&
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
-	FileHelper::WriteCharsTo(path, charResult);
+	string shaderMetaPath = path + FileSuffix::SUFFIX_META;
+	FileHelper::WriteCharsTo(shaderMetaPath, charResult);
 	ss << "Shader Serialize | guid: " << shaderMeta->guid << endl;
 }
 
@@ -598,7 +665,7 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 
 	unsigned int charCount = FileHelper::GetFileCharSize(metaPath);
 	if (charCount == 0) {
-		cout << "############### no bytes. path: " << path << endl;
+		cout << "############### no bytes. path: " << metaPath << endl;
 		return;
 	}
 
@@ -631,7 +698,9 @@ void Serialization::TextureMeta_SerializeTo(const TextureMeta& textureMeta, cons
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
-	FileHelper::WriteCharsTo(path, charResult);
+
+	string metaPath = path + FileSuffix::SUFFIX_META;
+	FileHelper::WriteCharsTo(metaPath, charResult);
 }
 
 void Serialization::TextureMeta_DeserializeFrom(TextureMeta* textureMeta, const string& path) {
@@ -639,7 +708,7 @@ void Serialization::TextureMeta_DeserializeFrom(TextureMeta* textureMeta, const 
 
 	unsigned int charCount = FileHelper::GetFileCharSize(metaPath);
 	if (charCount == 0) {
-		cout << "############### no bytes. path: " << path << endl;
+		cout << "############### no bytes. path: " << metaPath << endl;
 		return;
 	}
 
@@ -677,7 +746,7 @@ void Serialization::ObjMeta_SerializeTo(const ObjMeta& objMeta, const string& pa
 	string objMetaPath = path + FileSuffix::SUFFIX_META;
 	FileHelper::WriteCharsTo(objMetaPath, charResult);
 
-	ss << "ObjMetadata::Serialize | guid: " << objMeta.guid << endl;
+	ss << "ObjMetadata::Serialize " << path << endl;
 }
 
 void Serialization::ObjMeta_DeserializeFrom(ObjMeta* objMeta, const string& path) {
@@ -685,7 +754,7 @@ void Serialization::ObjMeta_DeserializeFrom(ObjMeta* objMeta, const string& path
 
 	unsigned int charCount = FileHelper::GetFileCharSize(metaPath);
 	if (charCount == 0) {
-		cout << "############### no bytes. path: " << path << endl;
+		cout << "############### no bytes. path: " << metaPath << endl;
 		return;
 	}
 

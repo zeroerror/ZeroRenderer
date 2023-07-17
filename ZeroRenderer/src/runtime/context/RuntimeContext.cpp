@@ -6,14 +6,13 @@ RuntimeContext::RuntimeContext() {
 	_textureRepo = new TextureRepo();
 	_meshRepo = new MeshRepo();
 	_sceneRepo = new SceneRepo();
-	sceneViewCamera = new Camera();
 }
 
 RuntimeContext::~RuntimeContext() {
 	delete _materialRepo;
 	delete _shaderRepo;
 	delete _textureRepo;
-	delete sceneViewCamera;
+	delete mainCamera;
 }
 
 MaterialRepo* RuntimeContext::GetMaterialRepo() { return _materialRepo; }

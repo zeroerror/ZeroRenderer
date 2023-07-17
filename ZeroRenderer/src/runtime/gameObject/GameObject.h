@@ -35,6 +35,10 @@ public:
 		T t = T();
 		Component com = static_cast<Component>(t);
 		ComponentType_ comType = com.componentType;
+		if (comType == ComponentType_Transform) {
+			return dynamic_cast<T*>(_transform);
+		}
+
 		for (auto com : _components) {
 			if (comType == com->componentType) {
 				return static_cast<T*>(com);
@@ -47,11 +51,15 @@ public:
 	template <typename T, typename = enable_if_t<is_base_of<Component, T>::value>>
 	void GetAllComponents(vector<T*>& components) {
 		T t = T();
-		Component com = static_cast<Component>(t);
-		ComponentType_ comType = com.componentType;
+		Component c = static_cast<Component>(t);
+		ComponentType_ comType = c.componentType;
+		if (comType == ComponentType_Transform) {
+			components.push_back(dynamic_cast<T*>(_transform));
+		}
+
 		for (auto com : _components) {
 			if (com->componentType == comType) {
-				components.push_back(static_cast<T*>(com));
+				components.push_back(dynamic_cast<T*>(com));
 			}
 		}
 	}

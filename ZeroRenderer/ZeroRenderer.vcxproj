@@ -70,6 +70,7 @@
     <ClInclude Include="src\editor\manager\EditorModelManager.h" />
     <ClInclude Include="src\editor\meta\CameraMeta.h" />
     <ClInclude Include="src\editor\meta\ComponentMeta.h" />
+    <ClInclude Include="src\editor\meta\DirectLightMeta.h" />
     <ClInclude Include="src\editor\meta\GameObjectMeta.h" />
     <ClInclude Include="src\editor\meta\MaterialMeta.h" />
     <ClInclude Include="src\editor\meta\MeshFilterMeta.h" />

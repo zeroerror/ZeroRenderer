@@ -20,7 +20,7 @@ public:
 	MeshRepo* GetMeshRepo();
 	SceneRepo* GetSceneRepo();
 
-	Camera* sceneViewCamera;
+	Camera* mainCamera;
 	DirectLight* sceneDirectLight;
 	Scene* currentScene;
 

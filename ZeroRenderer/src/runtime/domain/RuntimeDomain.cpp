@@ -169,7 +169,7 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	vec3 lightColor = light->color;
 	vec3 lightDirection = -light->GetLightDirection();
 
-	Camera* camera = runtimeContext->sceneViewCamera;
+	Camera* camera = runtimeContext->mainCamera;
 	mat4 cameraMVPMatrix = shader->useLightingMVP ?
 		lightMVPMatrix : camera->GetMVPMatrix_Perspective(modelPos);
 
@@ -290,9 +290,12 @@ SkinMeshRenderer* RuntimeDomain::LoadSkinMeshRenderer(const aiScene* aScene, Pre
 	MeshRepo* meshRepo = runtimeContext->GetMeshRepo();
 
 	vector<MeshFilter*>* meshFilters = skinMeshRenderer->meshFilters;
+	vector<MeshRenderer*>* meshRenderers = skinMeshRenderer->meshRenderers;
 	for (size_t i = 0; i < skinMeshRendererMeta->meshFilterMetas.size(); i++) {
 
 		MeshFilterMeta* meshFilterMeta = skinMeshRendererMeta->meshFilterMetas[i];
+		MeshRendererMeta* meshRendererMeta = skinMeshRendererMeta->meshRendererMetas[i];
+
 		Mesh* mesh;
 		string modelGUID = meshFilterMeta->modelGUID;
 		int meshIndex = meshFilterMeta->meshIndex;
@@ -346,15 +349,12 @@ SkinMeshRenderer* RuntimeDomain::LoadSkinMeshRenderer(const aiScene* aScene, Pre
 		meshFilters->push_back(meshFilter);
 
 		// Mesh Renderer
-		vector<MeshRenderer*>* meshRenderers = skinMeshRenderer->meshRenderers;
-		for (auto meshRendererMeta : skinMeshRendererMeta->meshRendererMetas) {
-			MeshRenderer* meshRenderer = new MeshRenderer();
-			meshRenderer->transform = skinMeshRenderer->transform;
-			meshRenderer->gameObject = skinMeshRenderer->gameObject;
-			meshRenderer->materialGUID = meshRendererMeta->materialGUID;
-			meshRenderer->GenerateRenderer(meshFilter);
-			meshRenderers->push_back(meshRenderer);
-		}
+		MeshRenderer* meshRenderer = new MeshRenderer();
+		meshRenderer->transform = skinMeshRenderer->transform;
+		meshRenderer->gameObject = skinMeshRenderer->gameObject;
+		meshRenderer->materialGUID = meshRendererMeta->materialGUID;
+		meshRenderer->GenerateRenderer(meshFilter);
+		meshRenderers->push_back(meshRenderer);
 	}
 
 	return skinMeshRenderer;
@@ -422,6 +422,18 @@ void RuntimeDomain::LoadScene(const string& path) {
 		MetaToScene(sceneMeta, *scene);
 	}
 
+	// Check current scene
+	if (runtimeContext->currentScene == nullptr) {
+		runtimeContext->currentScene = scene;
+	}
+	// Check main camera
+	if (runtimeContext->mainCamera == nullptr) {
+		runtimeContext->mainCamera = runtimeContext->currentScene->Find("Camera")->GetComponent<Camera>();
+	}
+	// Check light
+	if (runtimeContext->sceneDirectLight == nullptr) {
+		runtimeContext->sceneDirectLight = runtimeContext->currentScene->Find("DirectLight")->GetComponent<DirectLight>();
+	}
 
 	for (auto go : scene->gameObjects) {
 		vector<SkinMeshRenderer*> skinMeshRenderers = vector<SkinMeshRenderer*>();
@@ -430,6 +442,8 @@ void RuntimeDomain::LoadScene(const string& path) {
 			DrawSkinMeshRenderer(skinMeshRenderer);
 		}
 	}
+
+
 }
 
 void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer) {
@@ -478,7 +492,7 @@ void RuntimeDomain::MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshR
 	vector<MeshFilter*>* meshFilters = new vector<MeshFilter*>();
 	vector<MeshRenderer*>* meshRenderers = new vector<MeshRenderer*>();
 
-	for (int i = 0;i < skinMeshRendererMeta.meshFilterMetas.size();i++) {
+	for (int i = 0; i < skinMeshRendererMeta.meshFilterMetas.size(); i++) {
 		MeshFilterMeta* mfMeta = skinMeshRendererMeta.meshFilterMetas[i];
 		MeshFilter* meshFilter = new MeshFilter();
 		meshFilter->gameObject = skinMeshRenderer.gameObject;

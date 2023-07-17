@@ -10,6 +10,7 @@
 #include "FileHelper.h"
 #include <assimp/postprocess.h>
 
+#include "DirectLightMeta.h"
 #include "TextureMeta.h"
 #include "ShaderMeta.h"
 #include "PrefabInstanceMeta.h"
@@ -17,7 +18,6 @@
 #include "Serialization.h"
 #include "EditorModelManager.h"
 #include "EditorDefaultConfig.h"
-
 
 using namespace Serialization;
 using namespace std;
@@ -46,10 +46,11 @@ void EditorDatabase::ImportAssets(const string& dir) {
 		else {
 			fs::path path = entry.path();
 			string assetPath = path.string();
+			string metaPath = assetPath + FileSuffix::SUFFIX_META;
 			string extensionStr = path.extension().string();
 			if (extensionStr == FileSuffix::SUFFIX_PNG) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				if (!FileHelper::FileExist(assetPath)) {
+				if (!FileHelper::FileExist(metaPath)) {
 					TextureMeta texMeta = TextureMeta();
 					texMeta.guid = guid;
 					TextureMeta_SerializeTo(texMeta, assetPath);
@@ -61,11 +62,11 @@ void EditorDatabase::ImportAssets(const string& dir) {
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SHADER) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				if (!FileHelper::FileExist(assetPath)) {
+				if (!FileHelper::FileExist(metaPath)) {
 					ShaderMeta shaderMeta = ShaderMeta();
 					shaderMeta.guid = guid;
 					shaderMeta.useLightingMVP = false;
@@ -78,11 +79,11 @@ void EditorDatabase::ImportAssets(const string& dir) {
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_MAT) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
-				if (!FileHelper::FileExist(assetPath)) {
+				if (!FileHelper::FileExist(metaPath)) {
 					MaterialMeta materialMeta = MaterialMeta();
 					materialMeta.guid = guid;
 					MaterialMeta_SerializeTo(materialMeta, assetPath);
@@ -90,11 +91,11 @@ void EditorDatabase::ImportAssets(const string& dir) {
 				else {
 					MaterialMeta materialMeta = MaterialMeta();
 					MaterialMeta_DeserializeFrom(&materialMeta, assetPath);
-					guid = materialMeta.guid;
+					materialMeta.guid = guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_OBJ) {
 				EditorDatabase::ImportModel(assetPath);
@@ -103,20 +104,22 @@ void EditorDatabase::ImportAssets(const string& dir) {
 				string guid = GenerateGUIDFromAssetPath(assetPath);
 				InsertToMap_AssetPath2GUID(assetPath, guid);
 				InsertToMap_GUID2AssetPath(guid, assetPath);
-				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << guid << std::endl;
 			}
 			else if (extensionStr == FileSuffix::SUFFIX_SCENE) {
 				SceneMeta sceneMeta = SceneMeta();
-				if (!FileHelper::FileExist(assetPath)) {
-					sceneMeta.guid = GenerateGUIDFromAssetPath(assetPath);
+				string guid = GenerateGUIDFromAssetPath(assetPath);
+				if (!FileHelper::FileExist(metaPath)) {
+					sceneMeta.guid = guid;
 					SceneMeta_SerializeTo(sceneMeta, assetPath);
 				}
 				else {
 					SceneMeta_DeserializeFrom(&sceneMeta, assetPath);
+					sceneMeta.guid = guid;
 				}
 				InsertToMap_AssetPath2GUID(assetPath, sceneMeta.guid);
 				InsertToMap_GUID2AssetPath(sceneMeta.guid, assetPath);
-				std::cout << " +++ EditorDatabase: Import " << assetPath << " guid - " << sceneMeta.guid << std::endl;
+				std::cout << " +++ EditorDatabase: Import " << assetPath << sceneMeta.guid << std::endl;
 			}
 		}
 	}
@@ -153,11 +156,13 @@ void EditorDatabase::ImportModel(string& assetPath) {
 		ImportModel_Node(aScene->mRootNode, aScene, dir, objMeta, prefabMeta);
 	}
 
-	ObjMeta_SerializeTo(objMeta, assetPath);
+	ObjMeta_SerializeTo(objMeta, objMetaPath);
 
 	pos = assetPath.find_last_of(".");
-	string assetPathWithoutSuffix = assetPath.substr(0, pos);
-	PrefabMeta_SerializeTo(prefabMeta, assetPathWithoutSuffix);
+	if (pos != string::npos) {
+		string prefabPath = assetPath.substr(0, pos) + FileSuffix::SUFFIX_PREFAB;
+		PrefabMeta_SerializeTo(prefabMeta, prefabPath);
+	}
 }
 
 void EditorDatabase::ImportModel_Node(aiNode* aNode, const aiScene* aScene, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta) {
@@ -195,10 +200,11 @@ void EditorDatabase::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene,
 	MaterialMeta materialMeta = MaterialMeta();
 	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_DIFFUSE, dir, materialMeta);
 	ImportModel_Node_Mesh_Texture(aiMaterial, aiTextureType_SPECULAR, dir, materialMeta);
-	string matPath = dir + meshName;
+	string matPath = dir + meshName + FileSuffix::SUFFIX_MAT;
 	string materialGUID = GenerateGUIDFromAssetPath(matPath);
 	materialMeta.guid = materialGUID;
-	Serialization::MaterialMeta_SerializeTo(materialMeta, matPath);
+	materialMeta.shaderGUID = "4fa3f76955080b44";
+	MaterialMeta_SerializeTo(materialMeta, matPath);
 
 	meshRendererMeta->materialGUID = materialGUID;
 
@@ -381,7 +387,6 @@ void EditorDatabase::FillToAssetTreeNode(AssetTreeNode* node, const string& path
 	FillToAssetTreeNode(childNode, path, offset);
 }
 
-
 void EditorDatabase::MoveFile(const string& fromPath, const string& toPath) {
 	string fromGUID;
 	if (!TryGetGUIDFromAssetPath(fromPath, fromGUID)) return;
@@ -427,21 +432,21 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	MeshFilterMeta* meshFilterMeta;
 	MeshRendererMeta* meshRendererMeta;
 
-	//GameObjectMeta* directLightGOMeta = new GameObjectMeta();
-	//directLightGOMeta->name = "DirectLight";
-	//DirectLightMeta* directLight = cameraGOMeta->AddComponentMeta<DirectLightMeta>();
-	//directLight->scrWidth = scrWidth;
-	//directLight->scrHeight = scrHeight;
-	//directLight->shadowType = ShadowType::Hard;
-	//directLight->transform->SetPosition(vec3(0, 10.0f, 0));
-	//directLight->transform->SetRotation(quat(vec3(0, 0.5f, 0)));
-	//directLight->fov = cameraMeta->fov;
-	//directLight->scrWidth = cameraMeta->scrWidth;
-	//directLight->scrHeight = cameraMeta->scrHeight;
-	//directLight->nearPlane = cameraMeta->nearPlane;
-	//directLight->farPlane = cameraMeta->farPlane;
-	//directLight->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	//scene->gameObjectMetas.push_back(directLightGOMeta);
+	GameObjectMeta* directLightGOMeta = new GameObjectMeta();
+	directLightGOMeta->name = "DirectLight";
+	DirectLightMeta* directLightMeta = cameraGOMeta->AddComponentMeta<DirectLightMeta>();
+	directLightMeta->scrWidth = scrWidth;
+	directLightMeta->scrHeight = scrHeight;
+	directLightMeta->shadowType = ShadowType::Hard;
+	directLightGOMeta->transformMeta.position = vec3(0, 10.0f, 0);
+	directLightGOMeta->transformMeta.rotation = quat(vec3(0, 0.5f, 0));
+	directLightMeta->fov = cameraMeta->fov;
+	directLightMeta->scrWidth = cameraMeta->scrWidth;
+	directLightMeta->scrHeight = cameraMeta->scrHeight;
+	directLightMeta->nearPlane = cameraMeta->nearPlane;
+	directLightMeta->farPlane = cameraMeta->farPlane;
+	directLightMeta->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	sceneMeta.gameObjectMetas.push_back(directLightGOMeta);
 
 	// Create a depth map 2D image. 
 	//GameObjectMeta* depthMapImageGOMeta = new GameObjectMeta();

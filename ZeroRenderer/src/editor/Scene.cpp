@@ -25,6 +25,7 @@ Scene::~Scene() {
 	//}
 }
 
+// todo: with child and parent
 GameObject* Scene::Find(const string& name) {
 	for (auto go : gameObjects) {
 		if (go->name == name) {

@@ -34,24 +34,24 @@ modelGUID: 3d7168e8f3a8700a
 meshIndex: 6
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: 55ab7d2f08f5c15
+materialGUID: 699cdea50bc3d311
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: 4b90b20c29274b83
+materialGUID: e6f09c112bbdc18b
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: cc1b753a10947c58
+materialGUID: 5b26cb4fefc8f640
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: 962ec9a4aebb5c0b
+materialGUID: 4638d47e3399cdd3
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: 35d63cf429ce3591
+materialGUID: 3f2a5fb7ff65d765
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: c7bcdd64695192db
+materialGUID: a7117f206cb7c0c3
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: a9e549dc7846d2ea
+materialGUID: bf38f2cd3e20d266
 --ComponentEnd
 --ComponentEnd

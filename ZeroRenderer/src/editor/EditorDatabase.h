@@ -12,6 +12,46 @@
 #include <assimp/scene.h>
 
 using namespace std;
+struct AssetTreeNode;
+
+class EditorDatabase {
+
+public:
+	static void ImportAssets();
+	static void ImportAssets(const string& path);
+
+	static void ImportModel(string& path);
+	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
+	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
+	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& matMeta);
+
+	static void ClearFile(const unsigned int& suffixFlag);
+	static void ClearFile(const string& path, const unsigned int& suffixFlag);
+
+	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
+	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
+
+	static string GenerateGUIDFromAssetPath(const string& assetPath);
+	static bool TryGetGUIDFromAssetPath(const string& assetPath, string& guid);
+	static bool TryGetAssetPathFromGUID(const string& guid, string& assetPath);
+
+	static bool GUIDExist(const string& guid);
+	static bool AssetPathExist(const string& path);
+
+	static vector<string> GetAllAssetPaths();
+	static AssetTreeNode* GetRootAssetTreeNode();
+	static void MoveFile(const string& fromPath, const string& toPath);
+
+	static void GenerateDefaultSceneMeta();
+
+private:
+	static unordered_map<string, string> m_assetPath2GUID;
+	static unordered_map<string, string> m_guid2AssetPath;
+	static void InsertToMap_AssetPath2GUID(string& assetPath, const string& guid);
+	static void InsertToMap_GUID2AssetPath(const string& guid, string& assetPath);
+	static inline void FillToAssetTreeNode(AssetTreeNode* node, const string& path, size_t offset);
+
+};
 
 struct AssetTreeNode {
 	string assetPath;
@@ -61,43 +101,3 @@ struct AssetTreeNode {
 	}
 
 };
-
-class EditorDatabase {
-
-public:
-	static void ImportAssets();
-	static void ImportAssets(const string& path);
-
-	static void ImportModel(string& path);
-	static void ImportModel_Node(aiNode* aiNode, const aiScene* aiScene, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
-	static void ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aiScene, const unsigned int& meshIndex, const string& dir, ObjMeta& objMeta, PrefabMeta& prefabMeta);
-	static void ImportModel_Node_Mesh_Texture(aiMaterial* aMat, aiTextureType aTextureType, const string& dir, MaterialMeta& matMeta);
-
-	static void ClearFile(const unsigned int& suffixFlag);
-	static void ClearFile(const string& path, const unsigned int& suffixFlag);
-
-	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
-	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
-
-	static string GenerateGUIDFromAssetPath(const string& assetPath);
-	static bool TryGetGUIDFromAssetPath(const string& assetPath, string& guid);
-	static bool TryGetAssetPathFromGUID(const string& guid, string& assetPath);
-
-	static bool GUIDExist(const string& guid);
-	static bool AssetPathExist(const string& path);
-
-	static vector<string> GetAllAssetPaths();
-	static AssetTreeNode* GetRootAssetTreeNode();
-	static void MoveFile(const string& fromPath, const string& toPath);
-
-	static void GenerateDefaultSceneMeta();
-
-private:
-	static std::unordered_map<string, string> m_assetPath2GUID;
-	static std::unordered_map<string, string> m_guid2AssetPath;
-	static void InsertToMap_AssetPath2GUID(string& assetPath, const string& guid);
-	static void InsertToMap_GUID2AssetPath(const string& guid, string& assetPath);
-	static inline void FillToAssetTreeNode(AssetTreeNode* node, const string& path, size_t offset);
-
-};
-

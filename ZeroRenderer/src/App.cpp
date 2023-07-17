@@ -202,11 +202,12 @@ void GL_CLEANUP() {
 }
 
 int main() {
-	//vector<string> suffixes = vector<string>();
-	//suffixes.push_back(FileSuffix::SUFFIX_META);
-	//suffixes.push_back(FileSuffix::SUFFIX_SCENE);
-	//unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
-	//EditorDatabase::ClearFile(suffixFlag);
+	// vector<string> suffixes = vector<string>();
+	// suffixes.push_back(FileSuffix::SUFFIX_MAT);
+	// suffixes.push_back(FileSuffix::SUFFIX_META);
+	// suffixes.push_back(FileSuffix::SUFFIX_SCENE);
+	// unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
+	// EditorDatabase::ClearFile(suffixFlag);
 
 	// Import Editor Database
 	EditorDatabase::ImportAssets();

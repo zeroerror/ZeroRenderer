@@ -397,6 +397,7 @@
     <ClInclude Include="src\editor\meta\PrefabInstanceMeta.h" />
     <ClInclude Include="src\runtime\context\RuntimeContext.h" />
     <ClInclude Include="src\runtime\component\Camera.h" />
+    <ClInclude Include="src\editor\meta\DirectLightMeta.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

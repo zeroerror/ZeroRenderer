@@ -2,12 +2,11 @@
 #include <glm/gtx/quaternion.hpp>
 
 DirectLight::DirectLight() {
-    transform = new Transform();
     color = glm::vec3(1.0f, 1.0f, 1.0f);
+	componentType = ComponentType_DirectLight;
 }
 
 DirectLight::~DirectLight() {
-    delete transform;
 }
 
 glm::mat4 DirectLight::GetMVPMatrix_Ortho(const glm::vec3& pos) const{
