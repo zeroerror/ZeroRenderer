@@ -58,6 +58,18 @@ void Serialization::GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMet
 			continue;
 		}
 
+		if (ComponentType_MeshRenderer == comType) {
+			MeshRendererMeta* meshRendererMeta = gameObjectMeta->AddComponentMeta<MeshRendererMeta>();
+			MeshRendererMeta_DeserializeFrom(meshRendererMeta, ss);
+			continue;
+		}
+
+		if (ComponentType_MeshFilter == comType) {
+			MeshFilterMeta* meshFilterMeta = gameObjectMeta->AddComponentMeta<MeshFilterMeta>();
+			MeshFilterMeta_DeserializeFrom(meshFilterMeta, ss);
+			continue;
+		}
+
 		cout << "################ Don't know what this component type is!!! Please check!!! comType: " << comType << endl;
 	}
 }

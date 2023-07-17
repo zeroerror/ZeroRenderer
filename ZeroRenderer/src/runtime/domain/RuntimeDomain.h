@@ -6,6 +6,7 @@
 #include "GameObjectMeta.h"
 #include "ComponentMeta.h"
 #include "CameraMeta.h"
+#include "DirectLightMeta.h"
 #include "MeshFilterMeta.h"
 #include "MeshRendererMeta.h"
 #include "SkinMeshRendererMeta.h"
@@ -45,6 +46,7 @@ public:
 
 	// =======================================================================
 	// All meta's methods that convert to a runtime object.
+	void MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight);
 	void MetaToCamera(const CameraMeta& cameraMeta, Camera& camera);
 	void MetaToMeshFilter(const MeshFilterMeta& meshFilterMeta, MeshFilter& meshFilter);
 	void MetaToMeshRenderer(const MeshRendererMeta& meshRendererMeta, MeshRenderer& meshRenderer);

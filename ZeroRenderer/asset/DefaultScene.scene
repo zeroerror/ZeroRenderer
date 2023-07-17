@@ -18,8 +18,6 @@ nearPlane: -4.31602e+08
 farPlane: -4.31602e+08
 orthoSize: -4.31602e+08
 --ComponentEnd
---ComponentStart:
---ComponentEnd
 ====GameObjectEnd
 
 ====GameObjectStart:
@@ -31,6 +29,16 @@ position: 0 10 0
 rotation: 0 0.247404 0 0.968912
 --ComponentEnd
 
+--ComponentStart:
+componentType: ComponentType_DirectLight
+color: 1 1 1
+shadowType: 1
+scrWidth: 1920
+scrHeight: 1080
+fov: -4.31602e+08
+nearPlane: -4.31602e+08
+farPlane: -4.31602e+08
+--ComponentEnd
 ====GameObjectEnd
 
 ====GameObjectStart:

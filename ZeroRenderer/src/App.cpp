@@ -201,6 +201,11 @@ void GL_CLEANUP() {
 	glfwTerminate();
 }
 
+void GL_ClearScreen() {
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
 int main() {
 	// vector<string> suffixes = vector<string>();
 	// suffixes.push_back(FileSuffix::SUFFIX_MAT);
@@ -244,8 +249,12 @@ int main() {
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
 
+	glViewport(0, 0, static_cast<int>(ImGui::GetIO().DisplaySize.x), static_cast<int>(ImGui::GetIO().DisplaySize.y));
+
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
+		GL_ClearScreen();
+
 		// - UI Layout
 		ImVec2 projectLeftPanelMin = EDITOR_WINDOW_PROJECT_POSITION;
 		ImVec2 projectLeftPanelMax = projectLeftPanelMin;
@@ -322,9 +331,6 @@ int main() {
 
 		// Rendering ImGui
 		ImGui::Render();
-		glViewport(0, 0, static_cast<int>(ImGui::GetIO().DisplaySize.x), static_cast<int>(ImGui::GetIO().DisplaySize.y));
-		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);

@@ -478,6 +478,17 @@ void RuntimeDomain::MetaToCamera(const CameraMeta& cameraMeta, Camera& camera) {
 	camera.scrHeight = cameraMeta.scrHeight;
 }
 
+void RuntimeDomain::MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight) {
+	directLight.color = directLightMeta.color;
+	directLight.shadowType = directLightMeta.shadowType;
+	directLight.scrWidth = directLightMeta.scrWidth;
+	directLight.scrHeight = directLightMeta.scrHeight;
+	directLight.fov = directLightMeta.fov;
+	directLight.nearPlane = directLightMeta.nearPlane;
+	directLight.farPlane = directLightMeta.farPlane;
+	directLight.orthoSize = directLightMeta.orthoSize;
+}
+
 void RuntimeDomain::MetaToMeshFilter(const MeshFilterMeta& meshFilterMeta, MeshFilter& meshFilter) {
 	Mesh* mesh = new Mesh();
 	TryLoadMesh(meshFilterMeta.modelGUID, meshFilterMeta.meshIndex, mesh);
@@ -548,6 +559,13 @@ inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta,
 			continue;
 		}
 
+		if(componentType == ComponentType_DirectLight){
+			DirectLight* directLight = gameObject.AddComponent<DirectLight>();
+			DirectLightMeta* directLightMeta = static_cast<DirectLightMeta*>(componentMeta);
+			MetaToDirectLight(*directLightMeta, *directLight);
+			continue;
+		}
+
 		if (componentType == ComponentType_MeshFilter) {
 			MeshFilter* meshFilter = gameObject.AddComponent<MeshFilter>();
 			MeshFilterMeta* meshFilterMeta = static_cast<MeshFilterMeta*>(componentMeta);
@@ -569,6 +587,7 @@ inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta,
 			continue;
 		}
 
+		cout << "RuntimeDomain::_MetaToGameObject: Unknown component type: " << componentType << endl;
 	}
 }
 

@@ -434,7 +434,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 
 	GameObjectMeta* directLightGOMeta = new GameObjectMeta();
 	directLightGOMeta->name = "DirectLight";
-	DirectLightMeta* directLightMeta = cameraGOMeta->AddComponentMeta<DirectLightMeta>();
+	DirectLightMeta* directLightMeta = directLightGOMeta->AddComponentMeta<DirectLightMeta>();
 	directLightMeta->scrWidth = scrWidth;
 	directLightMeta->scrHeight = scrHeight;
 	directLightMeta->shadowType = ShadowType::Hard;
