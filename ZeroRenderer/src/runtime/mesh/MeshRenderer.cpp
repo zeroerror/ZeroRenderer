@@ -6,9 +6,10 @@ MeshRenderer::MeshRenderer() {
 	vb = new VertexBuffer();
 	ib = new IndexBuffer();
 	vbLayout = new VertexBufferLayout();
-	vbLayout->Push<float>(3);
 	vbLayout->Push<float>(2);
-	vbLayout->Push<float>(3);
+	//vbLayout->Push<float>(3);
+	//vbLayout->Push<float>(2);
+	//vbLayout->Push<float>(3);
 }
 
 MeshRenderer::~MeshRenderer() {
@@ -19,8 +20,8 @@ MeshRenderer::~MeshRenderer() {
 }
 
 void MeshRenderer::GenerateRenderer(const MeshFilter* meshFilter) {
-	vector<float> vertexData;
-	vector<unsigned int> indiceArray;
+	vector<float> vertexData = vector<float>();
+	vector<unsigned int> indiceArray = vector<unsigned int>();
 
 	vector<Vertex*>* vertices = meshFilter->mesh->vertices;
 	vector<unsigned int>* indices = meshFilter->mesh->indices;

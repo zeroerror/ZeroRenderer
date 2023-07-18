@@ -93,21 +93,21 @@ void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, 
 		}
 		if (key == "position:") {
 			iss >> key;
-			transformMeta->position.x = atoi(key.c_str());
+			transformMeta->position.x = atof(key.c_str());
 			iss >> key;
-			transformMeta->position.y = atoi(key.c_str());
+			transformMeta->position.y = atof(key.c_str());
 			iss >> key;
-			transformMeta->position.z = atoi(key.c_str());
+			transformMeta->position.z = atof(key.c_str());
 		}
 		else if (key == "rotation:") {
 			iss >> key;
-			transformMeta->rotation.x = atoi(key.c_str());
+			transformMeta->rotation.x = atof(key.c_str());
 			iss >> key;
-			transformMeta->rotation.y = atoi(key.c_str());
+			transformMeta->rotation.y = atof(key.c_str());
 			iss >> key;
-			transformMeta->rotation.z = atoi(key.c_str());
+			transformMeta->rotation.z = atof(key.c_str());
 			iss >> key;
-			transformMeta->rotation.w = atoi(key.c_str());
+			transformMeta->rotation.w = atof(key.c_str());
 		}
 	}
 }
@@ -184,11 +184,11 @@ void Serialization::DirectLightMeta_DeserializeFrom(DirectLightMeta* directLight
 		}
 		if (key == "color:") {
 			iss >> key;
-			directLightMeta->color.x = atoi(key.c_str());
+			directLightMeta->color.x = atof(key.c_str());
 			iss >> key;
-			directLightMeta->color.y = atoi(key.c_str());
+			directLightMeta->color.y = atof(key.c_str());
 			iss >> key;
-			directLightMeta->color.z = atoi(key.c_str());
+			directLightMeta->color.z = atof(key.c_str());
 		}
 		else if (key == "shadowType:") {
 			iss >> key;
@@ -617,11 +617,11 @@ void Serialization::MaterialMeta_DeserializeFrom(MaterialMeta* materialMeta, con
 		}
 		else if (key == "diffuseColor:") {
 			iss >> key;
-			materialMeta->diffuseColor.x = atoi(key.c_str());
+			materialMeta->diffuseColor.x = atof(key.c_str());
 			iss >> key;
-			materialMeta->diffuseColor.y = atoi(key.c_str());
+			materialMeta->diffuseColor.y = atof(key.c_str());
 			iss >> key;
-			materialMeta->diffuseColor.z = atoi(key.c_str());
+			materialMeta->diffuseColor.z = atof(key.c_str());
 		}
 		else if (key == "specularIntensity:") {
 			iss >> materialMeta->specularIntensity;

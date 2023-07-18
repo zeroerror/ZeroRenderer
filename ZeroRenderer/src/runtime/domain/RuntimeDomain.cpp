@@ -47,13 +47,14 @@ void RuntimeDomain::ProcessModel(const string& path) {
 	}
 
 	PrefabMeta prefabMeta = PrefabMeta();
-	PrefabMeta_DeserializeFrom(prefabMeta, path);
-	ProcessMeshes(aScene, prefabMeta);
+	string prefabPath = path.substr(0, path.find_last_of(".")) + FileSuffix::SUFFIX_PREFAB;
+	PrefabMeta_DeserializeFrom(prefabMeta, prefabPath);
+	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
+	ProcessMeshes(aScene, skinMeshRendererMeta);
 }
 
-void RuntimeDomain::ProcessMeshes(const aiScene* aScene, PrefabMeta& prefabMeta) {
+void RuntimeDomain::ProcessMeshes(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta) {
 	MeshRepo* meshRepo = runtimeContext->GetMeshRepo();
-	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
 	if (skinMeshRendererMeta == nullptr) {
 		return;
 	}
@@ -65,8 +66,6 @@ void RuntimeDomain::ProcessMeshes(const aiScene* aScene, PrefabMeta& prefabMeta)
 		Mesh* mesh = new Mesh();
 		aiMesh* aMesh = aScene->mMeshes[meshIndex];
 		mesh->meshName = aMesh->mName.C_Str();
-		meshRepo->TryAddMesh(modelGUID, meshIndex, mesh);
-
 		auto vertices = mesh->vertices;
 		for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
 			aiVector3D aPosition = aMesh->mVertices[i];
@@ -100,6 +99,8 @@ void RuntimeDomain::ProcessMeshes(const aiScene* aScene, PrefabMeta& prefabMeta)
 				indices->push_back(face.mIndices[j]);
 			}
 		}
+
+		meshRepo->TryAddMesh(modelGUID, meshIndex, mesh);
 	}
 }
 
@@ -172,6 +173,7 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	Camera* camera = runtimeContext->mainCamera;
 	mat4 cameraMVPMatrix = shader->useLightingMVP ?
 		lightMVPMatrix : camera->GetMVPMatrix_Perspective(modelPos);
+	mat4 modelRotMatrix = toMat4(modelRot);
 
 	// TODO: BIND AND SET BY THE SHADER META DATA.
 	shader->Bind();
@@ -179,7 +181,7 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	shader->SetUniform1i("u_diffuseMap", TEX_SLOT_DIFFUSE_MAP);
 	shader->SetUniform1i("u_specularMap", TEX_SLOT_SPECULAR_MAP);
 	shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-	shader->SetUniformMat4f("u_modRotationMatrix", toMat4(modelRot));
+	shader->SetUniformMat4f("u_modRotationMatrix", modelRotMatrix);
 	shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
 
 	shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
@@ -443,7 +445,6 @@ void RuntimeDomain::LoadScene(const string& path) {
 		}
 	}
 
-
 }
 
 void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer) {
@@ -460,6 +461,10 @@ void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer) {
 		BindShader(transfrom, material->shader);
 		if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
 		if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
+	}
+	else {
+		cout << "########################Dont have any material to draw MeshRenderer !!!!!!!!!!!!!! " << endl;
+		return;
 	}
 
 	IndexBuffer* ib = meshRenderer->ib;
@@ -559,7 +564,7 @@ inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta,
 			continue;
 		}
 
-		if(componentType == ComponentType_DirectLight){
+		if (componentType == ComponentType_DirectLight) {
 			DirectLight* directLight = gameObject.AddComponent<DirectLight>();
 			DirectLightMeta* directLightMeta = static_cast<DirectLightMeta*>(componentMeta);
 			MetaToDirectLight(*directLightMeta, *directLight);

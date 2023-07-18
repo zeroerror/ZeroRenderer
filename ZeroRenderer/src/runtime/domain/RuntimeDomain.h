@@ -27,7 +27,7 @@ public:
 	void Init();
 
 	void ProcessModel(const string& path);
-	void ProcessMeshes(const aiScene* aScene, PrefabMeta& prefabMeta);
+	void ProcessMeshes(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta);
 
 	void BindShader(const Transform* transform, Shader* shader);
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);

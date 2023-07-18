@@ -5,7 +5,7 @@ name: Camera
 
 --ComponentStart:
 componentType: ComponentType_Transform
-position: 0 10 -10
+position: 0 0 -10
 rotation: 0 0 0 1
 --ComponentEnd
 
@@ -13,10 +13,10 @@ rotation: 0 0 0 1
 componentType: ComponentType_Camera
 scrWidth: 1920
 scrHeight: 1080
-fov: -4.31602e+08
-nearPlane: -4.31602e+08
-farPlane: -4.31602e+08
-orthoSize: -4.31602e+08
+fov: 45
+nearPlane: 0.1
+farPlane: 100
+orthoSize: 20
 --ComponentEnd
 ====GameObjectEnd
 
@@ -35,9 +35,9 @@ color: 1 1 1
 shadowType: 1
 scrWidth: 1920
 scrHeight: 1080
-fov: -4.31602e+08
-nearPlane: -4.31602e+08
-farPlane: -4.31602e+08
+fov: 45
+nearPlane: 0.1
+farPlane: 100
 --ComponentEnd
 ====GameObjectEnd
 

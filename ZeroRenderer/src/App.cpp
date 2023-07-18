@@ -253,6 +253,13 @@ int main() {
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
+		
+		GL_ClearScreen();
+		runtimeDomain->LoadScene("asset/DefaultScene.scene");
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+		continue;
+		
 		GL_ClearScreen();
 
 		// - UI Layout
@@ -284,7 +291,6 @@ int main() {
 				_curProjectDetailsChoosedNode = nullptr;
 			}
 		}
-		glfwPollEvents();
 
 		// - Start a new ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -333,7 +339,10 @@ int main() {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+		runtimeDomain->LoadScene("asset/DefaultScene.scene");
 		glfwSwapBuffers(window);
+		glfwPollEvents();
+
 	}
 
 	GL_CLEANUP();

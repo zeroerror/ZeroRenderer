@@ -204,6 +204,8 @@ void EditorDatabase::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene,
 	string materialGUID = GenerateGUIDFromAssetPath(matPath);
 	materialMeta.guid = materialGUID;
 	materialMeta.shaderGUID = "4fa3f76955080b44";
+	materialMeta.shaderGUID = "9b5df9f9fade2c4a";
+	
 	MaterialMeta_SerializeTo(materialMeta, matPath);
 
 	meshRendererMeta->materialGUID = materialGUID;
@@ -425,7 +427,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	CameraMeta* cameraMeta = cameraGOMeta->AddComponentMeta<CameraMeta>();
 	cameraMeta->scrWidth = scrWidth;
 	cameraMeta->scrHeight = scrHeight;
-	cameraGOMeta->transformMeta.position = vec3(0, 10, -10);
+	cameraGOMeta->transformMeta.position = vec3(0, 0, -10);
 	cameraGOMeta->transformMeta.rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
 	sceneMeta.gameObjectMetas.push_back(cameraGOMeta);
 
@@ -543,6 +545,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 		PrefabInstanceMeta* prefabInstanceMeta = new PrefabInstanceMeta();
 		prefabInstanceMeta->guid = prefabGUID;
 		prefabInstanceMeta->transformMeta = TransformMeta();
+		prefabInstanceMeta->transformMeta.rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
 		prefabInstanceMeta->transformMeta.position = vec3(0, 0, 10);
 		sceneMeta.prefabInstanceMetas.push_back(prefabInstanceMeta);
 	}
