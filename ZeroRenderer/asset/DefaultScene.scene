@@ -6,7 +6,7 @@ name: Camera
 --ComponentStart:
 componentType: ComponentType_Transform
 position: 0 10 -10
-rotation: 0 0 0 1
+rotation: 0.130526 0 0 0.991445
 --ComponentEnd
 
 --ComponentStart:

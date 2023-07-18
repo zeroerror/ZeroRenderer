@@ -428,7 +428,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	cameraMeta->scrWidth = scrWidth;
 	cameraMeta->scrHeight = scrHeight;
 	cameraGOMeta->transformMeta.position = vec3(0, 10, -10);
-	cameraGOMeta->transformMeta.rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
+	cameraGOMeta->transformMeta.rotation = quat(vec3(radians(15.0f), radians(0.0f), radians(0.0f)));
 	sceneMeta.gameObjectMetas.push_back(cameraGOMeta);
 
 	MeshFilterMeta* meshFilterMeta;

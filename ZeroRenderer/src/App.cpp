@@ -331,6 +331,7 @@ int main() {
 		ImGui::End();
 
 		// - Editor Scene Panel
+		
 		// Render Scene's Frame Buffer
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 		glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
@@ -342,6 +343,7 @@ int main() {
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		// Show Scene View By Frame Buffer Texture
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POSITION);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
@@ -352,10 +354,9 @@ int main() {
 		drawList->AddImage((ImTextureID)(uintptr_t)sceneViewTexture, panelPos, panelPosMax, ImVec2(0, 1), ImVec2(1, 0));
 		drawList->PopTextureID();
 		ImGui::End();
+
 		ImGui::Render();
-
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
