@@ -201,15 +201,6 @@ void GL_CLEANUP() {
 	glfwTerminate();
 }
 
-void GL_Repaint() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
 int main() {
 	// vector<string> suffixes = vector<string>();
 	// suffixes.push_back(FileSuffix::SUFFIX_MAT);
@@ -250,17 +241,17 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
 
-	glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
+	// Init Scene's Frame Buffer
 	GLuint frameBuffer;
 	glGenFramebuffers(1, &frameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
 	GLuint sceneViewTexture;
 	glGenTextures(1, &sceneViewTexture);
 	glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -268,15 +259,12 @@ int main() {
 	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
-	glGenFramebuffers(1, &frameBuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneViewTexture, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
-		GL_Repaint();
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// - UI Layout
 		ImVec2 projectLeftPanelMin = EDITOR_WINDOW_PROJECT_POSITION;
@@ -343,13 +331,16 @@ int main() {
 		ImGui::End();
 
 		// - Editor Scene Panel
+		// Render Scene's Frame Buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+		glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
+		glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-			glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-			glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
-			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);  // 指定绘制缓冲为颜色附件
+			glReadBuffer(GL_NONE);  // 读取缓冲设置为GL_NONE
+			runtimeDomain->RenderScene("asset/DefaultScene.scene");
 		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POSITION);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
