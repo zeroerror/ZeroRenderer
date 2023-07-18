@@ -180,7 +180,7 @@ materialGUID: 81689f3660ca1299
 ====PrefabInstanceStart:
 guid: 5781b19e1ef7aab3
 componentType: ComponentType_Transform
-position: 0 0 10
+position: 0 -5 10
 rotation: 0 0 0 1
 ====PrefabInstanceEnd
 

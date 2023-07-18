@@ -36,7 +36,7 @@ public:
 	void BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 	void BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 
-	void LoadScene(const string& path);
+	void RenderScene(const string& path);
 
 	void DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer);
 	void DrawMeshRenderer(const MeshRenderer* meshRenderer);

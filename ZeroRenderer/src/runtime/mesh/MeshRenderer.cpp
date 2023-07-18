@@ -6,10 +6,9 @@ MeshRenderer::MeshRenderer() {
 	vb = new VertexBuffer();
 	ib = new IndexBuffer();
 	vbLayout = new VertexBufferLayout();
+	vbLayout->Push<float>(3);
 	vbLayout->Push<float>(2);
-	//vbLayout->Push<float>(3);
-	//vbLayout->Push<float>(2);
-	//vbLayout->Push<float>(3);
+	vbLayout->Push<float>(3);
 }
 
 MeshRenderer::~MeshRenderer() {

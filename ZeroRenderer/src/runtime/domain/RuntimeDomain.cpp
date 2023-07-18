@@ -407,7 +407,7 @@ void RuntimeDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRender
 	glDrawElements(GL_TRIANGLES, skinMeshRenderer->ib_batched->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void RuntimeDomain::LoadScene(const string& path) {
+void RuntimeDomain::RenderScene(const string& path) {
 	string sceneGUID;
 	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, sceneGUID)) {
 		return;

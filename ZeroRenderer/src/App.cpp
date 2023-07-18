@@ -201,9 +201,13 @@ void GL_CLEANUP() {
 	glfwTerminate();
 }
 
-void GL_ClearScreen() {
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+void GL_Repaint() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int main() {
@@ -226,7 +230,7 @@ int main() {
 	runtimeDomain->Init();
 
 	// Init GL
-	glfwInit(); 
+	glfwInit();
 	GLFWwindow* window = glfwCreateWindow(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, "Zero Engine v0.0.1", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 	glewInit();
@@ -249,18 +253,30 @@ int main() {
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
 
-	glViewport(0, 0, static_cast<int>(ImGui::GetIO().DisplaySize.x), static_cast<int>(ImGui::GetIO().DisplaySize.y));
+	glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
+	GLuint frameBuffer;
+	glGenFramebuffers(1, &frameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+	GLuint sceneViewTexture;
+	glGenTextures(1, &sceneViewTexture);
+	glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	glGenFramebuffers(1, &frameBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneViewTexture, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Main loop
 	while (!glfwWindowShouldClose(window)) {
-		
-		GL_ClearScreen();
-		runtimeDomain->LoadScene("asset/DefaultScene.scene");
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-		continue;
-		
-		GL_ClearScreen();
+		GL_Repaint();
 
 		// - UI Layout
 		ImVec2 projectLeftPanelMin = EDITOR_WINDOW_PROJECT_POSITION;
@@ -327,19 +343,28 @@ int main() {
 		ImGui::End();
 
 		// - Editor Scene Panel
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+			glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+			glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POSITION);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-
-		runtimeDomain->LoadScene("asset/DefaultScene.scene");
-
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		ImVec2 panelPos = ImGui::GetCursorScreenPos();
+		ImVec2 panelPosMax = ImVec2(panelPos.x + EDITOR_WINDOW_SCENE_WIDTH, panelPos.y + EDITOR_WINDOW_SCENE_HEIGHT);
+		drawList->PushTextureID((ImTextureID)(uintptr_t)sceneViewTexture);
+		drawList->AddImage((ImTextureID)(uintptr_t)sceneViewTexture, panelPos, panelPosMax, ImVec2(0, 1), ImVec2(1, 0));
+		drawList->PopTextureID();
 		ImGui::End();
-
-		// Rendering ImGui
 		ImGui::Render();
+
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		runtimeDomain->LoadScene("asset/DefaultScene.scene");
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
