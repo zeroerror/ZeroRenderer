@@ -742,6 +742,7 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 					iss = istringstream(line);
 					iss >> key;
 					iss >> key;
+
 					int v = atoi(key.c_str());
 					uniform.value = v;
 				}
@@ -750,6 +751,7 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 					istringstream iss(line);
 					iss >> key;
 					iss >> key;
+
 					float v = atoi(key.c_str());
 					uniform.value = v;
 				}
@@ -757,9 +759,9 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 					getline(ss, line);
 					iss = istringstream(line);
 					iss >> key;
+					iss >> key;
 
 					vec3 v = vec3();
-					iss >> key;
 					v.x = atof(key.c_str());
 					iss >> key;
 					v.y = atof(key.c_str());
@@ -768,8 +770,12 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 					uniform.value = v;
 				}
 				else if (ut == ShaderUniformType_Float4) {
-					vec4 v = vec4();
+					getline(ss, line);
+					iss = istringstream(line);
 					iss >> key;
+					iss >> key;
+
+					vec4 v = vec4();
 					v.x = atof(key.c_str());
 					iss >> key;
 					v.y = atof(key.c_str());

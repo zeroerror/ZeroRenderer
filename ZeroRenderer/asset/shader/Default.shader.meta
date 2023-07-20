@@ -14,7 +14,7 @@ uniformName: testFloat3
 uniformType: 4
 uniformValue: 0.33 0.33 0.33
 
-uniformName: testFloat4
+uniformName: u_mixedColor
 uniformType: 5
 uniformValue: 0.33 0.33 0.33 1
 

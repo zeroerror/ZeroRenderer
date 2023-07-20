@@ -575,7 +575,7 @@ void EditorDatabase::GenerateDefaultShader() {
 	uniform.value = vec3(0.33f, 0.33f, 0.33f);
 	uniforms.push_back(uniform);
 
-	uniform.name = "testFloat4";
+	uniform.name = "u_mixedColor";
 	uniform.type = ShaderUniformType_Float4;
 	uniform.value = vec4(0.33f, 0.33f, 0.33f, 1.0f);
 	uniforms.push_back(uniform);

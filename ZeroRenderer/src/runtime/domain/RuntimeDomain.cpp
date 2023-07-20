@@ -38,7 +38,7 @@ void RuntimeDomain::Init() {
 
 	// Generate default scene.
 	EditorDatabase::GenerateDefaultSceneMeta();
-	EditorDatabase::GenerateDefaultShader();
+	// EditorDatabase::GenerateDefaultShader();
 }
 
 void RuntimeDomain::ProcessModel(const string& path) {
