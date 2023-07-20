@@ -47,6 +47,8 @@ static const int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJE
 static const ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN = ImVec2(EDITOR_WINDOW_PROJECT_LEFT_POS_MAX.x, EDITOR_WINDOW_PROJECT_LEFT_POS_MAX.y - EDITOR_WINDOW_PROJECT_HEIGHT);
 static const ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX = ImVec2(EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.x + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.y + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT);
 
+static const float EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED = 1.0f;
+
 enum EditorPanelFlags_ {
 	EditorPanelFlags_None = 0,
 	EditorPanelFlags_TitleBar,
@@ -102,6 +104,9 @@ int _Clamp(const int& v, const int& min, const int& max) {
 	return v<min ? min : v>max ? max : v;
 }
 
+static vec2 _lastMousePos;
+static vec2 _mousePosDelta;
+vec2 GetMousePosDelta() { return _mousePosDelta; }
 vec2 GetMousePos() {
 	ImVec2 p = ImGui::GetMousePos();
 	return vec2(p.x, p.y);
@@ -113,7 +118,12 @@ bool GetMouseButtonUp(const MouseButtons_& button) { return _allKeyStatus[button
 bool GetKeyDown(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Down; }
 bool GetKeyPressing(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Pressing; }
 bool GetKeyUp(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Up; }
+
 void TickInput() {
+	vec2 curMousePos = GetMousePos();
+	_mousePosDelta = curMousePos - _lastMousePos;
+	_lastMousePos = curMousePos;
+
 	if (_CheckMouseDown(MouseButtons_Left))_allKeyStatus[MouseButtons_Left] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Left] + 1), KeyStatus_Down, KeyStatus_Pressing);
 	else _allKeyStatus[MouseButtons_Left] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Left] - 1), KeyStatus_None, KeyStatus_Up);
 	if (_CheckMouseDown(MouseButtons_Right))_allKeyStatus[MouseButtons_Right] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Right] + 1), KeyStatus_Down, KeyStatus_Pressing);
@@ -234,10 +244,26 @@ void DirectoryBackward() {
 	}
 }
 
-void TickEditorEvents() {
+void SceneViewEvent(const float& deltaTime) {
+	if (_curChoosedPanelFlags != EditorPanelFlags_SceneView)return;
+
+	if (GetMouseButtonPressing(MouseButtons_Right)) {
+		// todo： to runtimedomain's sceneviewdomain
+		vec2 mousePosDelta = GetMousePosDelta();
+		auto yawRadius = -mousePosDelta.x * EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED * deltaTime;
+		auto pitchRadius = mousePosDelta.y * EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED * deltaTime;
+		auto mainCamera = runtimeContext->mainCamera;
+		auto rot = mainCamera->transform->rotation;
+		auto newRot = quat(vec3(0, yawRadius, 0)) * rot * quat(vec3(pitchRadius, 0, 0));
+		mainCamera->transform->SetRotation(newRot);
+	}
+}
+
+void TickEditorEvents(const float& deltaTime) {
 	TickInput();
 	PanelSelection();
 	DirectoryBackward();
+	SceneViewEvent(deltaTime);
 }
 
 #pragma endregion
@@ -312,10 +338,15 @@ int main() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Main loop
+	float _lastTime = glfwGetTime();
 	while (!glfwWindowShouldClose(window)) {
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		float curTime = glfwGetTime();
+		float deltaTime = curTime - _lastTime;
+		_lastTime = curTime;
+		cout << "deltaTime: " << deltaTime << endl;
 
-		TickEditorEvents();
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		TickEditorEvents(deltaTime);
 
 		// - Start a new ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
