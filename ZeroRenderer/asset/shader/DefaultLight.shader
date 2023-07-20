@@ -68,16 +68,16 @@ void main()
     vec3 diffuse = u_lightColor * intensity; 
     outColor.rgb *= diffuse;
 
-    // ------ Shadow -------
-    vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
-    vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
-    float mapDepth = texture(u_depthMap, depthCoord).r;
-    float curDepth = light_glPos.z / light_glPos.w;
-    curDepth = curDepth * 0.5 + 0.5;
-    curDepth = curDepth > 1.0 ? 1.0 : curDepth;
-    float bias = min(0.00002 * (1 + dot), 0.00002);
-    float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
-    outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
+    // // ------ Shadow -------
+    // vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
+    // vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
+    // float mapDepth = texture(u_depthMap, depthCoord).r;
+    // float curDepth = light_glPos.z / light_glPos.w;
+    // curDepth = curDepth * 0.5 + 0.5;
+    // curDepth = curDepth > 1.0 ? 1.0 : curDepth;
+    // float bias = min(0.00002 * (1 + dot), 0.00002);
+    // float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
+    // outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
 
     // ------ Ambient Light -------
     vec3 ambientColor = texColor.xyz;
@@ -85,6 +85,7 @@ void main()
     vec3 ambient = ambientColor * ambientStrength;
     outColor.rgb += ambient;
 
+    outColor.a = 1;
     color = outColor;
 }
 

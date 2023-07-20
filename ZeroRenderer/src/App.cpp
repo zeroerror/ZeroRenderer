@@ -369,11 +369,13 @@ int main() {
 
 	// Main loop
 	float _lastTime = glfwGetTime();
+	int fps = 0;
 	while (!glfwWindowShouldClose(window)) {
 		float curTime = glfwGetTime();
 		float deltaTime = curTime - _lastTime;
+		fps = (int)(1.0f / deltaTime);
 		_lastTime = curTime;
-		cout << "deltaTime: " << deltaTime << endl;
+		glfwSetWindowTitle(window, ("Zero Engine v0.0.1 FPS: " + to_string(fps)).c_str());
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		TickEditorEvents(deltaTime);
