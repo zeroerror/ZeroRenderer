@@ -5,15 +5,15 @@ layout(location = 0) in vec4 originPosition;
 layout(location = 1) in vec2 texCoord;
 layout(location = 2) in vec3 normal;
 
-out vec2 v_texCoord;
-out vec3 v_normal;
-out vec4 v_relativePosition;
-out vec4 v_glPos;
-
 uniform mat4 u_mvp;
 uniform mat4 u_modRotationMatrix;
 uniform vec3 u_modPosition;
 uniform vec3 u_lightPosition;
+
+out vec2 v_texCoord;
+out vec3 v_normal;
+out vec4 v_relativePosition;
+out vec4 v_glPos;
 
 void main()
 {
@@ -50,14 +50,17 @@ uniform mat4 u_lightMVPMatrix;
 uniform vec3 u_lightDirection;
 uniform float u_nearPlane;
 uniform float u_farPlane;
+uniform vec3 u_mixedColor;
+uniform float u_mixedFactor;
 
 void main()
 {
     vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
     vec4 specularColor = texture(u_specularMap, v_texCoord);
     specularColor.a = 1.0;
-    vec4 mixColor = diffuseColor + specularColor;
-    vec4 outColor = mixColor;
+    vec4 texColor = diffuseColor + specularColor;
+
+    vec4 outColor = texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
 
     // - Lambert Light Model -
     float dot = dot(v_normal, u_lightDirection);
@@ -77,7 +80,7 @@ void main()
     outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
 
     // ------ Ambient Light -------
-    vec3 ambientColor = mixColor.xyz;
+    vec3 ambientColor = texColor.xyz;
     float ambientStrength = 0.3;
     vec3 ambient = ambientColor * ambientStrength;
     outColor.rgb += ambient;

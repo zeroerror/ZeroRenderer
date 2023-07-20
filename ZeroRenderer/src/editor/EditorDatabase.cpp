@@ -203,7 +203,7 @@ void EditorDatabase::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene,
 	string materialGUID = GenerateGUIDFromAssetPath(matPath);
 	materialMeta.guid = materialGUID;
 	materialMeta.shaderGUID = "4fa3f76955080b44";
-	materialMeta.shaderGUID = "9b5df9f9fade2c4a";
+	// materialMeta.shaderGUID = "9b5df9f9fade2c4a";
 
 	MaterialMeta_SerializeTo(materialMeta, matPath);
 

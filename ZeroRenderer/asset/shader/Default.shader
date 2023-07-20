@@ -30,7 +30,7 @@ void main() {
 	vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
 	vec4 specularColor = texture(u_specularMap, v_texCoord);
 	vec4 texColor = diffuseColor + specularColor;
-	vec4 outColor = texColor + mix(vec4(0), vec4(u_mixedColor,0.0), u_mixedFactor);
+	vec4 outColor = texColor + vec4(u_mixedColor, 1.0) * u_mixedFactor;
 
 	color = outColor;
 }
