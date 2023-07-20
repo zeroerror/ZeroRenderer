@@ -46,6 +46,7 @@
     <ClCompile Include="src\runtime\context\RuntimeContext.cpp" />
     <ClCompile Include="src\runtime\component\Camera.cpp" />
     <ClCompile Include="src\runtime\mesh\SkinMeshRenderer.cpp" />
+    <ClCompile Include="src\editor\meta\ShaderMeta.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\runtime\component\CameraController.h" />
@@ -398,6 +399,7 @@
     <ClInclude Include="src\runtime\context\RuntimeContext.h" />
     <ClInclude Include="src\runtime\component\Camera.h" />
     <ClInclude Include="src\editor\meta\DirectLightMeta.h" />
+    <ClInclude Include="src\generic\ShaderUniformType.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

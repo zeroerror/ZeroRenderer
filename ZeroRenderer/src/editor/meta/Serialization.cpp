@@ -659,17 +659,43 @@ void Serialization::MaterialMeta_DeserializeFrom(MaterialMeta* materialMeta, con
 	}
 }
 
-void Serialization::ShaderMeta_SerializeTo(ShaderMeta* shaderMeta, const string& path) {
+void Serialization::ShaderMeta_SerializeTo(const ShaderMeta& shaderMeta, const string& path) {
 	stringstream ss;
-	ss << "guid: " << shaderMeta->guid << endl;
-	ss << "useLightingMVP: " << shaderMeta->useLightingMVP << endl;
+	ss << "guid: " << shaderMeta.guid << endl;
+	ss << endl;
+	ss << "UniformsStart" << endl;
+	for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
+		ss << endl;
+		ShaderUniform uniform = shaderMeta.uniforms[i];
+		ss << "uniformName: " << uniform.name << endl;
+		auto uniformType = uniform.type;
+		ss << "uniformType: " << uniformType << endl;
+
+		if (uniformType == ShaderUniformType_Int) {
+			ss << "uniformValue: " << any_cast<int>(uniform.value) << endl;
+		}
+		else if (uniformType == ShaderUniformType_Float) {
+			ss << "uniformValue: " << any_cast<float>(uniform.value) << endl;
+		}
+		else if (uniformType == ShaderUniformType_Float3) {
+			vec3 v = any_cast<vec3>(uniform.value);
+			ss << "uniformValue: " << v.x << ' ' << v.y << ' ' << v.z << endl;
+		}
+		else if (uniformType == ShaderUniformType_Float4) {
+			vec4 v = any_cast<vec4>(uniform.value);
+			ss << "uniformValue: " << v.x << ' ' << v.y << ' ' << v.z << ' ' << v.w << endl;
+		}
+	}
+	ss << endl;
+	ss << "UniformsEnd" << endl;
+
 	string result = ss.str();
 	size_t len = result.length() + 1;
 	unsigned char* charResult = new unsigned char[len];
 	memcpy(charResult, result.c_str(), len);
 	string shaderMetaPath = path + FileSuffix::SUFFIX_META;
 	FileHelper::WriteCharsTo(shaderMetaPath, charResult);
-	ss << "Shader Serialize | guid: " << shaderMeta->guid << endl;
+	ss << "Shader Serialize | guid: " << shaderMeta.guid << endl;
 }
 
 void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const string& path) {
@@ -689,14 +715,57 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 	while (getline(ss, line)) {
 		istringstream iss(line);
 		string key;
-		if (!(iss >> key)) {
-			break;
-		}
+		if (!(iss >> key)) continue;
+
 		if (key == "guid:") {
 			iss >> shaderMeta->guid;
 		}
-		else if (key == "useLightingMVP:") {
-			iss >> shaderMeta->useLightingMVP;
+		else if (key == "UniformsStart:") {
+			while (getline(ss, line)) {
+				if (!(iss >> key)) continue;
+				if (key == "UniformsEnd:") break;
+
+				ShaderUniform uniform = ShaderUniform();
+				iss >> key;
+				uniform.name = key;
+
+				iss >> key;
+				ShaderUniformType_ ut = (ShaderUniformType_)(atoi(key.c_str()));
+				uniform.type = ut;
+
+				if (ut == ShaderUniformType_Int) {
+					iss >> key;
+					int v = atoi(key.c_str());
+					uniform.value = v;
+				}
+				else if (ut == ShaderUniformType_Float) {
+					iss >> key;
+					float v = atoi(key.c_str());
+					uniform.value = v;
+				}
+				else if (ut == ShaderUniformType_Float3) {
+					vec3 v = vec3();
+					iss >> key;
+					v.x = atof(key.c_str());
+					iss >> key;
+					v.y = atof(key.c_str());
+					iss >> key;
+					v.z = atof(key.c_str());
+					uniform.value = v;
+				}
+				else if (ut == ShaderUniformType_Float4) {
+					vec4 v = vec4();
+					iss >> key;
+					v.x = atof(key.c_str());
+					iss >> key;
+					v.y = atof(key.c_str());
+					iss >> key;
+					v.z = atof(key.c_str());
+					iss >> key;
+					v.w = atof(key.c_str());
+					uniform.value = v;
+				}
+			}
 		}
 	}
 }

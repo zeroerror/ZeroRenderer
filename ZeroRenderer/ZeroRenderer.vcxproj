@@ -25,6 +25,7 @@
     <ClCompile Include="src\editor\meta\GameObjectMeta.cpp" />
     <ClCompile Include="src\editor\meta\SceneMeta.cpp" />
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
+    <ClCompile Include="src\editor\meta\ShaderMeta.cpp" />
     <ClCompile Include="src\runtime\component\Camera.cpp" />
     <ClCompile Include="src\runtime\domain\RuntimeDomain.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
@@ -79,6 +80,7 @@
     <ClInclude Include="src\editor\meta\PrefabMeta.h" />
     <ClInclude Include="src\editor\meta\SceneMeta.h" />
     <ClInclude Include="src\editor\meta\Serialization.h" />
+    <ClInclude Include="src\generic\ShaderUniformType.h" />
     <ClInclude Include="src\runtime\component\Camera.h" />
     <ClInclude Include="src\runtime\component\Component.h" />
     <ClInclude Include="src\runtime\domain\RuntimeDomain.h" />

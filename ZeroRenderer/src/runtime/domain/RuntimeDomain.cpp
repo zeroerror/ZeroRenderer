@@ -491,6 +491,34 @@ void RuntimeDomain::MetaToCamera(const CameraMeta& cameraMeta, Camera& camera) {
 	camera.scrHeight = cameraMeta.scrHeight;
 }
 
+void RuntimeDomain::MetaToShader(const ShaderMeta& shaderMeta, Shader& shader) {
+	for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
+		ShaderUniform uniform = shaderMeta.uniforms[i];
+		string uniformName = uniform.name;
+		ShaderUniformType_ uniformType = uniform.type;
+		std::any uniformValue = uniform.value;
+		if (uniformType == ShaderUniformType_Int) {
+			shader.SetUniform1i(uniformName, any_cast<int>(uniformValue));
+		}
+		else if (uniformType == ShaderUniformType_Float) {
+			shader.SetUniform1f(uniformName, any_cast<float>(uniformValue));
+		}
+		else if (uniformType == ShaderUniformType_Float3) {
+			vec3 v = any_cast<vec3>(uniformValue);
+			shader.SetUniform3f(uniformName, v.x, v.y, v.z);
+		}
+		else if (uniformType == ShaderUniformType_Float4) {
+			vec4 v = any_cast<vec4>(uniformValue);
+			shader.SetUniform4f(uniformName, v.x, v.y, v.z, v.w);
+		}
+		else if (uniformType == ShaderUniformType_Matrix44) {
+			mat4 mat = any_cast<mat4>(uniformValue);
+			shader.SetUniformMat4f(uniformName, mat);
+		}
+
+	}
+}
+
 void RuntimeDomain::MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight) {
 	directLight.color = directLightMeta.color;
 	directLight.shadowType = directLightMeta.shadowType;

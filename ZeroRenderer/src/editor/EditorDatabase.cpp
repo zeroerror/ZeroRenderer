@@ -69,8 +69,7 @@ void EditorDatabase::ImportAssets(const string& dir) {
 				if (!FileHelper::FileExist(metaPath)) {
 					ShaderMeta shaderMeta = ShaderMeta();
 					shaderMeta.guid = guid;
-					shaderMeta.useLightingMVP = false;
-					ShaderMeta_SerializeTo(&shaderMeta, assetPath);
+					ShaderMeta_SerializeTo(shaderMeta, assetPath);
 				}
 				else {
 					ShaderMeta shaderMeta = ShaderMeta();
@@ -205,7 +204,7 @@ void EditorDatabase::ImportModel_Node_Mesh(aiMesh* aMesh, const aiScene* aScene,
 	materialMeta.guid = materialGUID;
 	materialMeta.shaderGUID = "4fa3f76955080b44";
 	materialMeta.shaderGUID = "9b5df9f9fade2c4a";
-	
+
 	MaterialMeta_SerializeTo(materialMeta, matPath);
 
 	meshRendererMeta->materialGUID = materialGUID;
@@ -410,7 +409,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	unsigned int scrWidth = 1920;
 	unsigned int scrHeight = 1080;
 
-	string defaultScenePath = "asset/DefaultScene" + FileSuffix::SUFFIX_SCENE;
+	string defaultScenePath = EditorDefaultConfig::DefaultScenePath();
 	string defaultSceneMetaPath = defaultScenePath + FileSuffix::SUFFIX_META;
 	string sceneGUID = GenerateGUIDFromAssetPath(defaultScenePath);
 	SceneMeta sceneMeta = SceneMeta();
@@ -553,3 +552,28 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	SceneMeta_SerializeTo(sceneMeta, EditorDefaultConfig::DefaultScenePath());
 }
 
+void EditorDatabase::GenerateDefaultShader() {
+	string defaultShaderPath = EditorDefaultConfig::DefaultShaderPath();
+	string defaultShaderMetaPath = defaultShaderPath + FileSuffix::SUFFIX_META;
+	ShaderMeta shaderMeta = ShaderMeta();
+	shaderMeta.uniforms = vector<ShaderUniform>();
+	vector<ShaderUniform>& uniforms = shaderMeta.uniforms;
+
+	ShaderUniform uniform = ShaderUniform();
+	uniform.name = "testInt";
+	uniform.type = ShaderUniformType_Int;
+	uniform.value = 1;
+	uniform.name = "testFloat";
+	uniform.type = ShaderUniformType_Float;
+	uniform.value = 0.66f;
+	uniform.name = "testFloat3";
+	uniform.type = ShaderUniformType_Float3;
+	uniform.value = vec3(0.33f, 0.33f, 0.33f);
+	uniform.name = "testFloat4";
+	uniform.type = ShaderUniformType_Float4;
+	uniform.value = vec4(0.33f, 0.33f, 0.33f, 1.0f);
+
+	uniforms.push_back(uniform);
+	ShaderMeta_SerializeTo(shaderMeta, defaultShaderMetaPath);
+
+}

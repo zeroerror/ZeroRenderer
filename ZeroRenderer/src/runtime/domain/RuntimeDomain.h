@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneMeta.h"
+#include "ShaderMeta.h"
 #include "ObjMeta.h"
 #include "PrefabInstanceMeta.h"
 #include "PrefabMeta.h"
@@ -46,18 +47,19 @@ public:
 
 	// =======================================================================
 	// All meta's methods that convert to a runtime object.
+	void MetaToShader(const ShaderMeta& shaderMeta, Shader& shader);
 	void MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight);
 	void MetaToCamera(const CameraMeta& cameraMeta, Camera& camera);
 	void MetaToMeshFilter(const MeshFilterMeta& meshFilterMeta, MeshFilter& meshFilter);
 	void MetaToMeshRenderer(const MeshRendererMeta& meshRendererMeta, MeshRenderer& meshRenderer);
 	void MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshRendererMeta, SkinMeshRenderer& skinMeshRenderer);
 	void MetaToTransform(const TransformMeta& transformMeta, Transform& transform);
-	void MetaToComponent(const ComponentMeta& componentMeta, Component& component);
 	void MetaToPrefab(const string& guid, PrefabMeta& prefabMeta);
 	void MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject);
 	void MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& gameObject);
 	void MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject);
 	void MetaToScene(const SceneMeta& sceneMeta, Scene& scene);
+
 
 private:
 	void _MetaToGameObject(const TransformMeta& transformMeta, const vector<ComponentMeta*> componentMetas, GameObject& gameObject);

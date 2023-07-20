@@ -43,6 +43,7 @@ public:
 	static void MoveFile(const string& fromPath, const string& toPath);
 
 	static void GenerateDefaultSceneMeta();
+	static void GenerateDefaultShader();
 
 private:
 	static unordered_map<string, string> m_assetPath2GUID;

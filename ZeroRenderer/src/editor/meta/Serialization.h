@@ -69,7 +69,7 @@ namespace Serialization {
 	/**
 	* @param path : the path of the file to be serialized. ps: the path must be a file path and the file's suffix must be .shader
 	*/
-	void ShaderMeta_SerializeTo(ShaderMeta* shaderMeta, const string& path);
+	void ShaderMeta_SerializeTo(const ShaderMeta& shaderMeta, const string& path);
 	/**
 	* @param path : the path of the file to be deserialized. ps: the path must be a file path and the file's suffix must be .shader
 	*/

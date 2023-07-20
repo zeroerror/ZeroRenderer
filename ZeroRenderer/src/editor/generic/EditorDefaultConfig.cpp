@@ -1,6 +1,7 @@
 #include "EditorDefaultConfig.h"
 
 string EditorDefaultConfig::_defaultScenePath = "asset/DefaultScene.scene";
+string EditorDefaultConfig::_defaultShaderPath = "asset/DefaultShader.shader";
 
 string EditorDefaultConfig::_defaultComponentStartStr = "--ComponentStart:";
 string EditorDefaultConfig::_defaultGameObjectStartStr = "====GameObjectStart:";
@@ -17,6 +18,7 @@ string EditorDefaultConfig::_defaultAllGameObjecntsEndStr = "########AllGameObje
 string EditorDefaultConfig::_defaultAllPrefabInstancesEndStr = "########AllPrefabInstancesEnd";
 
 const string& EditorDefaultConfig::DefaultScenePath() { return _defaultScenePath; }
+const string& EditorDefaultConfig::DefaultShaderPath() { return _defaultShaderPath; }
 
 const string& EditorDefaultConfig::DefaultComponentStartStr() { return _defaultComponentStartStr; }
 const string& EditorDefaultConfig::DefaultGameObjectStartStr() { return _defaultGameObjectStartStr; }
