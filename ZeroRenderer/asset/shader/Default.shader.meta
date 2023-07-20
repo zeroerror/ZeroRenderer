@@ -2,20 +2,12 @@ guid: 9b5df9f9fade2c4a
 
 UniformsStart: 
 
-uniformName: testInt
-uniformType: 1
-uniformValue: 1
-
-uniformName: testFloat
-uniformType: 2
-uniformValue: 0.66
-
-uniformName: testFloat3
-uniformType: 4
-uniformValue: 0.33 0.33 0.33
-
 uniformName: u_mixedColor
-uniformType: 5
-uniformValue: 0.33 0.33 0.33 1
+uniformType: 4
+uniformValue: 0 1 0
+
+uniformName: u_mixedFactor
+uniformType: 2
+uniformValue: 0.2
 
 UniformsEnd

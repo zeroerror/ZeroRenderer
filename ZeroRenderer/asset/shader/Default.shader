@@ -22,10 +22,15 @@ layout(location = 0) out vec4 color;
 in vec2 v_texCoord;
 
 uniform sampler2D u_diffuseMap;
-uniform vec4 u_mixedColor;
+uniform sampler2D u_specularMap;
+uniform vec3 u_mixedColor;
+uniform float u_mixedFactor;
 
 void main() {
-	vec4 texColor = texture(u_diffuseMap, v_texCoord);
-	vec4 outColor = mix(texColor, u_mixedColor, 0.5);
+	vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
+	vec4 specularColor = texture(u_specularMap, v_texCoord);
+	vec4 texColor = diffuseColor + specularColor;
+	vec4 outColor = texColor + mix(vec4(0), vec4(u_mixedColor,0.0), u_mixedFactor);
+
 	color = outColor;
 }
