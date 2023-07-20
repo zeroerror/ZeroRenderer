@@ -48,6 +48,7 @@ static const ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN = ImVec2(EDITOR_WINDOW_P
 static const ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX = ImVec2(EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.x + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.y + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT);
 
 static const float EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED = 1.0f;
+static const float EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED = 2.0f;
 
 enum EditorPanelFlags_ {
 	EditorPanelFlags_None = 0,
@@ -119,20 +120,27 @@ bool GetKeyDown(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Do
 bool GetKeyPressing(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Pressing; }
 bool GetKeyUp(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Up; }
 
+void _TickMouseKeyStatus(const MouseButtons_& key) {
+	if (_CheckMouseDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
+	else _allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] - 1), KeyStatus_None, KeyStatus_Up);
+}
+void _TickKeyStatus(const ImGuiKey& key) {
+	if (_CheckKeyDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
+	else _allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] - 1), KeyStatus_None, KeyStatus_Up);
+}
 void TickInput() {
 	vec2 curMousePos = GetMousePos();
 	_mousePosDelta = curMousePos - _lastMousePos;
 	_lastMousePos = curMousePos;
 
-	if (_CheckMouseDown(MouseButtons_Left))_allKeyStatus[MouseButtons_Left] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Left] + 1), KeyStatus_Down, KeyStatus_Pressing);
-	else _allKeyStatus[MouseButtons_Left] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Left] - 1), KeyStatus_None, KeyStatus_Up);
-	if (_CheckMouseDown(MouseButtons_Right))_allKeyStatus[MouseButtons_Right] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Right] + 1), KeyStatus_Down, KeyStatus_Pressing);
-	else _allKeyStatus[MouseButtons_Right] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Right] - 1), KeyStatus_None, KeyStatus_Up);
-	if (_CheckMouseDown(MouseButtons_Middle))_allKeyStatus[MouseButtons_Middle] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Middle] + 1), KeyStatus_Down, KeyStatus_Pressing);
-	else _allKeyStatus[MouseButtons_Middle] = (KeyStatus_)_Clamp((_allKeyStatus[MouseButtons_Middle] - 1), KeyStatus_None, KeyStatus_Up);
-
-	if (_CheckKeyDown(ImGuiKey_Backspace))_allKeyStatus[ImGuiKey_Backspace] = (KeyStatus_)_Clamp((_allKeyStatus[ImGuiKey_Backspace] + 1), KeyStatus_Down, KeyStatus_Pressing);
-	else _allKeyStatus[ImGuiKey_Backspace] = (KeyStatus_)_Clamp((_allKeyStatus[ImGuiKey_Backspace] - 1), KeyStatus_None, KeyStatus_Up);
+	_TickMouseKeyStatus(MouseButtons_Left);
+	_TickMouseKeyStatus(MouseButtons_Right);
+	_TickMouseKeyStatus(MouseButtons_Middle);
+	_TickKeyStatus(ImGuiKey_Backspace);
+	_TickKeyStatus(ImGuiKey_W);
+	_TickKeyStatus(ImGuiKey_S);
+	_TickKeyStatus(ImGuiKey_A);
+	_TickKeyStatus(ImGuiKey_D);
 }
 
 #pragma endregion
@@ -247,16 +255,38 @@ void DirectoryBackward() {
 void SceneViewEvent(const float& deltaTime) {
 	if (_curChoosedPanelFlags != EditorPanelFlags_SceneView)return;
 
+	auto mainCamera = runtimeContext->mainCamera;
+	auto pos = mainCamera->transform->GetPosition();
+	auto rot = mainCamera->transform->rotation;
+	auto camForward = mainCamera->transform->GetForward();
+	auto camRight = mainCamera->transform->GetRight();
+
 	if (GetMouseButtonPressing(MouseButtons_Right)) {
 		// todo： to runtimedomain's sceneviewdomain
 		vec2 mousePosDelta = GetMousePosDelta();
-		auto yawRadius = -mousePosDelta.x * EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED * deltaTime;
-		auto pitchRadius = mousePosDelta.y * EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED * deltaTime;
-		auto mainCamera = runtimeContext->mainCamera;
-		auto rot = mainCamera->transform->rotation;
-		auto newRot = quat(vec3(0, yawRadius, 0)) * rot * quat(vec3(pitchRadius, 0, 0));
-		mainCamera->transform->SetRotation(newRot);
+		float rotateFactor = EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED * deltaTime;
+		auto yawRadius = -mousePosDelta.x * rotateFactor;
+		auto pitchRadius = mousePosDelta.y * rotateFactor;
+		rot = quat(vec3(0, yawRadius, 0)) * rot * quat(vec3(pitchRadius, 0, 0));
 	}
+	mainCamera->transform->SetRotation(rot);
+
+	if (GetKeyPressing(ImGuiKey_W)) {
+		pos += camForward * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
+	}
+
+	if (GetKeyPressing(ImGuiKey_S)) {
+		pos += -camForward * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
+	}
+
+	if (GetKeyPressing(ImGuiKey_A)) {
+		pos += camRight * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
+	}
+
+	if (GetKeyPressing(ImGuiKey_D)) {
+		pos += -camRight * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
+	}
+	mainCamera->transform->SetPosition(pos);
 }
 
 void TickEditorEvents(const float& deltaTime) {
