@@ -21,26 +21,38 @@ RuntimeDomain* runtimeDomain;
 static const int EDITOR_WINDOW_WIDTH = 1920;
 static const int EDITOR_WINDOW_HEIGHT = 1080;
 
-static const ImVec2 EDITOR_WINDOW_TITLE_BAR_POSITION = ImVec2(0, 0);
+static const ImVec2 EDITOR_WINDOW_TITLE_BAR_POS = ImVec2(0, 0);
 static const int EDITOR_WINDOW_TITLE_BAR_WIDTH = EDITOR_WINDOW_WIDTH;
 static const int EDITOR_WINDOW_TITLE_BAR_HEIGHT = 1.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
+static const ImVec2 EDITOR_WINDOW_TITLE_BAR_POS_MIN = EDITOR_WINDOW_TITLE_BAR_POS;
+static const ImVec2 EDITOR_WINDOW_TITLE_BAR_POS_MAX = ImVec2(EDITOR_WINDOW_TITLE_BAR_POS_MIN.x + EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_POS_MIN.y + EDITOR_WINDOW_TITLE_BAR_HEIGHT);
 
-static const ImVec2 EDITOR_WINDOW_SCENE_POSITION = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT);
+static const ImVec2 EDITOR_WINDOW_SCENE_POS = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT);
 static const int EDITOR_WINDOW_SCENE_WIDTH = EDITOR_WINDOW_WIDTH;
 static const int EDITOR_WINDOW_SCENE_HEIGHT = 6.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
+static const ImVec2 EDITOR_WINDOW_SCENE_POS_MIN = EDITOR_WINDOW_SCENE_POS;
+static const ImVec2 EDITOR_WINDOW_SCENE_POS_MAX = ImVec2(EDITOR_WINDOW_SCENE_POS_MIN.x + EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_POS_MIN.y + EDITOR_WINDOW_SCENE_HEIGHT);
 
-static const ImVec2 EDITOR_WINDOW_PROJECT_POSITION = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT + EDITOR_WINDOW_SCENE_HEIGHT);
+static const ImVec2 EDITOR_WINDOW_PROJECT_POS = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT + EDITOR_WINDOW_SCENE_HEIGHT);
 static const int EDITOR_WINDOW_PROJECT_WIDTH = EDITOR_WINDOW_WIDTH;
 static const int EDITOR_WINDOW_PROJECT_HEIGHT = 3.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
+
 static const int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH = EDITOR_WINDOW_PROJECT_WIDTH / 4.0f;
 static const int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
+static const ImVec2 EDITOR_WINDOW_PROJECT_LEFT_POS_MIN = EDITOR_WINDOW_PROJECT_POS;
+static const ImVec2 EDITOR_WINDOW_PROJECT_LEFT_POS_MAX = ImVec2(EDITOR_WINDOW_PROJECT_LEFT_POS_MIN.x + EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_LEFT_POS_MIN.y + EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT);
+
 static const int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH = EDITOR_WINDOW_WIDTH - EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
 static const int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
+static const ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN = ImVec2(EDITOR_WINDOW_PROJECT_LEFT_POS_MAX.x, EDITOR_WINDOW_PROJECT_LEFT_POS_MAX.y - EDITOR_WINDOW_PROJECT_HEIGHT);
+static const ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX = ImVec2(EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.x + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.y + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT);
 
 enum EditorPanelFlags_ {
 	EditorPanelFlags_None = 0,
-	EditorPanelFlags_ProjectLeftColunm = 1 << 0,
-	EditorPanelFlags_ProjectRightColunm = 1 << 1,
+	EditorPanelFlags_TitleBar,
+	EditorPanelFlags_SceneView,
+	EditorPanelFlags_ProjectLeftColunm,
+	EditorPanelFlags_ProjectRightColunm,
 };
 
 #pragma region [EDITOR CACHE]
@@ -192,6 +204,43 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 }
 #pragma endregion
 
+#pragma region [EDITOR EVENT]
+
+void PanelSelection() {
+	if (GetMouseButtonDown(MouseButtons_Left)) {
+		vec2 mousePos = GetMousePos();
+		if (_IsInAABB(mousePos, EDITOR_WINDOW_TITLE_BAR_POS_MIN, EDITOR_WINDOW_TITLE_BAR_POS_MAX)) {
+			_curChoosedPanelFlags = EditorPanelFlags_TitleBar;
+		}
+		else if (_IsInAABB(mousePos, EDITOR_WINDOW_SCENE_POS_MIN, EDITOR_WINDOW_SCENE_POS_MAX)) {
+			_curChoosedPanelFlags = EditorPanelFlags_SceneView;
+		}
+		else if (_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_LEFT_POS_MIN, EDITOR_WINDOW_PROJECT_LEFT_POS_MAX)) {
+			_curChoosedPanelFlags = EditorPanelFlags_ProjectLeftColunm;
+		}
+		else if (_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN, EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX)) {
+			_curChoosedPanelFlags = EditorPanelFlags_ProjectRightColunm;
+		}
+		std::cout << "Choosed Panel: " << _curChoosedPanelFlags << std::endl;
+	}
+}
+
+void DirectoryBackward() {
+	if (GetKeyDown(ImGuiKey_Backspace)) {
+		if (_curProjectChoosedNode != nullptr && _curProjectChoosedNode->fatherNode != nullptr) {
+			_curProjectChoosedNode = _curProjectChoosedNode->fatherNode;
+			_curProjectDetailsChoosedNode = nullptr;
+		}
+	}
+}
+
+void TickEditorEvents() {
+	TickInput();
+	PanelSelection();
+	DirectoryBackward();
+}
+
+#pragma endregion
 
 void GL_CLEANUP() {
 	// Cleanup
@@ -266,35 +315,7 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-		// - UI Layout
-		ImVec2 projectLeftPanelMin = EDITOR_WINDOW_PROJECT_POSITION;
-		ImVec2 projectLeftPanelMax = projectLeftPanelMin;
-		projectLeftPanelMax.x += EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
-		projectLeftPanelMax.y += EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT;
-		ImVec2 projectRightPanelMin = projectLeftPanelMax;
-		projectRightPanelMin.y -= EDITOR_WINDOW_PROJECT_HEIGHT;
-		ImVec2 projectRightPanelMax = projectRightPanelMin;
-		projectRightPanelMax.x += EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH;
-		projectRightPanelMax.y += EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT;
-
-		// Device Input
-		TickInput();
-		if (GetMouseButtonDown(MouseButtons_Left)) {
-			vec2 mousePos = GetMousePos();
-			if (_IsInAABB(mousePos, projectLeftPanelMin, projectLeftPanelMax)) {
-				_curChoosedPanelFlags = EditorPanelFlags_ProjectLeftColunm;
-			}
-			else if (_IsInAABB(mousePos, projectRightPanelMin, projectRightPanelMax)) {
-				_curChoosedPanelFlags = EditorPanelFlags_ProjectRightColunm;
-			}
-			std::cout << "Choosed Panel: " << _curChoosedPanelFlags << std::endl;
-		}
-		if (GetKeyDown(ImGuiKey_Backspace)) {
-			if (_curProjectChoosedNode != nullptr && _curProjectChoosedNode->fatherNode != nullptr) {
-				_curProjectChoosedNode = _curProjectChoosedNode->fatherNode;
-				_curProjectDetailsChoosedNode = nullptr;
-			}
-		}
+		TickEditorEvents();
 
 		// - Start a new ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -302,7 +323,7 @@ int main() {
 		ImGui::NewFrame();
 
 		// - Editor Project Panel
-		ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POSITION);
+		ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POS);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
 		ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 
@@ -319,7 +340,7 @@ int main() {
 		ImGui::End();
 
 		// - Editor Title Bar
-		ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POSITION);
+		ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
 		ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 		if (ImGui::Button("Clear META")) {
@@ -331,7 +352,7 @@ int main() {
 		ImGui::End();
 
 		// - Editor Scene Panel
-		
+
 		// Render Scene's Frame Buffer
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 		glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
@@ -344,7 +365,7 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Show Scene View By Frame Buffer Texture
-		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POSITION);
+		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
 		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
 		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
