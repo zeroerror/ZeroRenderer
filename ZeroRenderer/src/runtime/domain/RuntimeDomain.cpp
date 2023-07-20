@@ -38,6 +38,7 @@ void RuntimeDomain::Init() {
 
 	// Generate default scene.
 	EditorDatabase::GenerateDefaultSceneMeta();
+	EditorDatabase::GenerateDefaultShader();
 }
 
 void RuntimeDomain::ProcessModel(const string& path) {
@@ -104,63 +105,13 @@ void RuntimeDomain::ProcessMeshes(const aiScene* aScene, SkinMeshRendererMeta* s
 	}
 }
 
-//
-//void RuntimeDomain::DrawModel(const Model* model) {
-//	Shader* modelShader = model->material->shader;
-//	if (model->isBatched) {
-//		IndexBuffer* ib = model->ib_batched;
-//		model->va_batched->Bind();
-//		ib->Bind();
-//		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
-//	}
-//	else {
-//		vector<Mesh*>* allMeshes = model->allMeshes;
-//		for (auto mesh : *allMeshes) {
-//			Material* meshMaterial = mesh->meshRenderer->material;
-//
-//			Shader* meshShader = meshMaterial->shader;
-//			meshShader = meshShader != nullptr ? meshShader : modelShader;
-//			BindShader(model, modelShader);
-//
-//			Texture* meshDiffuseTexture = meshMaterial->diffuseTexture;
-//			Texture* meshSpecularTexture = meshMaterial->specularTexture;
-//			if (meshDiffuseTexture != nullptr) meshDiffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
-//			if (meshSpecularTexture != nullptr)meshSpecularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
-//
-//			IndexBuffer* ib = mesh->meshRenderer->ib;
-//			mesh->meshRenderer->va->Bind();
-//			ib->Bind();
-//			GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
-//		}
-//	}
-//}
-//
-//void RuntimeDomain::DrawModel(const Model* model, const Material* material) {
-//	if (model->isBatched) {
-//		IndexBuffer* ib = model->ib_batched;
-//		model->va_batched->Bind();
-//		ib->Bind();
-//		GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
-//	}
-//	else {
-//		vector<Mesh*>* allMeshes = model->allMeshes;
-//		for (auto mesh : *allMeshes) {
-//			BindShader(model, material->shader);
-//			if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
-//			if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
-//
-//			IndexBuffer* ib = mesh->meshRenderer->ib;
-//			mesh->meshRenderer->va->Bind();
-//			ib->Bind();
-//			GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
-//		}
-//	}
-//}
-
 void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	if (shader == nullptr) {
 		return;
 	}
+
+	ShaderMeta shaderMeta;
+	ShaderMeta_DeserializeFrom(&shaderMeta, shader->GetPath());
 	vec3 modelPos = transform->GetPosition();
 	qua modelRot = transform->GetRotation();
 
@@ -177,9 +128,36 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 
 	// TODO: BIND AND SET BY THE SHADER META DATA.
 	shader->Bind();
+
+	for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
+		ShaderUniform uniform = shaderMeta.uniforms[i];
+		string uniformName = uniform.name;
+		ShaderUniformType_ uniformType = uniform.type;
+		std::any uniformValue = uniform.value;
+		if (uniformType == ShaderUniformType_Int) {
+			shader->SetUniform1i(uniformName, any_cast<int>(uniformValue));
+		}
+		else if (uniformType == ShaderUniformType_Float) {
+			shader->SetUniform1f(uniformName, any_cast<float>(uniformValue));
+		}
+		else if (uniformType == ShaderUniformType_Float3) {
+			vec3 v = any_cast<vec3>(uniformValue);
+			shader->SetUniform3f(uniformName, v.x, v.y, v.z);
+		}
+		else if (uniformType == ShaderUniformType_Float4) {
+			vec4 v = any_cast<vec4>(uniformValue);
+			shader->SetUniform4f(uniformName, v.x, v.y, v.z, v.w);
+		}
+		else if (uniformType == ShaderUniformType_Matrix44) {
+			mat4 mat = any_cast<mat4>(uniformValue);
+			shader->SetUniformMat4f(uniformName, mat);
+		}
+	}
+
 	shader->SetUniform1i("u_depthMap", TEX_SLOT_DEPTH_MAP);
 	shader->SetUniform1i("u_diffuseMap", TEX_SLOT_DIFFUSE_MAP);
 	shader->SetUniform1i("u_specularMap", TEX_SLOT_SPECULAR_MAP);
+
 	shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
 	shader->SetUniformMat4f("u_modRotationMatrix", modelRotMatrix);
 	shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
@@ -489,34 +467,6 @@ void RuntimeDomain::MetaToCamera(const CameraMeta& cameraMeta, Camera& camera) {
 	camera.orthoSize = cameraMeta.orthoSize;
 	camera.scrWidth = cameraMeta.scrWidth;
 	camera.scrHeight = cameraMeta.scrHeight;
-}
-
-void RuntimeDomain::MetaToShader(const ShaderMeta& shaderMeta, Shader& shader) {
-	for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
-		ShaderUniform uniform = shaderMeta.uniforms[i];
-		string uniformName = uniform.name;
-		ShaderUniformType_ uniformType = uniform.type;
-		std::any uniformValue = uniform.value;
-		if (uniformType == ShaderUniformType_Int) {
-			shader.SetUniform1i(uniformName, any_cast<int>(uniformValue));
-		}
-		else if (uniformType == ShaderUniformType_Float) {
-			shader.SetUniform1f(uniformName, any_cast<float>(uniformValue));
-		}
-		else if (uniformType == ShaderUniformType_Float3) {
-			vec3 v = any_cast<vec3>(uniformValue);
-			shader.SetUniform3f(uniformName, v.x, v.y, v.z);
-		}
-		else if (uniformType == ShaderUniformType_Float4) {
-			vec4 v = any_cast<vec4>(uniformValue);
-			shader.SetUniform4f(uniformName, v.x, v.y, v.z, v.w);
-		}
-		else if (uniformType == ShaderUniformType_Matrix44) {
-			mat4 mat = any_cast<mat4>(uniformValue);
-			shader.SetUniformMat4f(uniformName, mat);
-		}
-
-	}
 }
 
 void RuntimeDomain::MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight) {

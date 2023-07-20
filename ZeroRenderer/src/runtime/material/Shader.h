@@ -4,19 +4,14 @@
 #include <unordered_map>
 #include <glm/ext/matrix_float4x4.hpp>
 
+using namespace std;
+
 struct ShaderProgramSource {
 	std::string VertexSource;
 	std::string FragmentSource;
 };
 
 class Shader {
-
-private:
-	unsigned int m_programID;
-	unsigned int m_vsID;
-	unsigned int m_fsID;
-	std::string path;
-	std::unordered_map<std::string, int> m_UniformLocationCache;
 
 public:
 	bool useLightingMVP;
@@ -28,6 +23,7 @@ public:
 	void UnBind()const;
 
 	unsigned int GetID() const;
+	string GetPath()const;
 
 	// Set Uniforms
 	void SetUniform1i(const std::string& name, int v);
@@ -37,7 +33,14 @@ public:
 	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 	int GetUniformLocation(const std::string& name);
 
+
 private:
+	unsigned int m_programID;
+	unsigned int m_vsID;
+	unsigned int m_fsID;
+	std::string _path;
+	std::unordered_map<std::string, int> m_UniformLocationCache;
+
 	ShaderProgramSource ParseShader(const std::string& filePath);
 	unsigned int CompileShader(unsigned int type, const std::string& source);
 	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);

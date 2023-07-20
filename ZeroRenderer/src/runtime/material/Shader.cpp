@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "Shader.h"
- #include "VertexArray.h"
+#include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
 #include "Shader.h"
@@ -25,7 +25,7 @@ Shader::Shader(const std::string& filePath) {
 	ShaderProgramSource source = ParseShader(filePath);
 	m_programID = CreateShader(source.VertexSource, source.FragmentSource);
 	GLCall(glUseProgram(m_programID));
-	path = filePath;
+	_path = filePath;
 	std::cout << "Shader::Shader() " << m_programID << std::endl;
 }
 
@@ -37,6 +37,7 @@ Shader::~Shader() {
 }
 
 unsigned int Shader::GetID() const { return m_programID; }
+string Shader::GetPath() const { return _path; }
 
 ShaderProgramSource Shader::ParseShader(const std::string& filePath) {
 	std::ifstream stream(filePath);

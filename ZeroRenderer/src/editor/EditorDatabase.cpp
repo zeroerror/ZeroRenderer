@@ -554,8 +554,8 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 
 void EditorDatabase::GenerateDefaultShader() {
 	string defaultShaderPath = EditorDefaultConfig::DefaultShaderPath();
-	string defaultShaderMetaPath = defaultShaderPath + FileSuffix::SUFFIX_META;
 	ShaderMeta shaderMeta = ShaderMeta();
+	shaderMeta.guid = GenerateGUIDFromAssetPath(defaultShaderPath);
 	shaderMeta.uniforms = vector<ShaderUniform>();
 	vector<ShaderUniform>& uniforms = shaderMeta.uniforms;
 
@@ -563,17 +563,23 @@ void EditorDatabase::GenerateDefaultShader() {
 	uniform.name = "testInt";
 	uniform.type = ShaderUniformType_Int;
 	uniform.value = 1;
+	uniforms.push_back(uniform);
+
 	uniform.name = "testFloat";
 	uniform.type = ShaderUniformType_Float;
 	uniform.value = 0.66f;
+	uniforms.push_back(uniform);
+
 	uniform.name = "testFloat3";
 	uniform.type = ShaderUniformType_Float3;
 	uniform.value = vec3(0.33f, 0.33f, 0.33f);
+	uniforms.push_back(uniform);
+
 	uniform.name = "testFloat4";
 	uniform.type = ShaderUniformType_Float4;
 	uniform.value = vec4(0.33f, 0.33f, 0.33f, 1.0f);
-
 	uniforms.push_back(uniform);
-	ShaderMeta_SerializeTo(shaderMeta, defaultShaderMetaPath);
+
+	ShaderMeta_SerializeTo(shaderMeta, defaultShaderPath);
 
 }

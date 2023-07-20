@@ -663,7 +663,7 @@ void Serialization::ShaderMeta_SerializeTo(const ShaderMeta& shaderMeta, const s
 	stringstream ss;
 	ss << "guid: " << shaderMeta.guid << endl;
 	ss << endl;
-	ss << "UniformsStart" << endl;
+	ss << "UniformsStart: " << endl;
 	for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
 		ss << endl;
 		ShaderUniform uniform = shaderMeta.uniforms[i];
@@ -722,28 +722,42 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 		}
 		else if (key == "UniformsStart:") {
 			while (getline(ss, line)) {
+				iss = istringstream(line);
 				if (!(iss >> key)) continue;
-				if (key == "UniformsEnd:") break;
+				if (key == "UniformsEnd") break;
 
 				ShaderUniform uniform = ShaderUniform();
 				iss >> key;
 				uniform.name = key;
 
+				getline(ss, line);
+				iss = istringstream(line);
+				iss >> key;
 				iss >> key;
 				ShaderUniformType_ ut = (ShaderUniformType_)(atoi(key.c_str()));
 				uniform.type = ut;
 
 				if (ut == ShaderUniformType_Int) {
+					getline(ss, line);
+					iss = istringstream(line);
+					iss >> key;
 					iss >> key;
 					int v = atoi(key.c_str());
 					uniform.value = v;
 				}
 				else if (ut == ShaderUniformType_Float) {
+					getline(ss, line);
+					istringstream iss(line);
+					iss >> key;
 					iss >> key;
 					float v = atoi(key.c_str());
 					uniform.value = v;
 				}
 				else if (ut == ShaderUniformType_Float3) {
+					getline(ss, line);
+					iss = istringstream(line);
+					iss >> key;
+
 					vec3 v = vec3();
 					iss >> key;
 					v.x = atof(key.c_str());
@@ -765,6 +779,8 @@ void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const str
 					v.w = atof(key.c_str());
 					uniform.value = v;
 				}
+
+				shaderMeta->uniforms.push_back(uniform);
 			}
 		}
 	}

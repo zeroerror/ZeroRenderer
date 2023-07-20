@@ -1,2 +1,21 @@
 guid: 9b5df9f9fade2c4a
-useLightingMVP: 0
+
+UniformsStart: 
+
+uniformName: testInt
+uniformType: 1
+uniformValue: 1
+
+uniformName: testFloat
+uniformType: 2
+uniformValue: 0.66
+
+uniformName: testFloat3
+uniformType: 4
+uniformValue: 0.33 0.33 0.33
+
+uniformName: testFloat4
+uniformType: 5
+uniformValue: 0.33 0.33 0.33 1
+
+UniformsEnd

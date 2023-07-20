@@ -47,7 +47,6 @@ public:
 
 	// =======================================================================
 	// All meta's methods that convert to a runtime object.
-	void MetaToShader(const ShaderMeta& shaderMeta, Shader& shader);
 	void MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight);
 	void MetaToCamera(const CameraMeta& cameraMeta, Camera& camera);
 	void MetaToMeshFilter(const MeshFilterMeta& meshFilterMeta, MeshFilter& meshFilter);
