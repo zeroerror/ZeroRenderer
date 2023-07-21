@@ -58,6 +58,18 @@ enum EditorPanelFlags_ {
 	EditorPanelFlags_ProjectRightColunm,
 };
 
+#pragma region [EDITOR TIME]
+
+float _lastTime;
+float _deltaTime;
+void TickDeltaTime() {
+	float curTime = glfwGetTime();
+	_deltaTime = curTime - _lastTime;
+	_lastTime = curTime;
+}
+
+#pragma endregion
+
 #pragma region [EDITOR CACHE]
 
 AssetTreeNode* _rootNode = nullptr;
@@ -66,6 +78,19 @@ AssetTreeNode* _curProjectDetailsChoosedNode = nullptr;
 EditorPanelFlags_ _curChoosedPanelFlags = EditorPanelFlags_None;
 double _assetClickTime;
 unsigned int _texture_id;
+
+void InitEditorGLIcon() {
+	string path = "asset/texture/folder.png";
+	int width, height, channels;
+	unsigned char* imgData = stbi_load(path.c_str(), &width, &height, &channels, 4);
+	glGenTextures(1, &_texture_id);
+	glBindTexture(GL_TEXTURE_2D, _texture_id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
+}
 
 #pragma endregion
 
@@ -87,17 +112,17 @@ enum MouseButtons_ {
 	MouseButtons_Middle = 2,
 };
 
-bool _CheckMouseDown(const MouseButtons_& button) {
+bool Editor_CheckMouseDown(const MouseButtons_& button) {
 	ImGuiIO& io = ImGui::GetIO();
 	return io.MouseDown[button];
 }
 
-bool _CheckKeyDown(const ImGuiKey& key) {
+bool Editor_CheckKeyDown(const ImGuiKey& key) {
 	ImGuiIO& io = ImGui::GetIO();
 	return io.KeysDown[key];
 }
 
-bool _IsInAABB(const vec2& v, const ImVec2& min, const ImVec2& max) {
+bool Editor_IsInAABB(const vec2& v, const ImVec2& min, const ImVec2& max) {
 	return v.x > min.x && v.x < max.x&& v.y>min.y && v.y < max.y;
 }
 
@@ -121,14 +146,14 @@ bool GetKeyPressing(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatu
 bool GetKeyUp(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Up; }
 
 void _TickMouseKeyStatus(const MouseButtons_& key) {
-	if (_CheckMouseDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
+	if (Editor_CheckMouseDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
 	else _allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] - 1), KeyStatus_None, KeyStatus_Up);
 }
 void _TickKeyStatus(const ImGuiKey& key) {
-	if (_CheckKeyDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
+	if (Editor_CheckKeyDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
 	else _allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] - 1), KeyStatus_None, KeyStatus_Up);
 }
-void TickInput() {
+void TickEditorInput() {
 	vec2 curMousePos = GetMousePos();
 	_mousePosDelta = curMousePos - _lastMousePos;
 	_lastMousePos = curMousePos;
@@ -224,26 +249,26 @@ void ImGui_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 
 #pragma region [EDITOR EVENT]
 
-void PanelSelection() {
+void EditorEv_PanelSelection() {
 	if (GetMouseButtonDown(MouseButtons_Left)) {
 		vec2 mousePos = GetMousePos();
-		if (_IsInAABB(mousePos, EDITOR_WINDOW_TITLE_BAR_POS_MIN, EDITOR_WINDOW_TITLE_BAR_POS_MAX)) {
+		if (Editor_IsInAABB(mousePos, EDITOR_WINDOW_TITLE_BAR_POS_MIN, EDITOR_WINDOW_TITLE_BAR_POS_MAX)) {
 			_curChoosedPanelFlags = EditorPanelFlags_TitleBar;
 		}
-		else if (_IsInAABB(mousePos, EDITOR_WINDOW_SCENE_POS_MIN, EDITOR_WINDOW_SCENE_POS_MAX)) {
+		else if (Editor_IsInAABB(mousePos, EDITOR_WINDOW_SCENE_POS_MIN, EDITOR_WINDOW_SCENE_POS_MAX)) {
 			_curChoosedPanelFlags = EditorPanelFlags_SceneView;
 		}
-		else if (_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_LEFT_POS_MIN, EDITOR_WINDOW_PROJECT_LEFT_POS_MAX)) {
+		else if (Editor_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_LEFT_POS_MIN, EDITOR_WINDOW_PROJECT_LEFT_POS_MAX)) {
 			_curChoosedPanelFlags = EditorPanelFlags_ProjectLeftColunm;
 		}
-		else if (_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN, EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX)) {
+		else if (Editor_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN, EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX)) {
 			_curChoosedPanelFlags = EditorPanelFlags_ProjectRightColunm;
 		}
 		std::cout << "Choosed Panel: " << _curChoosedPanelFlags << std::endl;
 	}
 }
 
-void DirectoryBackward() {
+void EditorEv_DirectoryBackward() {
 	if (GetKeyDown(ImGuiKey_Backspace)) {
 		if (_curProjectChoosedNode != nullptr && _curProjectChoosedNode->fatherNode != nullptr) {
 			_curProjectChoosedNode = _curProjectChoosedNode->fatherNode;
@@ -252,7 +277,7 @@ void DirectoryBackward() {
 	}
 }
 
-void SceneViewEvent(const float& deltaTime) {
+void EditorEv_SceneView(const float& deltaTime) {
 	if (_curChoosedPanelFlags != EditorPanelFlags_SceneView)return;
 
 	auto mainCamera = runtimeContext->mainCamera;
@@ -289,37 +314,103 @@ void SceneViewEvent(const float& deltaTime) {
 	mainCamera->transform->SetPosition(pos);
 }
 
-void TickEditorEvents(const float& deltaTime) {
-	TickInput();
-	PanelSelection();
-	DirectoryBackward();
-	SceneViewEvent(deltaTime);
+void TickEditorEvents() {
+	TickEditorInput();
+	EditorEv_PanelSelection();
+	EditorEv_DirectoryBackward();
+	EditorEv_SceneView(_deltaTime);
 }
 
 #pragma endregion
 
-void GL_CLEANUP() {
-	// Cleanup
+#pragma region [GL]
+
+void GL_ShowFPS(GLFWwindow* window) {
+	int fps = (int)(1.0f / _deltaTime);
+	glfwSetWindowTitle(window, ("Zero Engine v0.0.1 FPS: " + to_string(fps)).c_str());
+}
+
+void ImGui_NewFrame() {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+}
+
+void ImGui_ShowEditorProjectPanle() {
+	ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POS);
+	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
+	ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+
+	ImGui::Columns(2);
+	ImGui::SetColumnWidth(0, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH);
+	ImGui::SetColumnWidth(1, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH);
+	ImGui_ShowProjectPanel();
+
+	ImGui::NextColumn();
+
+	if (_curProjectChoosedNode != nullptr) {
+		ImGui_ShowProjectDetailsPanel(_curProjectChoosedNode);
+	}
+	ImGui::End();
+}
+
+void ImGui_ShowEditorTitleBar() {
+	ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
+	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
+	ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+	if (ImGui::Button("Clear META")) {
+		vector<string> suffixes = vector<string>();
+		suffixes.push_back(FileSuffix::SUFFIX_META);
+		unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
+		EditorDatabase::ClearFile(suffixFlag);
+	}
+	ImGui::End();
+}
+
+GLuint frameBuffer;
+GLuint sceneViewTexture;
+void ImGui_ShowEditorSceneView() {
+	// Render Scene's Frame Buffer
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+		glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
+		glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
+		runtimeDomain->RenderScene("asset/DefaultScene.scene");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	// Show Scene View By Frame Buffer Texture
+	ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
+	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
+	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+	ImVec2 panelPos = ImGui::GetCursorScreenPos();
+	ImVec2 panelPosMax = ImVec2(panelPos.x + EDITOR_WINDOW_SCENE_WIDTH, panelPos.y + EDITOR_WINDOW_SCENE_HEIGHT);
+	drawList->PushTextureID((ImTextureID)(uintptr_t)sceneViewTexture);
+	drawList->AddImage((ImTextureID)(uintptr_t)sceneViewTexture, panelPos, panelPosMax, ImVec2(0, 1), ImVec2(1, 0));
+	drawList->PopTextureID();
+	ImGui::End();
+}
+
+void ImGuiShutDown() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+}
+
+void GLShutDown() {
 	glfwTerminate();
 }
 
-int main() {
-	// vector<string> suffixes = vector<string>();
-	// suffixes.push_back(FileSuffix::SUFFIX_MAT);
-	// suffixes.push_back(FileSuffix::SUFFIX_META);
-	// suffixes.push_back(FileSuffix::SUFFIX_SCENE);
-	// unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
-	// EditorDatabase::ClearFile(suffixFlag);
+#pragma endregion
 
+int main() {
 	// Import Editor Database
 	EditorDatabase::ImportAssets();
 	_rootNode = EditorDatabase::GetRootAssetTreeNode();
 	_rootNode->isExpanded = true;
 
-	// Init Editor Context
+	// Init Editor Context And Domain
 	runtimeContext = new RuntimeContext();
 	runtimeDomain = new RuntimeDomain();
 	runtimeDomain->Inject(runtimeContext);
@@ -336,24 +427,10 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
-	// 创建图像纹理
-	string path = "asset/texture/folder.png";
-	int width, height, channels;
-	unsigned char* imgData = stbi_load(path.c_str(), &width, &height, &channels, 4);
-	glGenTextures(1, &_texture_id);
-	glBindTexture(GL_TEXTURE_2D, _texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
-
 	// Init Scene's Frame Buffer
-	GLuint frameBuffer;
 	glGenFramebuffers(1, &frameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 
-	GLuint sceneViewTexture;
 	glGenTextures(1, &sceneViewTexture);
 	glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -371,81 +448,26 @@ int main() {
 	float _lastTime = glfwGetTime();
 	int fps = 0;
 	while (!glfwWindowShouldClose(window)) {
-		float curTime = glfwGetTime();
-		float deltaTime = curTime - _lastTime;
-		fps = (int)(1.0f / deltaTime);
-		_lastTime = curTime;
-		glfwSetWindowTitle(window, ("Zero Engine v0.0.1 FPS: " + to_string(fps)).c_str());
-
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-		TickEditorEvents(deltaTime);
+		TickDeltaTime();
+		TickEditorEvents();
+		GL_ShowFPS(window);
 
-		// - Start a new ImGui frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		// - Editor Project Panel
-		ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POS);
-		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
-		ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH);
-		ImGui::SetColumnWidth(1, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH);
-		ImGui_ShowProjectPanel();
-
-		ImGui::NextColumn();
-
-		if (_curProjectChoosedNode != nullptr) {
-			ImGui_ShowProjectDetailsPanel(_curProjectChoosedNode);
-		}
-		ImGui::End();
-
-		// - Editor Title Bar
-		ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
-		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
-		ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-		if (ImGui::Button("Clear META")) {
-			vector<string> suffixes = vector<string>();
-			suffixes.push_back(FileSuffix::SUFFIX_META);
-			unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
-			EditorDatabase::ClearFile(suffixFlag);
-		}
-		ImGui::End();
-
-		// - Editor Scene Panel
-
-		// Render Scene's Frame Buffer
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-			glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-			glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
-			glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
-			runtimeDomain->RenderScene("asset/DefaultScene.scene");
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-
-		// Show Scene View By Frame Buffer Texture
-		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
-		ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
-		ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		ImVec2 panelPos = ImGui::GetCursorScreenPos();
-		ImVec2 panelPosMax = ImVec2(panelPos.x + EDITOR_WINDOW_SCENE_WIDTH, panelPos.y + EDITOR_WINDOW_SCENE_HEIGHT);
-		drawList->PushTextureID((ImTextureID)(uintptr_t)sceneViewTexture);
-		drawList->AddImage((ImTextureID)(uintptr_t)sceneViewTexture, panelPos, panelPosMax, ImVec2(0, 1), ImVec2(1, 0));
-		drawList->PopTextureID();
-		ImGui::End();
-
+		ImGui_NewFrame();
+		ImGui_ShowEditorProjectPanle();
+		ImGui_ShowEditorTitleBar();
+		ImGui_ShowEditorSceneView();
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
 	}
 
-	GL_CLEANUP();
+	ImGuiShutDown();
+	GLShutDown();
 
 	return 0;
 }
