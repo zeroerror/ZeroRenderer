@@ -9,8 +9,8 @@ public:
 	static unsigned int GetFileCharSize(const string& path);
 	static bool FileExist(const string& path);
 	static void CreateFile(const string& path);
-	static bool ReadCharsFrom(const string& path, unsigned char* chars);
-	static void WriteCharsTo(const string& path, const unsigned char* chars);
+	static bool ReadCharsFrom(const string& path, char* chars);
+	static void WriteCharsTo(const string& path, const char* chars);
 	static void DeleteFile(const string& filePath);
 	static bool PathEquals(const string& path1, const string& path2);
 	static string NormalizedPath(const string& path);

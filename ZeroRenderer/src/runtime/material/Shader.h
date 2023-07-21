@@ -14,8 +14,6 @@ struct ShaderProgramSource {
 class Shader {
 
 public:
-	bool useLightingMVP;
-
 	Shader(const std::string& filePath);
 	~Shader();
 

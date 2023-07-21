@@ -37,7 +37,7 @@ void RuntimeDomain::Init() {
 	}
 
 	// Generate default scene.
-	EditorDatabase::GenerateDefaultSceneMeta();
+	// EditorDatabase::GenerateDefaultSceneMeta();
 	// EditorDatabase::GenerateDefaultShader();
 }
 
@@ -110,7 +110,7 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 		return;
 	}
 
-	ShaderMeta shaderMeta;
+	ShaderMeta shaderMeta = ShaderMeta();
 	ShaderMeta_DeserializeFrom(&shaderMeta, shader->GetPath());
 	vec3 modelPos = transform->GetPosition();
 	qua modelRot = transform->GetRotation();
@@ -122,37 +122,36 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	vec3 lightDirection = -light->GetLightDirection();
 
 	Camera* camera = runtimeContext->mainCamera;
-	mat4 cameraMVPMatrix = shader->useLightingMVP ?
-		lightMVPMatrix : camera->GetMVPMatrix_Perspective(modelPos);
+	mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(modelPos);
 	mat4 modelRotMatrix = toMat4(modelRot);
 
-	// TODO: BIND AND SET BY THE SHADER META DATA.
 	shader->Bind();
 
-	for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
-		ShaderUniform uniform = shaderMeta.uniforms[i];
-		string uniformName = uniform.name;
-		ShaderUniformType_ uniformType = uniform.type;
-		std::any uniformValue = uniform.value;
-		if (uniformType == ShaderUniformType_Int) {
-			shader->SetUniform1i(uniformName, any_cast<int>(uniformValue));
-		}
-		else if (uniformType == ShaderUniformType_Float) {
-			shader->SetUniform1f(uniformName, any_cast<float>(uniformValue));
-		}
-		else if (uniformType == ShaderUniformType_Float3) {
-			vec3 v = any_cast<vec3>(uniformValue);
-			shader->SetUniform3f(uniformName, v.x, v.y, v.z);
-		}
-		else if (uniformType == ShaderUniformType_Float4) {
-			vec4 v = any_cast<vec4>(uniformValue);
-			shader->SetUniform4f(uniformName, v.x, v.y, v.z, v.w);
-		}
-		else if (uniformType == ShaderUniformType_Matrix44) {
-			mat4 mat = any_cast<mat4>(uniformValue);
-			shader->SetUniformMat4f(uniformName, mat);
-		}
-	}
+	// for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
+	// 	ShaderUniform uniform = shaderMeta.uniforms[i];
+	// 	string uniformName = uniform.name;
+	// 	ShaderUniformType_ uniformType = uniform.type;
+	// 	std::any uniformValue = uniform.value;
+	// 	if (uniformType == ShaderUniformType_Int) {
+	// 		shader->SetUniform1i(uniformName, any_cast<int>(uniformValue));
+	// 	}
+	// 	else if (uniformType == ShaderUniformType_Float) {
+	// 		float v = any_cast<float>(uniformValue);
+	// 		shader->SetUniform1f(uniformName, v);
+	// 	}
+	// 	else if (uniformType == ShaderUniformType_Float3) {
+	// 		vec3 v = any_cast<vec3>(uniformValue);
+	// 		shader->SetUniform3f(uniformName, v.x, v.y, v.z);
+	// 	}
+	// 	else if (uniformType == ShaderUniformType_Float4) {
+	// 		vec4 v = any_cast<vec4>(uniformValue);
+	// 		shader->SetUniform4f(uniformName, v.x, v.y, v.z, v.w);
+	// 	}
+	// 	else if (uniformType == ShaderUniformType_Matrix44) {
+	// 		mat4 mat = any_cast<mat4>(uniformValue);
+	// 		shader->SetUniformMat4f(uniformName, mat);
+	// 	}
+	// }
 
 	shader->SetUniform1i("u_depthMap", TEX_SLOT_DEPTH_MAP);
 	shader->SetUniform1i("u_diffuseMap", TEX_SLOT_DIFFUSE_MAP);
@@ -387,12 +386,9 @@ void RuntimeDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRender
 
 void RuntimeDomain::RenderScene(const string& path) {
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
 	glDepthFunc(GL_LESS);
-	glDepthMask(GL_TRUE);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	string sceneGUID;
 	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, sceneGUID)) {

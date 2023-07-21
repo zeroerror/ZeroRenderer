@@ -23,32 +23,35 @@ bool FileHelper::FileExist(const string& path) {
 void FileHelper::CreateFile(const string& path) {
 }
 
-bool FileHelper::ReadCharsFrom(const string& path, unsigned char* chars) {
+bool FileHelper::ReadCharsFrom(const string& path, char* chars) {
 	ifstream is(path);
 	if (!is.good()) {
 		is.close();
+		cout << " ****************** FileHelper::ReadCharsFrom | file open failed! " << endl;
 		return false;
 	}
 
 	char ch;
 	int index = 0;
 	while (is.get(ch)) {
-		chars[index++] = static_cast<unsigned char>(ch);
+		chars[index++] = ch;
 	}
+	chars[index] = '\0'; 
 	is.close();
 
 	return true;
 }
 
-void FileHelper::WriteCharsTo(const string& path, const unsigned char* chars) {
+void FileHelper::WriteCharsTo(const string& path, const char* chars) {
 	ofstream os(path);
 	if (!os.good()) {
+		os.close();
 		cout << " ****************** FileHelper::WriteCharsTo | file create failed! " << endl;
 		return;
 	}
 
 	int index = 0;
-	unsigned char c = chars[index];
+	char c = chars[index];
 	while (c != '\0') {
 		os << c;
 		c = chars[++index];
@@ -91,7 +94,6 @@ bool FileHelper::PathEquals(const string& path1, const string& path2) {
 }
 
 void FileHelper::NormalizePath(string& path) {
-	string::size_type len = path.length();
 	for (char& c : path) {
 		if (c == '\\') {
 			c = '/';
@@ -101,7 +103,6 @@ void FileHelper::NormalizePath(string& path) {
 
 string FileHelper::NormalizedPath(const string& path) {
 	string norPath = path;
-	string::size_type len = path.length();
 	for (char& c : norPath) {
 		if (c == '\\') {
 			c = '/';

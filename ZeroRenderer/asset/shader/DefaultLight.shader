@@ -57,18 +57,18 @@ void main()
 {
     vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
     vec4 specularColor = texture(u_specularMap, v_texCoord);
-    specularColor.a = 1.0;
+    specularColor.a = 1;
     vec4 texColor = diffuseColor + specularColor;
 
     vec4 outColor = texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
 
     // - Lambert Light Model -
-    float dot = dot(v_normal, u_lightDirection);
-    float intensity = -min(dot, 0.0);
-    vec3 diffuse = u_lightColor * intensity; 
-    outColor.rgb *= diffuse;
+    // float dot = dot(v_normal, u_lightDirection);
+    // float intensity = -min(dot, 0.0);
+    // vec3 diffuse = u_lightColor * intensity; 
+    // outColor.rgb *= diffuse;
 
-    // // ------ Shadow -------
+    // ------ Shadow -------
     // vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
     // vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
     // float mapDepth = texture(u_depthMap, depthCoord).r;
@@ -79,13 +79,12 @@ void main()
     // float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
     // outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
 
-    // ------ Ambient Light -------
-    vec3 ambientColor = texColor.xyz;
-    float ambientStrength = 0.3;
-    vec3 ambient = ambientColor * ambientStrength;
-    outColor.rgb += ambient;
-
-    outColor.a = 1;
-    color = outColor;
+    // // ------ Ambient Light -------
+    // vec3 ambientColor = texColor.xyz;
+    // float ambientStrength = 0.3;
+    // vec3 ambient = ambientColor * ambientStrength;
+    // outColor.rgb += ambient;
+    
+    color = texColor;
 }
 

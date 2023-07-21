@@ -315,7 +315,7 @@ void Serialization::ComponentMeta_SerializeTo(const ComponentMeta& componentMeta
 void Serialization::PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabInstanceMeta, stringstream& ss) {
 	ss << EditorDefaultConfig::DefaultPrefabInstanceStartStr() << endl;
 	ss << "guid: " << prefabInstanceMeta.guid << endl;
-	TransformMeta_SerializeTo(prefabInstanceMeta.transformMeta, ss);
+	ComponentMeta_SerializeTo(prefabInstanceMeta.transformMeta, ss);
 	ss << EditorDefaultConfig::DefaultPrefabInstanceEndStr() << endl;
 }
 
@@ -326,7 +326,7 @@ void Serialization::PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefa
 		string key;
 
 		if (!(iss >> key)) continue;
-		if (key == EditorDefaultConfig::DefaultGameObjectEndStr()) break;
+		if (key == EditorDefaultConfig::DefaultPrefabInstanceEndStr()) break;
 
 		if (key == "guid:") {
 			iss >> key;
@@ -354,7 +354,7 @@ void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const s
 
 	string result = ss.str();
 	size_t len = result.length() + 1;
-	unsigned char* charResult = new unsigned char[len];
+	char* charResult = new char[len];
 	memcpy(charResult, result.c_str(), len);
 	FileHelper::WriteCharsTo(path, charResult);
 	ss << "Prefab Serialize : " << path << endl;
@@ -366,7 +366,7 @@ void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const s
 
 		string result = ss.str();
 		size_t len = result.length() + 1;
-		unsigned char* charResult = new unsigned char[len];
+		char* charResult = new char[len];
 		memcpy(charResult, result.c_str(), len);
 		string prefabMetaPath = path + FileSuffix::SUFFIX_META;
 		FileHelper::WriteCharsTo(prefabMetaPath, charResult);
@@ -382,10 +382,10 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const str
 		return;
 	}
 
-	unsigned char* res = new unsigned char[charCount];
+	char* res = new char[charCount];
 
 	FileHelper::ReadCharsFrom(path, res);
-	string str(reinterpret_cast<char*>(res));
+	string str(res);
 
 	stringstream ss(str);
 	string line;
@@ -428,7 +428,7 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const str
 	{
 		string metaPath = path + FileSuffix::SUFFIX_META;
 		FileHelper::ReadCharsFrom(metaPath, res);
-		string str(reinterpret_cast<char*>(res));
+		string str(res);
 		stringstream ss(str);
 		string line;
 		while (getline(ss, line)) {
@@ -472,7 +472,7 @@ void Serialization::SceneMeta_SerializeTo(const SceneMeta& sceneMeta, const stri
 
 	string result = ss.str();
 	size_t len = result.length() + 1;
-	unsigned char* charResult = new unsigned char[len];
+	char* charResult = new char[len];
 	memcpy(charResult, result.c_str(), len);
 	FileHelper::WriteCharsTo(path, charResult);
 	delete[] charResult;
@@ -483,7 +483,7 @@ void Serialization::SceneMeta_SerializeTo(const SceneMeta& sceneMeta, const stri
 		ss << "guid: " << sceneMeta.guid << endl;
 		string result = ss.str();
 		size_t len = result.length() + 1;
-		unsigned char* charResult = new unsigned char[len];
+		char* charResult = new char[len];
 		memcpy(charResult, result.c_str(), len);
 		string metaPath = path + FileSuffix::SUFFIX_META;
 		FileHelper::WriteCharsTo(metaPath, charResult);
@@ -493,9 +493,9 @@ void Serialization::SceneMeta_SerializeTo(const SceneMeta& sceneMeta, const stri
 }
 
 void Serialization::SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string& path) {
-	unsigned char* res = new unsigned char[FileHelper::GetFileCharSize(path)];
+	char* res = new char[FileHelper::GetFileCharSize(path)];
 	FileHelper::ReadCharsFrom(path, res);
-	string str(reinterpret_cast<char*>(res));
+	string str(res);
 	stringstream ss(str);
 	string line;
 	while (getline(ss, line)) {
@@ -538,13 +538,13 @@ void Serialization::SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string
 		}
 	}
 
-	delete res;
+	delete[] res;
 
 	{
 		string metaPath = path + FileSuffix::SUFFIX_META;
-		unsigned char* res = new unsigned char[FileHelper::GetFileCharSize(metaPath)];
+		char* res = new char[FileHelper::GetFileCharSize(metaPath)];
 		FileHelper::ReadCharsFrom(metaPath, res);
-		string str(reinterpret_cast<char*>(res));
+		string str(res);
 		stringstream ss(str);
 		string line;
 		while (getline(ss, line)) {
@@ -557,7 +557,7 @@ void Serialization::SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string
 				iss >> sceneMeta->guid;
 			}
 		}
-		delete res;
+		delete[] res;
 	}
 }
 
@@ -571,7 +571,7 @@ void Serialization::MaterialMeta_SerializeTo(const MaterialMeta& materialMeta, c
 	ss << "shininess: " << materialMeta.shininess << endl;
 	string result = ss.str();
 	size_t len = result.length() + 1;
-	unsigned char* charResult = new unsigned char[len];
+	char* charResult = new char[len];
 	memcpy(charResult, result.c_str(), len);
 	FileHelper::WriteCharsTo(path, charResult);
 
@@ -580,7 +580,7 @@ void Serialization::MaterialMeta_SerializeTo(const MaterialMeta& materialMeta, c
 		ss << "guid: " << materialMeta.guid << endl;
 		string result = ss.str();
 		size_t len = result.length() + 1;
-		unsigned char* charResult = new unsigned char[len];
+		char* charResult = new char[len];
 		memcpy(charResult, result.c_str(), len);
 		string matMetaPath = path + FileSuffix::SUFFIX_META;
 		FileHelper::WriteCharsTo(matMetaPath, charResult);
@@ -595,9 +595,9 @@ void Serialization::MaterialMeta_DeserializeFrom(MaterialMeta* materialMeta, con
 		return;
 	}
 
-	unsigned char* res = new unsigned char[charCount];
+	char* res = new char[charCount];
 	FileHelper::ReadCharsFrom(path, res);
-	string str(reinterpret_cast<char*>(res));
+	string str(res);
 	stringstream ss(str);
 	string line;
 	while (getline(ss, line)) {
@@ -640,9 +640,9 @@ void Serialization::MaterialMeta_DeserializeFrom(MaterialMeta* materialMeta, con
 			return;
 		}
 
-		unsigned char* res = new unsigned char[charCount];
+		char* res = new char[charCount];
 		FileHelper::ReadCharsFrom(metaPath, res);
-		string str(reinterpret_cast<char*>(res));
+		string str(res);
 		stringstream ss(str);
 		string line;
 		while (getline(ss, line)) {
@@ -655,7 +655,7 @@ void Serialization::MaterialMeta_DeserializeFrom(MaterialMeta* materialMeta, con
 				iss >> materialMeta->guid;
 			}
 		}
-		delete res;
+		delete[] res;
 	}
 }
 
@@ -691,7 +691,7 @@ void Serialization::ShaderMeta_SerializeTo(const ShaderMeta& shaderMeta, const s
 
 	string result = ss.str();
 	size_t len = result.length() + 1;
-	unsigned char* charResult = new unsigned char[len];
+	char* charResult = new char[len];
 	memcpy(charResult, result.c_str(), len);
 	string shaderMetaPath = path + FileSuffix::SUFFIX_META;
 	FileHelper::WriteCharsTo(shaderMetaPath, charResult);
@@ -701,15 +701,15 @@ void Serialization::ShaderMeta_SerializeTo(const ShaderMeta& shaderMeta, const s
 void Serialization::ShaderMeta_DeserializeFrom(ShaderMeta* shaderMeta, const string& path) {
 	string metaPath = path + FileSuffix::SUFFIX_META;
 
-	unsigned int charCount = FileHelper::GetFileCharSize(metaPath);
-	if (charCount == 0) {
+	size_t charCount = FileHelper::GetFileCharSize(metaPath);
+	if (charCount <= 0) {
 		cout << "############### no bytes. path: " << metaPath << endl;
 		return;
 	}
 
-	unsigned char* res = new unsigned char[charCount];
+	char* res = new  char[charCount];
 	FileHelper::ReadCharsFrom(metaPath, res);
-	string str(reinterpret_cast<char*>(res));
+	string str(res);
 	stringstream ss(str);
 	string line;
 	while (getline(ss, line)) {
@@ -799,7 +799,7 @@ void Serialization::TextureMeta_SerializeTo(const TextureMeta& textureMeta, cons
 	ss << "height: " << textureMeta.height << endl;
 	string result = ss.str();
 	size_t len = result.length() + 1;
-	unsigned char* charResult = new unsigned char[len];
+	char* charResult = new char[len];
 	memcpy(charResult, result.c_str(), len);
 
 	string metaPath = path + FileSuffix::SUFFIX_META;
@@ -815,9 +815,9 @@ void Serialization::TextureMeta_DeserializeFrom(TextureMeta* textureMeta, const 
 		return;
 	}
 
-	unsigned char* res = new unsigned char[charCount];
+	char* res = new char[charCount];
 	FileHelper::ReadCharsFrom(metaPath, res);
-	string str(reinterpret_cast<char*>(res));
+	string str(res);
 	stringstream ss(str);
 	string line;
 	while (getline(ss, line)) {
@@ -844,7 +844,7 @@ void Serialization::ObjMeta_SerializeTo(const ObjMeta& objMeta, const string& pa
 
 	string result = ss.str();
 	size_t len = result.length() + 1;
-	unsigned char* charResult = new unsigned char[len];
+	char* charResult = new char[len];
 	memcpy(charResult, result.c_str(), len);
 	string objMetaPath = path + FileSuffix::SUFFIX_META;
 	FileHelper::WriteCharsTo(objMetaPath, charResult);
@@ -861,9 +861,9 @@ void Serialization::ObjMeta_DeserializeFrom(ObjMeta* objMeta, const string& path
 		return;
 	}
 
-	unsigned char* res = new unsigned char[charCount];
+	char* res = new char[charCount];
 	FileHelper::ReadCharsFrom(metaPath, res);
-	string str(reinterpret_cast<char*>(res));
+	string str(res);
 	stringstream ss(str);
 	string line;
 	while (getline(ss, line)) {

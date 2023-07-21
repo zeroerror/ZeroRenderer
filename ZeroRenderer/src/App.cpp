@@ -356,7 +356,7 @@ int main() {
 	GLuint sceneViewTexture;
 	glGenTextures(1, &sceneViewTexture);
 	glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -378,6 +378,7 @@ int main() {
 		glfwSetWindowTitle(window, ("Zero Engine v0.0.1 FPS: " + to_string(fps)).c_str());
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
 		TickEditorEvents(deltaTime);
 
 		// - Start a new ImGui frame
@@ -417,15 +418,13 @@ int main() {
 		// - Editor Scene Panel
 
 		// Render Scene's Frame Buffer
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-		glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
-		glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-			glDrawBuffer(GL_COLOR_ATTACHMENT0);  // 指定绘制缓冲为颜色附件
-			glReadBuffer(GL_NONE);  // 读取缓冲设置为GL_NONE
+			glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+			glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
+			glBindTexture(GL_TEXTURE_2D, sceneViewTexture);
 			runtimeDomain->RenderScene("asset/DefaultScene.scene");
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		// Show Scene View By Frame Buffer Texture
 		ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
