@@ -21,7 +21,7 @@ using namespace filesystem;
 namespace fs = filesystem;
 
 void RuntimeDomain::Inject(RuntimeContext* ctxt) {
-	this->runtimeContext = ctxt;
+	this->_runtimeContext = ctxt;
 }
 
 void RuntimeDomain::Init() {
@@ -55,7 +55,7 @@ void RuntimeDomain::ProcessModel(const string& path) {
 }
 
 void RuntimeDomain::ProcessMeshes(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta) {
-	MeshRepo* meshRepo = runtimeContext->GetMeshRepo();
+	MeshRepo* meshRepo = _runtimeContext->GetMeshRepo();
 	if (skinMeshRendererMeta == nullptr) {
 		return;
 	}
@@ -115,13 +115,13 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	vec3 modelPos = transform->GetPosition();
 	qua modelRot = transform->GetRotation();
 
-	DirectLight* light = runtimeContext->sceneDirectLight;
+	DirectLight* light = _runtimeContext->sceneDirectLight;
 	mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
 	vec3 lightPos = light->transform->GetPosition();
 	vec3 lightColor = light->color;
 	vec3 lightDirection = -light->GetLightDirection();
 
-	Camera* camera = runtimeContext->mainCamera;
+	Camera* camera = _runtimeContext->mainCamera;
 	mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(modelPos);
 	mat4 modelRotMatrix = toMat4(modelRot);
 
@@ -185,7 +185,7 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 		return false;
 	}
 
-	MaterialRepo* materialRepo = runtimeContext->GetMaterialRepo();
+	MaterialRepo* materialRepo = _runtimeContext->GetMaterialRepo();
 	if (materialRepo->TryGetMaterialByGUID(guid, material)) {
 		return true;
 	}
@@ -196,7 +196,7 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 	material = new Material();
 	string shaderGUID = materialMeta.shaderGUID;
 
-	ShaderRepo* shaderRepo = runtimeContext->GetShaderRepo();
+	ShaderRepo* shaderRepo = _runtimeContext->GetShaderRepo();
 	if (!shaderRepo->TryGetShaderByGUID(shaderGUID, material->shader)) {
 		string shaderPath;
 		if (EditorDatabase::TryGetAssetPathFromGUID(shaderGUID, shaderPath)) {
@@ -208,7 +208,7 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 		}
 	}
 
-	TextureRepo* textureRepo = runtimeContext->GetTextureRepo();
+	TextureRepo* textureRepo = _runtimeContext->GetTextureRepo();
 
 	string diffuseTextureGUID = materialMeta.diffuseTextureGUID;
 	if (!textureRepo->TryGetTextureByGUID(diffuseTextureGUID, material->diffuseTexture)) {
@@ -247,7 +247,7 @@ bool RuntimeDomain::TryLoadMesh(const string& modelGUID, const int& meshIndex, M
 		return false;
 	}
 
-	MeshRepo* meshRepo = runtimeContext->GetMeshRepo();
+	MeshRepo* meshRepo = _runtimeContext->GetMeshRepo();
 	if (!meshRepo->TryGetMesh(modelGUID, meshIndex, mesh)) {
 		const aiScene* aScene = nullptr;
 		if (!EditorModelManager::TryLoadModel(modelPath, aScene)) {
@@ -266,7 +266,7 @@ bool RuntimeDomain::TryLoadMesh(const string& modelGUID, const int& meshIndex, M
 SkinMeshRenderer* RuntimeDomain::LoadSkinMeshRenderer(const aiScene* aScene, PrefabMeta& prefabMeta) {
 	SkinMeshRenderer* skinMeshRenderer = new SkinMeshRenderer();
 	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
-	MeshRepo* meshRepo = runtimeContext->GetMeshRepo();
+	MeshRepo* meshRepo = _runtimeContext->GetMeshRepo();
 
 	vector<MeshFilter*>* meshFilters = skinMeshRenderer->meshFilters;
 	vector<MeshRenderer*>* meshRenderers = skinMeshRenderer->meshRenderers;
@@ -395,7 +395,7 @@ void RuntimeDomain::RenderScene(const string& path) {
 		return;
 	}
 
-	SceneRepo* sceneRepo = runtimeContext->GetSceneRepo();
+	SceneRepo* sceneRepo = _runtimeContext->GetSceneRepo();
 	Scene* scene;
 	if (!sceneRepo->TryGetScene(sceneGUID, scene)) {
 		scene = new Scene();
@@ -407,16 +407,16 @@ void RuntimeDomain::RenderScene(const string& path) {
 	}
 
 	// Check current scene
-	if (runtimeContext->currentScene == nullptr) {
-		runtimeContext->currentScene = scene;
+	if (_runtimeContext->currentScene == nullptr) {
+		_runtimeContext->currentScene = scene;
 	}
 	// Check main camera
-	if (runtimeContext->mainCamera == nullptr) {
-		runtimeContext->mainCamera = runtimeContext->currentScene->Find("Camera")->GetComponent<Camera>();
+	if (_runtimeContext->mainCamera == nullptr) {
+		_runtimeContext->mainCamera = _runtimeContext->currentScene->Find("Camera")->GetComponent<Camera>();
 	}
 	// Check light
-	if (runtimeContext->sceneDirectLight == nullptr) {
-		runtimeContext->sceneDirectLight = runtimeContext->currentScene->Find("DirectLight")->GetComponent<DirectLight>();
+	if (_runtimeContext->sceneDirectLight == nullptr) {
+		_runtimeContext->sceneDirectLight = _runtimeContext->currentScene->Find("DirectLight")->GetComponent<DirectLight>();
 	}
 
 	for (auto go : scene->gameObjects) {

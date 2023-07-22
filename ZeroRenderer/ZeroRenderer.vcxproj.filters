@@ -33,7 +33,7 @@
     <ClCompile Include="src\editor\generic\TextureSlotCollection.h" />
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
     <ClCompile Include="src\runtime\mesh\MeshRenderer.cpp" />
-    <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\runtime\repo\MeshRepo.cpp" />
     <ClCompile Include="src\editor\meta\SkinMeshRendererMeta.cpp" />
     <ClCompile Include="src\runtime\mesh\Mesh.cpp" />
@@ -47,6 +47,7 @@
     <ClCompile Include="src\runtime\component\Camera.cpp" />
     <ClCompile Include="src\runtime\mesh\SkinMeshRenderer.cpp" />
     <ClCompile Include="src\editor\meta\ShaderMeta.cpp" />
+    <ClCompile Include="src\ZeroEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\runtime\component\CameraController.h" />
@@ -400,6 +401,7 @@
     <ClInclude Include="src\runtime\component\Camera.h" />
     <ClInclude Include="src\editor\meta\DirectLightMeta.h" />
     <ClInclude Include="src\generic\ShaderUniformType.h" />
+    <ClInclude Include="src\EditorApp.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

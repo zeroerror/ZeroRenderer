@@ -21,7 +21,7 @@
 
 class RuntimeDomain {
 
-	RuntimeContext* runtimeContext;
+	RuntimeContext* _runtimeContext;
 
 public:
 	void Inject(RuntimeContext* ctxt);
