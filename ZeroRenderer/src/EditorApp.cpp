@@ -28,6 +28,51 @@ EditorApp::EditorApp() {
 
 	_InitEditorGLIcon();
 
+	_InitSceneViewFrameBuffer();
+
+	_InitWindowCongfig();
+}
+
+EditorApp::~EditorApp() {
+	_ShutDown();
+}
+
+int EditorApp::Tick() {
+	if (glfwWindowShouldClose(window)) {
+		_ShutDown();
+		return 0;
+	}
+
+	_TickDeltaTime();
+	_TickEvents();
+	_ShowFPS(window);
+
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	_ImGui_NewFrame();
+	_ShowEditorProjectPanle();
+	_ShowEditorTitleBar();
+	_ShowEditorSceneView();
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+
+	return 1;
+}
+
+void EditorApp::_ShutDown() {
+	if (_alreadyShutDown)return;
+
+	_ImGuiShutDown();
+	_GLShutDown();
+	_alreadyShutDown = true;
+}
+
+GLuint _frameBuffer;
+GLuint _sceneViewTexture;
+void EditorApp::_InitSceneViewFrameBuffer() {
 	// Init Scene's Frame Buffer
 	glGenFramebuffers(1, &_frameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
@@ -45,47 +90,19 @@ EditorApp::EditorApp() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _sceneViewTexture, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	_InitWindowCongfig();
 }
 
-EditorApp::~EditorApp() {
-	ShutDown();
-}
-
-int EditorApp::Tick() {
-	if (glfwWindowShouldClose(window)) {
-		ShutDown();
-		return 0;
+void EditorApp::_RenderSceneViewFrameBuffer() {
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+		glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_ALWAYS);
+		_runtimeDomain->RenderScene("asset/DefaultScene.scene");
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-
-
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-	_TickDeltaTime();
-	_TickEvents();
-	_ShowFPS(window);
-
-	_ImGui_NewFrame();
-	_ImGui_ShowEditorProjectPanle();
-	_ImGui_ShowEditorTitleBar();
-	_ImGui_ShowEditorSceneView();
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	glfwSwapBuffers(window);
-	glfwPollEvents();
-
-	return 1;
 }
-
-void EditorApp::ShutDown() {
-	if (_alreadyShutDown)return;
-
-	_ImGuiShutDown();
-	_GLShutDown();
-	_alreadyShutDown = true;
-}
-
 
 void EditorApp::_InitWindowCongfig() {
 	EDITOR_WINDOW_WIDTH = 1920;
@@ -365,18 +382,18 @@ void EditorApp::_TickEvents() {
 
 #pragma region [GL]
 
-void EditorApp::_ShowFPS(GLFWwindow* window) {
-	int fps = (int)(1.0f / _deltaTime);
-	glfwSetWindowTitle(window, ("Zero Engine v0.0.1 FPS: " + to_string(fps)).c_str());
-}
-
 void EditorApp::_ImGui_NewFrame() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 }
 
-void EditorApp::_ImGui_ShowEditorProjectPanle() {
+void EditorApp::_ShowFPS(GLFWwindow* window) {
+	int fps = (int)(1.0f / _deltaTime);
+	glfwSetWindowTitle(window, ("Zero Engine v0.0.1 FPS: " + to_string(fps)).c_str());
+}
+
+void EditorApp::_ShowEditorProjectPanle() {
 	ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POS);
 	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
 	ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
@@ -394,7 +411,7 @@ void EditorApp::_ImGui_ShowEditorProjectPanle() {
 	ImGui::End();
 }
 
-void EditorApp::_ImGui_ShowEditorTitleBar() {
+void EditorApp::_ShowEditorTitleBar() {
 	ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
 	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
 	ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
@@ -407,19 +424,9 @@ void EditorApp::_ImGui_ShowEditorTitleBar() {
 	ImGui::End();
 }
 
-GLuint _frameBuffer;
-GLuint _sceneViewTexture;
-void EditorApp::_ImGui_ShowEditorSceneView() {
-	// Render Scene's Frame Buffer
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-		glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
-		glViewport(0, 0, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT);
-		glBindTexture(GL_TEXTURE_2D, _sceneViewTexture);
-		_runtimeDomain->RenderScene("asset/DefaultScene.scene");
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
+void EditorApp::_ShowEditorSceneView() {
+	_RenderSceneViewFrameBuffer();
 
-	// Show Scene View By Frame Buffer Texture
 	ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
 	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);

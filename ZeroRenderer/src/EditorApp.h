@@ -50,9 +50,9 @@ public:
 
 private:
 	bool _alreadyShutDown;
-	void ShutDown();
+	void _ShutDown();
 
-#pragma region [EDITOR WINDOW]
+#pragma region [EDITOR WINDOW Config]
 
 private:
 	int EDITOR_WINDOW_WIDTH;
@@ -149,6 +149,16 @@ private:
 
 #pragma endregion
 
+#pragma region [Scene View]
+
+private:
+	GLuint _frameBuffer;
+	GLuint _sceneViewTexture;
+	void _InitSceneViewFrameBuffer();
+	void _RenderSceneViewFrameBuffer();
+
+#pragma endregion
+
 #pragma region [EDITOR EVENT]
 
 private:
@@ -162,13 +172,11 @@ private:
 #pragma region [GL]
 
 private:
-	GLuint _frameBuffer;
-	GLuint _sceneViewTexture;
 	void _ShowFPS(GLFWwindow* window);
 	void _ImGui_NewFrame();
-	void _ImGui_ShowEditorProjectPanle();
-	void _ImGui_ShowEditorTitleBar();
-	void _ImGui_ShowEditorSceneView();
+	void _ShowEditorProjectPanle();
+	void _ShowEditorTitleBar();
+	void _ShowEditorSceneView();
 	void _ImGuiShutDown();
 	void _GLShutDown();
 

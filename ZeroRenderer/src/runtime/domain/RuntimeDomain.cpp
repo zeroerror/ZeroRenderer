@@ -385,11 +385,6 @@ void RuntimeDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRender
 }
 
 void RuntimeDomain::RenderScene(const string& path) {
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
 	string sceneGUID;
 	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, sceneGUID)) {
 		return;

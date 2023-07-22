@@ -61,30 +61,29 @@ void main()
     vec4 texColor = diffuseColor + specularColor;
 
     vec4 outColor = texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
+     //- Lambert Light Model -
+     float dot = dot(v_normal, u_lightDirection);
+     float intensity = -min(dot, 0.0);
+     vec3 diffuse = u_lightColor * intensity; 
+     outColor.rgb *= diffuse;
 
-    // - Lambert Light Model -
-    // float dot = dot(v_normal, u_lightDirection);
-    // float intensity = -min(dot, 0.0);
-    // vec3 diffuse = u_lightColor * intensity; 
-    // outColor.rgb *= diffuse;
+     ////------ Shadow -------
+     //vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
+     //vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
+     //float mapDepth = texture(u_depthMap, depthCoord).r;
+     //float curDepth = light_glPos.z / light_glPos.w;
+     //curDepth = curDepth * 0.5 + 0.5;
+     //curDepth = curDepth > 1.0 ? 1.0 : curDepth;
+     //float bias = min(0.00002 * (1 + dot), 0.00002);
+     //float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
+     //outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
 
-    // ------ Shadow -------
-    // vec4 light_glPos = u_lightMVPMatrix * v_relativePosition;
-    // vec2 depthCoord = light_glPos.xy / light_glPos.w * 0.5 + 0.5;
-    // float mapDepth = texture(u_depthMap, depthCoord).r;
-    // float curDepth = light_glPos.z / light_glPos.w;
-    // curDepth = curDepth * 0.5 + 0.5;
-    // curDepth = curDepth > 1.0 ? 1.0 : curDepth;
-    // float bias = min(0.00002 * (1 + dot), 0.00002);
-    // float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
-    // outColor = vec4(outColor.rgb * shadowFactor, outColor.a);
-
-    // // ------ Ambient Light -------
-    // vec3 ambientColor = texColor.xyz;
-    // float ambientStrength = 0.3;
-    // vec3 ambient = ambientColor * ambientStrength;
-    // outColor.rgb += ambient;
+     // ------ Ambient Light -------
+     vec3 ambientColor = texColor.xyz;
+     float ambientStrength = 0.3;
+     vec3 ambient = ambientColor * ambientStrength;
+     outColor.rgb += ambient;
     
-    color = texColor;
+    color = outColor;
 }
 
