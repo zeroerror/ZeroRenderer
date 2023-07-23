@@ -72,8 +72,8 @@ void EditorApp::_ShutDown() {
 
 GLuint _frameBuffer;
 GLuint _sceneViewTexture;
+GLuint _depthTexture;
 void EditorApp::_InitSceneViewFrameBuffer() {
-	// Init Scene's Frame Buffer
 	glGenFramebuffers(1, &_frameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
 
@@ -84,12 +84,14 @@ void EditorApp::_InitSceneViewFrameBuffer() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _sceneViewTexture, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	glGenTextures(1, &_depthTexture);
+	glBindTexture(GL_TEXTURE_2D, _depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void EditorApp::_RenderSceneViewFrameBuffer() {
@@ -98,7 +100,7 @@ void EditorApp::_RenderSceneViewFrameBuffer() {
 		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_ALWAYS);
+		glDepthFunc(GL_LESS);
 		_runtimeDomain->RenderScene("asset/DefaultScene.scene");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
