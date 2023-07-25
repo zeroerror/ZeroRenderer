@@ -346,7 +346,6 @@ void EditorApp::_Event_SceneView(const float& deltaTime) {
 	auto camRight = mainCamera->transform->GetRight();
 
 	if (GetMouseButtonPressing(MouseButtons_Right)) {
-		// todo： to runtimedomain's sceneviewdomain
 		vec2 mousePosDelta = GetMousePosDelta();
 		float rotateFactor = EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED * deltaTime;
 		auto yawRadius = -mousePosDelta.x * rotateFactor;

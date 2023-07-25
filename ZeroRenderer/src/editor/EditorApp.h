@@ -9,6 +9,7 @@
 #include "EditorDatabase.h"
 #include "Serialization.h"
 #include <RuntimeDomain.h>
+#include <RuntimeDomain.h>
 #include "FileSuffix.h"
 
 using namespace Serialization;

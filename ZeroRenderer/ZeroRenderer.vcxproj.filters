@@ -48,6 +48,8 @@
     <ClCompile Include="src\ZeroEngine.cpp" />
     <ClCompile Include="src\editor\EditorApp.cpp" />
     <ClCompile Include="src\runtime\scene\Scene.cpp" />
+    <ClCompile Include="src\editor\context\EditorContext.cpp" />
+    <ClCompile Include="src\editor\domain\EditorDomain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\runtime\component\CameraController.h" />
@@ -402,6 +404,8 @@
     <ClInclude Include="src\generic\ShaderUniformType.h" />
     <ClInclude Include="src\editor\EditorApp.h" />
     <ClInclude Include="src\runtime\scene\Scene.h" />
+    <ClInclude Include="src\editor\context\EditorContext.h" />
+    <ClInclude Include="src\editor\domain\EditorDomain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />
