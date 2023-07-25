@@ -1,5 +1,6 @@
 #include "SceneRepo.h"
 #include "EditorDatabase.h"
+#include "Scene.h"
 #include <iostream>
 
 SceneRepo::SceneRepo() {

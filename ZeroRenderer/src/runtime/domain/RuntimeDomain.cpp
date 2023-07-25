@@ -3,6 +3,7 @@
 #include "EditorDatabase.h"
 #include "ShaderMeta.h"
 #include "FileSuffix.h"
+#include "Scene.h"
 #include "FileHelper.h"
 #include "Serialization.h"
 #include "SkinMeshRenderer.h"
