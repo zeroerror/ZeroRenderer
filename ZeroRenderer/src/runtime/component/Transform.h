@@ -13,6 +13,7 @@ using namespace std;
 using namespace glm;
 
 class Transform : public Component {
+
 public:
 	Transform();
 	~Transform();
@@ -20,13 +21,10 @@ public:
 	vec3 position;
 	quat rotation;
 	vec3 scale;
-
 	vec3 GetPosition()const;
 	void SetPosition(const vec3& newPosition);
-
 	quat GetRotation() const;
 	void SetRotation(const quat& newRotation);
-
 	vec3 GetForward() const;
 	vec3 GetUp() const;
 	vec3 GetRight() const;
@@ -35,4 +33,20 @@ private:
 	vec3 m_forward;
 	vec3 m_up;
 	vec3 m_right;
+
+public:
+	void AddChild(Transform* child);
+	void RemoveChild(Transform* child);
+	void SetParent(Transform* parent);
+	Transform* GetParent() const;
+	Transform* GetChild(int index) const;
+	Transform* Find(const string& path);
+	int GetChildCount() const;
+
+private:
+	Transform* _parent;
+	vector<Transform*> _children;
+	Transform* _Find(const string& path, Transform* transform) const;
+	Transform* _Find(const string& name) const;
+	string GetName() const;
 };

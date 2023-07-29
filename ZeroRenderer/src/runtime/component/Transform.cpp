@@ -47,3 +47,76 @@ void Transform::SetRotation(const glm::quat& newRotation) {
 	m_up = glm::normalize(newRotation * glm::vec3(0.0f, 1.0f, 0.0f));
 	m_right = glm::normalize(newRotation * glm::vec3(1.0f, 0.0f, 0.0f));
 }
+
+void Transform::AddChild(Transform* child) {
+	_children.push_back(child);
+}
+
+void Transform::RemoveChild(Transform* child) {
+	if (child == nullptr) {
+		return;
+	}
+	for (auto it = _children.begin(); it != _children.end(); ++it) {
+		if (*it == child) {
+			_children.erase(it);
+			break;
+		}
+	}
+}
+
+void Transform::SetParent(Transform* parent) {
+	_parent = parent;
+}
+
+Transform* Transform::GetParent() const {
+	return _parent;
+}
+
+Transform* Transform::GetChild(int index) const {
+	if (index < 0 || index >= _children.size()) {
+		return nullptr;
+	}
+	return _children[index];
+}
+
+Transform* Transform::Find(const string& path)  {
+	return _Find(path, this);
+}
+
+Transform* Transform::_Find(const string& path, Transform* transform) const {
+	if (transform == nullptr) {
+		return nullptr;
+	}
+
+	size_t end1 = path.find_last_of("/");
+	if (end1 == string::npos) {
+		return  _Find(path);
+	}
+
+	size_t end2 = path.find_last_of("/");
+	string name;
+	if (end2 == string::npos)name = path.substr(end1 + 1);
+	else name = path.substr(end1 + 1, end2);
+
+	Transform* next = _Find(name);
+
+	_Find(name, next);
+}
+
+Transform* Transform::_Find(const string& name) const{
+	for (auto child : _children) {
+		if (child->GetName() == name) {
+			return child;
+		}
+	}
+
+	return nullptr;
+}
+
+int Transform::GetChildCount() const {
+	return _children.size();
+}
+
+string Transform::GetName() const{
+	return gameObject->GetName();
+}

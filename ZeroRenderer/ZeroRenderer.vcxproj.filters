@@ -377,7 +377,6 @@
     <ClInclude Include="src\editor\meta\ObjMeta.h" />
     <ClInclude Include="src\runtime\domain\RuntimeDomain.h" />
     <ClInclude Include="src\editor\meta\ShaderMeta.h" />
-    <ClInclude Include="src\runtime\component\Component.h" />
     <ClInclude Include="src\editor\meta\Serialization.h" />
     <ClInclude Include="src\editor\meta\SceneMeta.h" />
     <ClInclude Include="src\runtime\mesh\MeshFilter.h" />
@@ -406,6 +405,7 @@
     <ClInclude Include="src\runtime\scene\Scene.h" />
     <ClInclude Include="src\editor\context\EditorContext.h" />
     <ClInclude Include="src\editor\domain\EditorDomain.h" />
+    <ClInclude Include="src\runtime\component\Component.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

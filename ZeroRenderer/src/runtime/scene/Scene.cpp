@@ -3,33 +3,32 @@
 #include "Serialization.h"
 using namespace Serialization;
 
-Scene::Scene() {
-	//camera = new Camera();
-	//directLight = new DirectLight();
-	//depthMapImage = new Rectangle();
-	//lightCube = new Cube();
-	//cubes = new vector<Cube*>();
-	//models = new vector<Model*>();
-}
+Scene::Scene() {}
 
 Scene::~Scene() {
-	//delete camera;
-	//delete directLight;
-	//delete lightCube;
-	//delete depthMapImage;
-	//for (auto cube : *cubes) {
-	//	delete cube;
-	//}
-	//for (auto model : *models) {
-	//	delete model;
-	//}
+	for (auto go : gameObjects) {
+		delete go;
+	}
 }
 
-// todo: with child and parent
-GameObject* Scene::Find(const string& name) {
+GameObject* Scene::Find(const string& path) {
+	string normalizedPath = FileHelper::NormalizedPath(path);
+	size_t end1 = normalizedPath.find_last_of("/");
+	if (end1 == string::npos) {
+		for (auto go : gameObjects) {
+			if (go->GetName() == normalizedPath) {
+				return go;
+			}
+		}
+
+		return nullptr;
+	}
+
+	normalizedPath = normalizedPath.substr(end1 + 1);
 	for (auto go : gameObjects) {
-		if (go->name == name) {
-			return go;
+		GameObject* res = go->Find(normalizedPath);
+		if (res != nullptr) {
+			return res;
 		}
 	}
 

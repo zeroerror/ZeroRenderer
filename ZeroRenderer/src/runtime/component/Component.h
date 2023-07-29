@@ -46,4 +46,8 @@ public:
 	GameObject* gameObject;
 	Transform* transform;
 	ComponentType_ componentType;
+
+private:
+	string _name;
+
 };

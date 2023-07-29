@@ -575,12 +575,12 @@ inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta,
 }
 
 void RuntimeDomain::MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& gameObject) {
-	gameObject.name = prefabMeta.name;
+	gameObject.SetName(prefabMeta.name);
 	_MetaToGameObject(prefabMeta.transformMeta, prefabMeta.componentMetas, gameObject);
 }
 
 void RuntimeDomain::MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject) {
-	gameObject.name = gameObjectMeta.name;
+	gameObject.SetName(gameObjectMeta.name);
 	_MetaToGameObject(gameObjectMeta.transformMeta, gameObjectMeta.componentMetas, gameObject);
 }
 

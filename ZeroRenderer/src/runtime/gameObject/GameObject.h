@@ -16,10 +16,11 @@ public:
 	GameObject();
 	~GameObject();
 
-	string name;
-	Transform* transform() { return _transform; };
-
+	void SetName(const string& name);
+	string GetName() const;
+	Transform* transform() const;
 	vector<Component*> GetAllComponents();
+	GameObject* Find(const string& path);
 
 	template <typename T, typename = enable_if_t<is_base_of<Component, T>::value>>
 	T* AddComponent() {
@@ -65,8 +66,11 @@ public:
 	}
 
 private:
+	string _name;
 	Transform* _transform;
 	vector<Component*> _components;
+	GameObject* _Find(const string& path, GameObject* gameObject) const;
+	GameObject* _Find(const string& name) const;
 
 };
 
