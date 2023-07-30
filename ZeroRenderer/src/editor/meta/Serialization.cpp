@@ -82,6 +82,7 @@ void Serialization::TransformMeta_SerializeTo(const TransformMeta& transformMeta
 	for (auto childGID : transformMeta.childrenGIDs) {
 		ss << "childGID: " << childGID << endl;
 	}
+	ss << "------childrenGIDs" << endl;
 
 	ss << "position: " << transformMeta.position.x << ' ' << transformMeta.position.y << ' ' << transformMeta.position.z << endl;
 	ss << "rotation: " << transformMeta.rotation.x << ' ' << transformMeta.rotation.y << ' ' << transformMeta.rotation.z << ' ' << transformMeta.rotation.w << endl;
@@ -137,12 +138,13 @@ void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, 
 			while (getline(ss, line)) {
 				istringstream iss(line);
 				if (!(iss >> key)) continue;
+				if (key == "------childrenGIDs") break;
+
 				if (key == "childGID:") {
 					iss >> key;
 					childrenGIDs.push_back(stoi(key));
 					continue;
 				}
-				break;
 			}
 			transformMeta->childrenGIDs = childrenGIDs;
 			continue;

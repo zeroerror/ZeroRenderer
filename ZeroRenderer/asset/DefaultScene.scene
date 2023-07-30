@@ -7,6 +7,7 @@ componentType: ComponentType_Transform
 gid: 1
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: 0 10 -10
 rotation: 0.130526 0 0 0.991445
 --ComponentEnd
@@ -29,6 +30,7 @@ componentType: ComponentType_Transform
 gid: 2
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: 0 10 0
 rotation: 0 0.247404 0 0.968912
 --ComponentEnd
@@ -52,6 +54,7 @@ componentType: ComponentType_Transform
 gid: 3
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: 0 -0.05 0
 rotation: 0 0 0 1
 --ComponentEnd
@@ -76,6 +79,7 @@ componentType: ComponentType_Transform
 gid: 4
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: -8 2.5 0
 rotation: 0 0 0 1
 --ComponentEnd
@@ -100,6 +104,7 @@ componentType: ComponentType_Transform
 gid: 5
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: 0 2.5 -8
 rotation: 0 0 0 1
 --ComponentEnd
@@ -124,6 +129,7 @@ componentType: ComponentType_Transform
 gid: 6
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: -4 1 4
 rotation: 0 0 0 1
 --ComponentEnd
@@ -148,6 +154,7 @@ componentType: ComponentType_Transform
 gid: 7
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: 4 1 -4
 rotation: 0 0 0 1
 --ComponentEnd
@@ -172,6 +179,7 @@ componentType: ComponentType_Transform
 gid: 8
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: 6 0.5 6
 rotation: 0 0 0 1
 --ComponentEnd
@@ -196,6 +204,7 @@ componentType: ComponentType_Transform
 gid: 10
 fatherGID: 0
 childrenGIDs: 
+------childrenGIDs
 position: 0 0 0
 rotation: 0 0 0 1
 --ComponentEnd
@@ -213,7 +222,8 @@ componentType: ComponentType_Transform
 gid: 9
 fatherGID: 0
 childrenGIDs: 
-position: 0 -5 10
+------childrenGIDs
+position: 0 0 0
 rotation: 0 0 0 1
 --ComponentEnd
 ====PrefabInstanceEnd
