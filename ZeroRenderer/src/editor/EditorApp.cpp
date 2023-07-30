@@ -53,6 +53,7 @@ int EditorApp::Tick() {
 	_ShowFPS(window);
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_ImGui_NewFrame();
 	_ShowEditorProjectPanle();
@@ -102,7 +103,7 @@ void EditorApp::_InitSceneViewFrameBuffer() {
 void EditorApp::_RenderSceneViewFrameBuffer() {
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
 		glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
-		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);

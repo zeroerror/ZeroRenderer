@@ -1,0 +1,221 @@
+########AllGameObjectsStart:
+
+====GameObjectStart:
+name: Camera
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 1
+fatherGID: 0
+childrenGIDs: 
+position: 0 10 -10
+rotation: 0.130526 0 0 0.991445
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_Camera
+scrWidth: 1920
+scrHeight: 1080
+fov: 45
+nearPlane: 0.1
+farPlane: 100
+orthoSize: 20
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: DirectLight
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 2
+fatherGID: 0
+childrenGIDs: 
+position: 0 10 0
+rotation: 0 0.247404 0 0.968912
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_DirectLight
+color: 1 1 1
+shadowType: 1
+scrWidth: 1920
+scrHeight: 1080
+fov: 45
+nearPlane: 0.1
+farPlane: 100
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: GroundCube
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 3
+fatherGID: 0
+childrenGIDs: 
+position: 0 -0.05 0
+rotation: 0 0 0 1
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -1
+--ComponentEnd
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+--ComponentEnd
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: Wall1
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 4
+fatherGID: 0
+childrenGIDs: 
+position: -8 2.5 0
+rotation: 0 0 0 1
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -1
+--ComponentEnd
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+--ComponentEnd
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: Wall2
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 5
+fatherGID: 0
+childrenGIDs: 
+position: 0 2.5 -8
+rotation: 0 0 0 1
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -1
+--ComponentEnd
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+--ComponentEnd
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: obstacle1
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 6
+fatherGID: 0
+childrenGIDs: 
+position: -4 1 4
+rotation: 0 0 0 1
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -1
+--ComponentEnd
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+--ComponentEnd
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: obstacle2
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 7
+fatherGID: 0
+childrenGIDs: 
+position: 4 1 -4
+rotation: 0 0 0 1
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -1
+--ComponentEnd
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+--ComponentEnd
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: obstacle3
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 8
+fatherGID: 0
+childrenGIDs: 
+position: 6 0.5 6
+rotation: 0 0 0 1
+--ComponentEnd
+
+--ComponentStart:
+componentType: ComponentType_MeshFilter
+modelGUID: 
+meshIndex: -1
+--ComponentEnd
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_MeshRenderer
+materialGUID: 81689f3660ca1299
+--ComponentEnd
+--ComponentEnd
+====GameObjectEnd
+
+====GameObjectStart:
+name: Root
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 10
+fatherGID: 0
+childrenGIDs: 
+position: 0 0 0
+rotation: 0 0 0 1
+--ComponentEnd
+
+====GameObjectEnd
+
+########AllGameObjectsEnd
+
+########AllPrefabInstancesStart:
+
+====PrefabInstanceStart:
+guid: 5781b19e1ef7aab3
+--ComponentStart:
+componentType: ComponentType_Transform
+gid: 9
+fatherGID: 0
+childrenGIDs: 
+position: 0 -5 10
+rotation: 0 0 0 1
+--ComponentEnd
+====PrefabInstanceEnd
+
+########AllPrefabInstancesEnd

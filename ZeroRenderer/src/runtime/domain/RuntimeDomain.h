@@ -27,13 +27,14 @@ public:
 	void Inject(RuntimeContext* ctxt);
 	void Init();
 
-	void ProcessModel(const string& path);
-	void ProcessMeshes(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta);
+	void ProcessModelMeshFromPath(const string& path);
+	void ProcessMeshFromSkinMeshRendererMeta(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta);
+	void ProcessMeshFromMeshFilterMeta(const aiScene* aScene, MeshFilterMeta* meshFilterMeta, Mesh* mesh);
 
 	void BindShader(const Transform* transform, Shader* shader);
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
 
-	SkinMeshRenderer* LoadSkinMeshRenderer(const aiScene* aScene, PrefabMeta& prefabMeta);
+	SkinMeshRenderer* LoadSkinMeshRenderer(const aiScene* aScene, SkinMeshRendererMeta& skinMeshRendererMeta);
 	void BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 	void BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 
@@ -53,9 +54,9 @@ public:
 	void MetaToMeshRenderer(const MeshRendererMeta& meshRendererMeta, MeshRenderer& meshRenderer);
 	void MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshRendererMeta, SkinMeshRenderer& skinMeshRenderer);
 	void MetaToTransform(const TransformMeta& transformMeta, Transform& transform);
-	void MetaToPrefab(const string& guid, PrefabMeta& prefabMeta);
-	void MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject);
+	void GUIDToPrefabMeta(const string& guid, PrefabMeta& prefabMeta);
 	void MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& gameObject);
+	void MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject);
 	void MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject);
 	void MetaToScene(const SceneMeta& sceneMeta, Scene& scene);
 
