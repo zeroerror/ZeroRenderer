@@ -356,6 +356,7 @@ void Serialization::ComponentMeta_SerializeTo(const ComponentMeta& componentMeta
 void Serialization::PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabInstanceMeta, stringstream& ss) {
 	ss << EditorDefaultConfig::DefaultPrefabInstanceStartStr() << endl;
 	ss << "guid: " << prefabInstanceMeta.guid << endl;
+	ss << "name: " << prefabInstanceMeta.name << endl;
 	ComponentMeta_SerializeTo(prefabInstanceMeta.transformMeta, ss);
 	ss << EditorDefaultConfig::DefaultPrefabInstanceEndStr() << endl;
 }
@@ -372,6 +373,12 @@ void Serialization::PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefa
 		if (key == "guid:") {
 			iss >> key;
 			prefabInstanceMeta->guid = key;
+			continue;
+		}
+
+		if (key == "name:") {
+			iss >> key;
+			prefabInstanceMeta->name = key;
 			continue;
 		}
 

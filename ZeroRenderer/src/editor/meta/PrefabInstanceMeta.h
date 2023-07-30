@@ -11,5 +11,6 @@ public:
 
 	TransformMeta transformMeta;
 	string guid;
+	string name;
 };
 

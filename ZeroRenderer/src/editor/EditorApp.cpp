@@ -13,7 +13,7 @@ EditorApp::EditorApp() {
 	_runtimeContext = new RuntimeContext();
 	_runtimeDomain = new RuntimeDomain();
 	_runtimeDomain->Inject(_runtimeContext);
-	_runtimeDomain->Init();
+	_runtimeDomain->PreprocessModelMeshes();
 
 	// Init Editor Context And Domain
 	_editorContext = new EditorContext();
@@ -422,11 +422,19 @@ void EditorApp::_ShowEditorTitleBar() {
 	ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
 	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
 	ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-	if (ImGui::Button("Clear META")) {
+	if (ImGui::Button("Clear All Meta Files")) {
 		vector<string> suffixes = vector<string>();
 		suffixes.push_back(FileSuffix::SUFFIX_META);
 		unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
 		EditorDatabase::ClearFile(suffixFlag);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Generate Default Scene")) {
+		EditorDatabase::GenerateDefaultSceneMeta();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Generate Default Shader")) {
+		EditorDatabase::GenerateDefaultShader();
 	}
 	ImGui::End();
 }

@@ -217,6 +217,7 @@ rotation: 0 0 0 1
 
 ====PrefabInstanceStart:
 guid: 5781b19e1ef7aab3
+name: Nanosuit
 --ComponentStart:
 componentType: ComponentType_Transform
 gid: 9

@@ -25,7 +25,7 @@ class RuntimeDomain {
 
 public:
 	void Inject(RuntimeContext* ctxt);
-	void Init();
+	void PreprocessModelMeshes();
 
 	void ProcessModelMeshFromPath(const string& path);
 	void ProcessMeshFromSkinMeshRendererMeta(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta);

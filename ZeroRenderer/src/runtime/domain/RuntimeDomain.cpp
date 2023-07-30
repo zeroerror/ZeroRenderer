@@ -25,7 +25,7 @@ void RuntimeDomain::Inject(RuntimeContext* ctxt) {
 	this->_runtimeContext = ctxt;
 }
 
-void RuntimeDomain::Init() {
+void RuntimeDomain::PreprocessModelMeshes() {
 	// Load all models'meshes to mesh repo.
 	vector<string> suffixes = vector<string>();
 	suffixes.push_back(FileSuffix::SUFFIX_OBJ);
@@ -36,10 +36,6 @@ void RuntimeDomain::Init() {
 	for (auto path : filePaths) {
 		ProcessModelMeshFromPath(path);
 	}
-
-	// Generate default scene.
-	EditorDatabase::GenerateDefaultSceneMeta();
-	// EditorDatabase::GenerateDefaultShader();
 }
 
 void RuntimeDomain::ProcessModelMeshFromPath(const string& path) {
@@ -536,6 +532,7 @@ void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMet
 	GUIDToPrefabMeta(prefabInstanceMeta.guid, prefabMeta);
 	MetaToGameObject(prefabMeta, gameObject);
 	MetaToTransform(prefabInstanceMeta.transformMeta, *gameObject.transform());
+	gameObject.SetName(prefabInstanceMeta.name);
 }
 
 inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta, const vector<ComponentMeta*> componentMetas, GameObject& gameObject) {
