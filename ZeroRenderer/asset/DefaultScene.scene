@@ -8,8 +8,8 @@ gid: 1
 fatherGID: 0
 childrenGIDs: 
 ------childrenGIDs
-position: 0 10 -10
-rotation: 0.130526 0 0 0.991445
+position: 0 20 -10
+rotation: 0.258819 0 0 0.965926
 --ComponentEnd
 
 --ComponentStart:
