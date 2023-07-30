@@ -88,7 +88,7 @@ private:
 	float EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED;
 	float EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED;
 
-	void _InitWindowCongfig();
+	void _InitEditorWindowCongfig();
 
 #pragma endregion
 
@@ -157,6 +157,7 @@ private:
 private:
 	GLuint _frameBuffer;
 	GLuint _sceneViewTexture;
+	void _InitSceneView();
 	void _InitSceneViewFrameBuffer();
 	void _RenderSceneViewFrameBuffer();
 

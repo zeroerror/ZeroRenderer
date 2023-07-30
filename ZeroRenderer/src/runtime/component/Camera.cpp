@@ -63,3 +63,13 @@ glm::mat4 Camera::GetMVPMatrix_Perspective(const glm::vec3& pos) const {
 
 	return mvp;
 }
+
+void Camera::CopyFrom(const Camera& camera) {
+	nearPlane = camera.nearPlane;
+	farPlane = camera.farPlane;
+	fov = camera.fov;
+	orthoSize = camera.orthoSize;
+	cameraType = camera.cameraType;
+	scrWidth = camera.scrWidth;
+	scrHeight = camera.scrHeight;
+}

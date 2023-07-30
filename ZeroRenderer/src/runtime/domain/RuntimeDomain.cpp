@@ -111,7 +111,7 @@ void RuntimeDomain::ProcessMeshFromMeshFilterMeta(const aiScene* aScene, MeshFil
 
 }
 
-void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
+void RuntimeDomain::BindShader(const Transform* transform, Shader* shader, const Camera& camera) {
 	if (shader == nullptr) {
 		return;
 	}
@@ -127,8 +127,7 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	vec3 lightColor = light->color;
 	vec3 lightDirection = -light->GetLightDirection();
 
-	Camera* camera = _runtimeContext->mainCamera;
-	mat4 cameraMVPMatrix = camera->GetMVPMatrix_Perspective(modelPos);
+	mat4 cameraMVPMatrix = camera.GetMVPMatrix_Perspective(modelPos);
 	mat4 modelRotMatrix = toMat4(modelRot);
 
 	shader->Bind();
@@ -171,8 +170,8 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader) {
 	shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
 	shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
 	shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
-	shader->SetUniform1f("u_nearPlane", camera->nearPlane);
-	shader->SetUniform1f("u_farPlane", camera->farPlane);
+	shader->SetUniform1f("u_nearPlane", camera.nearPlane);
+	shader->SetUniform1f("u_farPlane", camera.farPlane);
 }
 
 bool RuntimeDomain::TryLoadMaterialByAssetPath(const string& path, Material*& material) {
@@ -389,10 +388,10 @@ void RuntimeDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRender
 	glDrawElements(GL_TRIANGLES, skinMeshRenderer->ib_batched->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void RuntimeDomain::RenderScene(const string& path) {
+Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
 	string sceneGUID;
 	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, sceneGUID)) {
-		return;
+		return nullptr;
 	}
 
 	SceneRepo* sceneRepo = _runtimeContext->GetSceneRepo();
@@ -401,46 +400,35 @@ void RuntimeDomain::RenderScene(const string& path) {
 		scene = new Scene();
 
 		sceneRepo->TryAddScene(sceneGUID, scene);
-		SceneMeta sceneMeta;
-		SceneMeta_DeserializeFrom(&sceneMeta, path);
-		MetaToScene(sceneMeta, *scene);
+		SceneMeta_DeserializeFrom(&resSceneMeta, path);
+		MetaToScene(resSceneMeta, *scene);
 	}
 
-	// Check current scene
-	if (_runtimeContext->currentScene == nullptr) {
-		_runtimeContext->currentScene = scene;
-	}
-	// Check main camera
-	if (_runtimeContext->mainCamera == nullptr) {
-		_runtimeContext->mainCamera = _runtimeContext->currentScene->Find("Camera")->GetComponent<Camera>();
-	}
-	// Check light
-	if (_runtimeContext->sceneDirectLight == nullptr) {
-		_runtimeContext->sceneDirectLight = _runtimeContext->currentScene->Find("DirectLight")->GetComponent<DirectLight>();
-	}
+	return scene;
+}
 
-	for (auto go : scene->gameObjects) {
+void RuntimeDomain::RenderScene(const Scene& scene, const Camera& camera) {
+	for (auto go : scene.gameObjects) {
 		vector<SkinMeshRenderer*> skinMeshRenderers = vector<SkinMeshRenderer*>();
 		go->GetAllComponents<SkinMeshRenderer>(skinMeshRenderers);
 		for (auto skinMeshRenderer : skinMeshRenderers) {
-			DrawSkinMeshRenderer(skinMeshRenderer);
+			DrawSkinMeshRenderer(skinMeshRenderer, camera);
 		}
 	}
-
 }
 
-void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer) {
+void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer, const Camera& camera) {
 	auto meshRenderers = skinMeshRenderer->meshRenderers;
 	for (auto meshRenderer : *meshRenderers) {
-		DrawMeshRenderer(meshRenderer);
+		DrawMeshRenderer(meshRenderer, camera);
 	}
 }
 
-void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer) {
+void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer, const Camera& camera) {
 	const Transform* transfrom = meshRenderer->transform;
 	Material* material;
 	if (TryLoadMaterialByGUID(meshRenderer->materialGUID, material)) {
-		BindShader(transfrom, material->shader);
+		BindShader(transfrom, material->shader, camera);
 		if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
 		if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 	}

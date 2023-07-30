@@ -2,7 +2,7 @@
 
 // ********************** EDITOR USER CONFIG **********************
 EditorApp::EditorApp() {
-	_InitWindowCongfig();
+	_InitEditorWindowCongfig();
 
 	// Import Editor Database
 	EditorDatabase::ImportAssets();
@@ -32,10 +32,10 @@ EditorApp::EditorApp() {
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 	_InitEditorGLIcon();
+	_InitEditorWindowCongfig();
 
+	_InitSceneView();
 	_InitSceneViewFrameBuffer();
-
-	_InitWindowCongfig();
 }
 
 EditorApp::~EditorApp() {
@@ -100,6 +100,28 @@ void EditorApp::_InitSceneViewFrameBuffer() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void EditorApp::_InitSceneView() {
+	SceneMeta currentSceneMeta;
+	Scene* scene = _runtimeDomain->OpenScene("asset/DefaultScene.scene", currentSceneMeta);
+
+	_runtimeContext->currentScene = scene;
+
+	Camera* mainCamera = scene->Find("Camera")->GetComponent<Camera>();
+	_runtimeContext->mainCamera = mainCamera;
+	_runtimeContext->sceneDirectLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
+
+	GameObject* sceneViewCameraGO = new GameObject();
+	sceneViewCameraGO->SetName("SceneViewCamera");
+	Camera* sceneViewCamera = sceneViewCameraGO->AddComponent<Camera>();
+	if (mainCamera != nullptr) {
+		sceneViewCamera->CopyFrom(*mainCamera);
+		sceneViewCamera->transform->SetPosition(mainCamera->transform->GetPosition());
+		sceneViewCamera->transform->SetRotation(mainCamera->transform->GetRotation());
+	}
+	_editorContext->sceneViewCamera = sceneViewCamera;
+	_editorContext->currentSceneMeta = currentSceneMeta;
+}
+
 void EditorApp::_RenderSceneViewFrameBuffer() {
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
 		glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
@@ -107,12 +129,12 @@ void EditorApp::_RenderSceneViewFrameBuffer() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
-		_runtimeDomain->RenderScene("asset/DefaultScene.scene");
+		_runtimeDomain->RenderScene(*_runtimeContext->currentScene, *_editorContext->sceneViewCamera);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
 
-void EditorApp::_InitWindowCongfig() {
+void EditorApp::_InitEditorWindowCongfig() {
 	EDITOR_WINDOW_WIDTH = 1920;
 	EDITOR_WINDOW_HEIGHT = 1080;
 
@@ -345,11 +367,11 @@ void EditorApp::_Event_DirectoryBackward() {
 void EditorApp::_Event_SceneView(const float& deltaTime) {
 	if (_curChoosedPanelFlags != EditorPanelFlags_SceneView)return;
 
-	auto mainCamera = _runtimeContext->mainCamera;
-	auto pos = mainCamera->transform->GetPosition();
-	auto rot = mainCamera->transform->rotation;
-	auto camForward = mainCamera->transform->GetForward();
-	auto camRight = mainCamera->transform->GetRight();
+	auto sceneViewCamera = _editorContext->sceneViewCamera;
+	auto pos = sceneViewCamera->transform->GetPosition();
+	auto rot = sceneViewCamera->transform->rotation;
+	auto camForward = sceneViewCamera->transform->GetForward();
+	auto camRight = sceneViewCamera->transform->GetRight();
 
 	if (GetMouseButtonPressing(MouseButtons_Right)) {
 		vec2 mousePosDelta = GetMousePosDelta();
@@ -358,7 +380,7 @@ void EditorApp::_Event_SceneView(const float& deltaTime) {
 		auto pitchRadius = mousePosDelta.y * rotateFactor;
 		rot = quat(vec3(0, yawRadius, 0)) * rot * quat(vec3(pitchRadius, 0, 0));
 	}
-	mainCamera->transform->SetRotation(rot);
+	sceneViewCamera->transform->SetRotation(rot);
 
 	if (GetKeyPressing(ImGuiKey_W)) {
 		pos += camForward * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
@@ -375,7 +397,7 @@ void EditorApp::_Event_SceneView(const float& deltaTime) {
 	if (GetKeyPressing(ImGuiKey_D)) {
 		pos += -camRight * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
 	}
-	mainCamera->transform->SetPosition(pos);
+	sceneViewCamera->transform->SetPosition(pos);
 }
 
 void EditorApp::_TickEvents() {

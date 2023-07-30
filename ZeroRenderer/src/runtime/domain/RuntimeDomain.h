@@ -31,17 +31,18 @@ public:
 	void ProcessMeshFromSkinMeshRendererMeta(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta);
 	void ProcessMeshFromMeshFilterMeta(const aiScene* aScene, MeshFilterMeta* meshFilterMeta, Mesh* mesh);
 
-	void BindShader(const Transform* transform, Shader* shader);
+	void BindShader(const Transform* transform, Shader* shader, const Camera& camera);
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
 
 	SkinMeshRenderer* LoadSkinMeshRenderer(const aiScene* aScene, SkinMeshRendererMeta& skinMeshRendererMeta);
 	void BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 	void BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 
-	void RenderScene(const string& path);
+	Scene* OpenScene(const string& path, SceneMeta& resSceneMeta);
+	void RenderScene(const Scene& scene, const Camera& camera);
 
-	void DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer);
-	void DrawMeshRenderer(const MeshRenderer* meshRenderer);
+	void DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer, const Camera& camera);
+	void DrawMeshRenderer(const MeshRenderer* meshRenderer, const Camera& camera);
 
 	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 	bool TryLoadMesh(const string& modelGUID, const int& meshIndex, Mesh*& mesh);

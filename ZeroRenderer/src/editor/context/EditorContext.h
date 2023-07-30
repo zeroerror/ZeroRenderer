@@ -1,12 +1,11 @@
 #pragma once
 #include "SceneMeta.h"
+#include "Camera.h"
 
 class EditorContext {
 
 public:
-	SceneMeta GetCurrentSceneMeta();
-	SceneMeta SetCurrentSceneMeta();
-private:
-	SceneMeta _currentSceneMeta;
+	SceneMeta currentSceneMeta;
+	Camera* sceneViewCamera;
 
 };
