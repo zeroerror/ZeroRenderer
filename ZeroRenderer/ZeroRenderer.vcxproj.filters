@@ -50,6 +50,7 @@
     <ClCompile Include="src\runtime\scene\Scene.cpp" />
     <ClCompile Include="src\editor\context\EditorContext.cpp" />
     <ClCompile Include="src\editor\domain\EditorDomain.cpp" />
+    <ClCompile Include="src\editor\meta\PrefabInstanceMeta.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\runtime\component\CameraController.h" />

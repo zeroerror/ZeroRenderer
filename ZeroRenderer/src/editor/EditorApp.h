@@ -9,7 +9,7 @@
 #include "EditorDatabase.h"
 #include "Serialization.h"
 #include <RuntimeDomain.h>
-#include <RuntimeDomain.h>
+#include <EditorDomain.h>
 #include "FileSuffix.h"
 
 using namespace Serialization;
@@ -43,6 +43,8 @@ class EditorApp {
 public:
 	RuntimeContext* _runtimeContext;
 	RuntimeDomain* _runtimeDomain;
+	EditorContext* _editorContext;
+	EditorDomain* _editorDomain;
 	GLFWwindow* window;
 
 	EditorApp();

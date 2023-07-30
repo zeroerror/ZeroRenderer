@@ -9,8 +9,8 @@ using namespace std;
 
 void Serialization::GameObjectMeta_SerializeTo(const GameObjectMeta& gameObjectMeta, stringstream& ss) {
 	ss << EditorDefaultConfig::DefaultGameObjectStartStr() << endl;
+
 	ss << "name: " << gameObjectMeta.name << endl;
-	ss << endl;
 	ss << EditorDefaultConfig::DefaultComponentStartStr() << endl;
 	TransformMeta_SerializeTo(gameObjectMeta.transformMeta, ss);
 	ss << EditorDefaultConfig::DefaultComponentEndStr() << endl;
@@ -76,6 +76,13 @@ void Serialization::GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMet
 
 void Serialization::TransformMeta_SerializeTo(const TransformMeta& transformMeta, stringstream& ss) {
 	ss << "componentType: " << ComponentType_Names[transformMeta.componentType] << endl;
+	ss << "gid: " << transformMeta.gid << endl;
+	ss << "fatherGID: " << transformMeta.fatherGID << endl;
+	ss << "childrenGIDs: " << endl;
+	for (auto childGID : transformMeta.childrenGIDs) {
+		ss << "childGID: " << childGID << endl;
+	}
+
 	ss << "position: " << transformMeta.position.x << ' ' << transformMeta.position.y << ' ' << transformMeta.position.z << endl;
 	ss << "rotation: " << transformMeta.rotation.x << ' ' << transformMeta.rotation.y << ' ' << transformMeta.rotation.z << ' ' << transformMeta.rotation.w << endl;
 }
@@ -98,8 +105,10 @@ void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, 
 			transformMeta->position.y = atof(key.c_str());
 			iss >> key;
 			transformMeta->position.z = atof(key.c_str());
+			continue;
 		}
-		else if (key == "rotation:") {
+
+		if (key == "rotation:") {
 			iss >> key;
 			transformMeta->rotation.x = atof(key.c_str());
 			iss >> key;
@@ -108,7 +117,37 @@ void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, 
 			transformMeta->rotation.z = atof(key.c_str());
 			iss >> key;
 			transformMeta->rotation.w = atof(key.c_str());
+			continue;
 		}
+
+		if (key == "gid:") {
+			iss >> key;
+			transformMeta->gid = stoi(key);
+			continue;
+		}
+
+		if (key == "fatherGID:") {
+			iss >> key;
+			transformMeta->fatherGID = stoi(key);
+			continue;
+		}
+
+		if (key == "childrenGIDs:") {
+			vector<int> childrenGIDs;
+			while (getline(ss, line)) {
+				istringstream iss(line);
+				if (!(iss >> key)) continue;
+				if (key == "childGID:") {
+					iss >> key;
+					childrenGIDs.push_back(stoi(key));
+					continue;
+				}
+				break;
+			}
+			transformMeta->childrenGIDs = childrenGIDs;
+			continue;
+		}
+
 	}
 }
 

@@ -25,6 +25,7 @@
     <ClCompile Include="src\editor\generic\EditorDefaultConfig.cpp" />
     <ClCompile Include="src\editor\manager\EditorModelManager.cpp" />
     <ClCompile Include="src\editor\meta\GameObjectMeta.cpp" />
+    <ClCompile Include="src\editor\meta\PrefabInstanceMeta.cpp" />
     <ClCompile Include="src\editor\meta\SceneMeta.cpp" />
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
     <ClCompile Include="src\editor\meta\ShaderMeta.cpp" />

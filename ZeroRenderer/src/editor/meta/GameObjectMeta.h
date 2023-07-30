@@ -16,6 +16,7 @@ public:
 	~GameObjectMeta();
 
 	string name;
+
 	TransformMeta transformMeta;
 	vector<ComponentMeta*> componentMetas;
 
@@ -39,5 +40,6 @@ public:
 
 		return nullptr;
 	}
+
 };
 

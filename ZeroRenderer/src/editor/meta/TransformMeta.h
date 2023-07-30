@@ -9,14 +9,19 @@ using namespace glm;
 
 class TransformMeta :public ComponentMeta
 {
-public:
 
+public:
 	TransformMeta();
 	~TransformMeta();
 
 	vec3 position;
 	quat rotation;
 	vec3 scale;
+
+public:
+	int gid;
+	int fatherGID;
+	vector<int> childrenGIDs;
 
 };
 

@@ -7,6 +7,8 @@ using namespace std;
 class PrefabInstanceMeta {
 
 public:
+	PrefabInstanceMeta();
+
 	TransformMeta transformMeta;
 	string guid;
 };

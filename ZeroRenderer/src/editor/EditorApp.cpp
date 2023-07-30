@@ -9,11 +9,16 @@ EditorApp::EditorApp() {
 	_rootNode = EditorDatabase::GetRootAssetTreeNode();
 	_rootNode->isExpanded = true;
 
-	// Init Editor Context And Domain
+	// Init Editor's Runtime Context And Domain
 	_runtimeContext = new RuntimeContext();
 	_runtimeDomain = new RuntimeDomain();
 	_runtimeDomain->Inject(_runtimeContext);
 	_runtimeDomain->Init();
+
+	// Init Editor Context And Domain
+	_editorContext = new EditorContext();
+	_editorDomain = new EditorDomain();
+	_editorDomain->Inject(_editorContext, _runtimeDomain);
 
 	// Init GL
 	glfwInit();
