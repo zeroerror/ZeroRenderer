@@ -287,10 +287,8 @@ void Serialization::ComponentMeta_SerializeTo(const ComponentMeta& componentMeta
 
 void Serialization::PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabInstanceMeta, stringstream& ss) {
 	ss << EditorDefaultConfig::DefaultPrefabInstanceStartStr() << endl;
-	ss << "gid: " << prefabInstanceMeta.gid << endl;
 	ss << "guid: " << prefabInstanceMeta.guid << endl;
-	ss << "name: " << prefabInstanceMeta.name << endl;
-	ComponentMeta_SerializeTo(*prefabInstanceMeta.transformMeta, ss);
+	GameObjectMeta_SerializeTo(*prefabInstanceMeta.gameObjectMeta, ss);
 	ss << EditorDefaultConfig::DefaultPrefabInstanceEndStr() << endl;
 }
 
@@ -303,12 +301,6 @@ void Serialization::PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefa
 		if (!(iss >> key)) continue;
 		if (key == EditorDefaultConfig::DefaultPrefabInstanceEndStr()) break;
 
-		if (key == "gid:") {
-			iss >> key;
-			prefabInstanceMeta->gid = atoi(key.c_str());
-			continue;
-		}
-
 		if (key == "guid:") {
 			iss >> key;
 			prefabInstanceMeta->guid = key;
@@ -317,45 +309,21 @@ void Serialization::PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefa
 
 		if (key == "name:") {
 			iss >> key;
-			prefabInstanceMeta->name = key;
+			prefabInstanceMeta->gameObjectMeta->name = key;
 			continue;
 		}
 
-		if (key != "componentType:")continue;
-
-		iss >> key;
-
-		ComponentType_ comType = GetComponentType(key);
-		if (ComponentType_Transform == comType) {
-			PrefabInstanceMetaTransformMeta_DeserializeFrom(prefabInstanceMeta->transformMeta, ss);
+		if (key == EditorDefaultConfig::DefaultGameObjectStartStr()) {
+			GameObjectMeta_DeserializeFrom(prefabInstanceMeta->gameObjectMeta, ss);
 			continue;
 		}
 	}
-}
-
-void Serialization::PrefabInstanceMetaTransformMeta_DeserializeFrom(TransformMeta* transformMeta, stringstream& ss) {
-	ss << "componentType: " << ComponentType_Names[transformMeta->componentType] << endl;
-	ss << "fatherGID: " << transformMeta->fatherGID << endl;
-	ss << "childrenGIDs: " << endl;
-	for (auto childGID : *transformMeta->childrenGIDs) {
-		ss << "childGID: " << childGID << endl;
-	}
-	ss << "------childrenGIDs" << endl;
-
-	ss << "position: " << transformMeta->position.x << ' ' << transformMeta->position.y << ' ' << transformMeta->position.z << endl;
-	ss << "rotation: " << transformMeta->rotation.x << ' ' << transformMeta->rotation.y << ' ' << transformMeta->rotation.z << ' ' << transformMeta->rotation.w << endl;
 }
 
 void Serialization::GameObjectMeta_SerializeTo(const GameObjectMeta& gameObjectMeta, stringstream& ss) {
 	ss << EditorDefaultConfig::DefaultGameObjectStartStr() << endl;
-
 	ss << "gid: " << gameObjectMeta.gid << endl;
 	ss << "name: " << gameObjectMeta.name << endl;
-	ss << EditorDefaultConfig::DefaultComponentStartStr() << endl;
-	TransformMeta_SerializeTo(*gameObjectMeta.transformMeta, ss);
-	ss << EditorDefaultConfig::DefaultComponentEndStr() << endl;
-	ss << endl;
-
 	for (auto comMeta : gameObjectMeta.componentMetas) {
 		ComponentMeta_SerializeTo(*comMeta, ss);
 	}
@@ -591,8 +559,7 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const str
 		;
 		ComponentType_ comType = GetComponentType(key);
 		if (ComponentType_Transform == comType) {
-			TransformMeta transformMeta = prefabMeta.transformMeta;
-			TransformMeta_DeserializeFrom(&transformMeta, ss);
+			TransformMeta_DeserializeFrom(&prefabMeta.transformMeta, ss);
 		}
 		else if (ComponentType_Camera == comType) {
 			CameraMeta* cameraMeta = static_cast<CameraMeta*>(prefabMeta.AddComponentMeta<CameraMeta>());

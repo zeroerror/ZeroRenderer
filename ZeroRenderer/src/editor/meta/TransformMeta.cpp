@@ -13,8 +13,6 @@ TransformMeta::TransformMeta() {
 }
 
 TransformMeta::~TransformMeta() {
-	delete childrenGIDs;
-	delete children;
 }
 
 void TransformMeta::SetFather(TransformMeta* father) {

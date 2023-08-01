@@ -540,10 +540,10 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	if (TryGetGUIDFromAssetPath("asset/model/nanosuit/nanosuit.prefab", prefabGUID)) {
 		PrefabInstanceMeta* prefabInstanceMeta = new PrefabInstanceMeta();
 		prefabInstanceMeta->guid = prefabGUID;
-		prefabInstanceMeta->name = "Nanosuit";
-		prefabInstanceMeta->gid = gid++;
-		prefabInstanceMeta->transformMeta->position = vec3(0, 0, 0);
-		prefabInstanceMeta->transformMeta->rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
+		prefabInstanceMeta->gameObjectMeta->name = "Nanosuit";
+		prefabInstanceMeta->gameObjectMeta->gid= gid++;
+		prefabInstanceMeta->gameObjectMeta->transformMeta->position = vec3(0, 0, 0);
+		prefabInstanceMeta->gameObjectMeta->transformMeta->rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
 		sceneMeta.prefabInstanceMetas.push_back(prefabInstanceMeta);
 	}
 
@@ -554,7 +554,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 		rootGOMeta->transformMeta->AddChild(goMeta->transformMeta);
 	}
 	for(auto prefabInstanceMeta : sceneMeta.prefabInstanceMetas){
-		rootGOMeta->transformMeta->AddChild(prefabInstanceMeta->transformMeta);
+		rootGOMeta->transformMeta->AddChild(prefabInstanceMeta->gameObjectMeta->transformMeta);
 	}
 	sceneMeta.gameObjectMetas.push_back(rootGOMeta);
 

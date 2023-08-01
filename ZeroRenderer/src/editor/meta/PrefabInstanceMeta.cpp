@@ -1,9 +1,9 @@
 #include "PrefabInstanceMeta.h"
 
 PrefabInstanceMeta::PrefabInstanceMeta() {
-	transformMeta = new TransformMeta();
+	gameObjectMeta = new GameObjectMeta();
 }
 
 PrefabInstanceMeta::~PrefabInstanceMeta() {
-	delete transformMeta;
+	delete gameObjectMeta;
 }

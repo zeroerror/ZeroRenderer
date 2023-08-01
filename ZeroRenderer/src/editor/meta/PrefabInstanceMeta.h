@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "GameObjectMeta.h"
 #include "TransformMeta.h"
 
 using namespace std;
@@ -10,9 +11,7 @@ public:
 	PrefabInstanceMeta();
 	~PrefabInstanceMeta();
 
-	int gid;
 	string guid;
-	string name;
-	TransformMeta* transformMeta;
+	GameObjectMeta* gameObjectMeta;
 };
 

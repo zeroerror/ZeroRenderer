@@ -403,7 +403,8 @@ Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
 		sceneRepo->TryAddScene(sceneGUID, scene);
 		SceneMeta_DeserializeFrom(&resSceneMeta, path);
 		MetaToScene(resSceneMeta, *scene);
-	}else{
+	}
+	else {
 		_runtimeContext->currentScene = scene;
 	}
 
@@ -512,7 +513,7 @@ void RuntimeDomain::MetaToTransform(const TransformMeta& transformMeta, Transfor
 
 	vector<int>* childrenGIDs = transformMeta.childrenGIDs;
 	Scene* curScene = _runtimeContext->currentScene;
-	for(auto childGID : *childrenGIDs) {
+	for (auto childGID : *childrenGIDs) {
 		GameObject* childGO = curScene->Find(childGID);
 		if (childGO == nullptr) {
 			cout << "RuntimeDomain::MetaToTransform: Can't find child gameobject by gid: " << childGID << endl;
@@ -577,14 +578,14 @@ inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta,
 }
 
 void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject) {
-	gameObject.SetGID(prefabInstanceMeta.gid);
+	gameObject.SetGID(prefabInstanceMeta.gameObjectMeta->gid);
 
 	PrefabMeta prefabMeta = PrefabMeta();
 	GUIDToPrefabMeta(prefabInstanceMeta.guid, prefabMeta);
 	MetaToGameObject(prefabMeta, gameObject);
-	MetaToTransform(*prefabInstanceMeta.transformMeta, *gameObject.transform());
-	
-	gameObject.SetName(prefabInstanceMeta.name);
+	MetaToTransform(*prefabInstanceMeta.gameObjectMeta->transformMeta, *gameObject.transform());
+
+	gameObject.SetName(prefabInstanceMeta.gameObjectMeta->name);
 }
 
 void RuntimeDomain::MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& gameObject) {

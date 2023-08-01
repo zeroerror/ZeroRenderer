@@ -1,18 +1,17 @@
 ########AllGameObjectsStart:
 
 ====GameObjectStart:
-gid: 0
+gid: 1
 name: Camera
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 1
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: 0 20 -10
 rotation: 0.258819 0 0 0.965926
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_Camera
 scrWidth: 1920
@@ -25,18 +24,17 @@ orthoSize: 20
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 2
 name: DirectLight
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 2
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: 0 10 0
 rotation: 0 0.247404 0 0.968912
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_DirectLight
 color: 1 1 1
@@ -50,18 +48,17 @@ farPlane: 100
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 3
 name: GroundCube
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 3
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: 0 -0.05 0
 rotation: 0 0 0 1
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
@@ -76,18 +73,17 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 4
 name: Wall1
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 4
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: -8 2.5 0
 rotation: 0 0 0 1
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
@@ -102,18 +98,17 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 5
 name: Wall2
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 5
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: 0 2.5 -8
 rotation: 0 0 0 1
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
@@ -128,18 +123,17 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 6
 name: obstacle1
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 6
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: -4 1 4
 rotation: 0 0 0 1
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
@@ -154,18 +148,17 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 7
 name: obstacle2
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 7
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: 4 1 -4
 rotation: 0 0 0 1
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
@@ -180,18 +173,17 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 8
 name: obstacle3
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 8
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: 6 0.5 6
 rotation: 0 0 0 1
 --ComponentEnd
-
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
@@ -206,11 +198,11 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
-gid: 0
+gid: 10
 name: Root
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 10
 fatherGID: 0
 childrenGIDs: 
 childGID: 1
@@ -226,7 +218,6 @@ childGID: 9
 position: 0 0 0
 rotation: 0 0 0 1
 --ComponentEnd
-
 ====GameObjectEnd
 
 ########AllGameObjectsEnd
@@ -235,16 +226,19 @@ rotation: 0 0 0 1
 
 ====PrefabInstanceStart:
 guid: 5781b19e1ef7aab3
+====GameObjectStart:
+gid: 9
 name: Nanosuit
+
 --ComponentStart:
 componentType: ComponentType_Transform
-gid: 9
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
 position: 0 0 0
 rotation: 0 0 0 1
 --ComponentEnd
+====GameObjectEnd
 ====PrefabInstanceEnd
 
 ########AllPrefabInstancesEnd
