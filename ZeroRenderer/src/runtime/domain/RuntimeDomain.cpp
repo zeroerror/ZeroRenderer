@@ -510,17 +510,8 @@ void RuntimeDomain::MetaToTransform(const TransformMeta& transformMeta, Transfor
 	transform.SetPosition(transformMeta.position);
 	transform.SetRotation(transformMeta.rotation);
 	transform.scale = transformMeta.scale;
-
-	vector<int>* childrenGIDs = transformMeta.childrenGIDs;
-	Scene* curScene = _runtimeContext->currentScene;
-	for (auto childGID : *childrenGIDs) {
-		GameObject* childGO = curScene->Find(childGID);
-		if (childGO == nullptr) {
-			cout << "RuntimeDomain::MetaToTransform: Can't find child gameobject by gid: " << childGID << endl;
-			continue;
-		}
-		transform.AddChild(childGO->transform());
-	}
+	transform.fatherGID_forSerialize = transformMeta.fatherGID;
+	transform.childrenGIDs_forSerialize = *transformMeta.childrenGIDs;
 }
 
 void RuntimeDomain::GUIDToPrefabMeta(const string& guid, PrefabMeta& prefabMeta) {
@@ -533,10 +524,13 @@ void RuntimeDomain::GUIDToPrefabMeta(const string& guid, PrefabMeta& prefabMeta)
 	PrefabMeta_DeserializeFrom(prefabMeta, prefabPath);
 }
 
-inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta, const vector<ComponentMeta*> componentMetas, GameObject& gameObject) {
-	MetaToTransform(transformMeta, *gameObject.transform());
+inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta*> componentMetas, GameObject& gameObject) {
 	for (ComponentMeta* componentMeta : componentMetas) {
 		ComponentType_ componentType = componentMeta->componentType;
+		if (componentType == ComponentType_Transform) {
+			TransformMeta* transformMeta = static_cast<TransformMeta*>(componentMeta);
+			MetaToTransform(*transformMeta, *gameObject.transform());
+		}
 
 		if (componentType == ComponentType_Camera) {
 			Camera* camera = gameObject.AddComponent<Camera>();
@@ -590,13 +584,13 @@ void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMet
 
 void RuntimeDomain::MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& gameObject) {
 	gameObject.SetName(prefabMeta.name);
-	_MetaToGameObject(prefabMeta.transformMeta, prefabMeta.componentMetas, gameObject);
+	_MetaToGameObject(prefabMeta.componentMetas, gameObject);
 }
 
 void RuntimeDomain::MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject) {
 	gameObject.SetGID(gameObjectMeta.gid);
 	gameObject.SetName(gameObjectMeta.name);
-	_MetaToGameObject(*gameObjectMeta.transformMeta, gameObjectMeta.componentMetas, gameObject);
+	_MetaToGameObject(gameObjectMeta.componentMetas, gameObject);
 }
 
 void RuntimeDomain::MetaToScene(const SceneMeta& sceneMeta, Scene& scene) {
@@ -610,6 +604,20 @@ void RuntimeDomain::MetaToScene(const SceneMeta& sceneMeta, Scene& scene) {
 		GameObject* go = new GameObject();
 		MetaToGameObject(*meta, *go);
 		scene.gameObjects.push_back(go);
+	}
+
+	// Serialize Transform Father And Children.
+	for (auto go : scene.gameObjects) {
+		Transform* trans = go->transform();
+		Scene* curScene = _runtimeContext->currentScene;
+		for (auto childGID : trans->childrenGIDs_forSerialize) {
+			GameObject* childGO = curScene->Find(childGID);
+			if (childGO == nullptr) {
+				cout << "RuntimeDomain::MetaToTransform: Can't find child gameobject by gid: " << childGID << endl;
+				continue;
+			}
+			trans->AddChild(childGO->transform());
+		}
 	}
 }
 

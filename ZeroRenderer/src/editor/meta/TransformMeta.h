@@ -24,8 +24,8 @@ public:
 
 public:
 	int fatherGID;
-	TransformMeta* father;
 	vector<int>* childrenGIDs;
+	TransformMeta* father;
 	vector<TransformMeta*>* children;
 
 	void SetFather(TransformMeta* father);

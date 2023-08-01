@@ -43,7 +43,11 @@ public:
 	Transform* Find(const string& path);
 	int GetChildCount() const;
 
+	int fatherGID_forSerialize;
+	vector<int> childrenGIDs_forSerialize;
+
 private:
+
 	Transform* _father;
 	vector<Transform*>* _children;
 	Transform* _Find(const string& path, Transform* transform) const;

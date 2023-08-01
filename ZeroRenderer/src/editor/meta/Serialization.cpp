@@ -559,7 +559,7 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const str
 		;
 		ComponentType_ comType = GetComponentType(key);
 		if (ComponentType_Transform == comType) {
-			TransformMeta_DeserializeFrom(&prefabMeta.transformMeta, ss);
+			TransformMeta_DeserializeFrom(prefabMeta.transformMeta, ss);
 		}
 		else if (ComponentType_Camera == comType) {
 			CameraMeta* cameraMeta = static_cast<CameraMeta*>(prefabMeta.AddComponentMeta<CameraMeta>());

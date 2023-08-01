@@ -61,7 +61,7 @@ public:
 	void MetaToScene(const SceneMeta& sceneMeta, Scene& scene);
 
 private:
-	void _MetaToGameObject(const TransformMeta& transformMeta, const vector<ComponentMeta*> componentMetas, GameObject& gameObject);
+	void _MetaToGameObject(const vector<ComponentMeta*> componentMetas, GameObject& gameObject);
 
 };
 

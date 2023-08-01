@@ -11,6 +11,7 @@ Transform::Transform()
 	componentType = ComponentType_Transform;
 
 	_children = new vector<Transform*>();
+	childrenGIDs_forSerialize = vector<int>();
 }
 
 Transform::~Transform() {

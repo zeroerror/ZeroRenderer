@@ -3,7 +3,6 @@
 ====GameObjectStart:
 gid: 1
 name: Camera
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -26,7 +25,6 @@ orthoSize: 20
 ====GameObjectStart:
 gid: 2
 name: DirectLight
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -50,7 +48,6 @@ farPlane: 100
 ====GameObjectStart:
 gid: 3
 name: GroundCube
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -75,7 +72,6 @@ materialGUID: 81689f3660ca1299
 ====GameObjectStart:
 gid: 4
 name: Wall1
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -100,7 +96,6 @@ materialGUID: 81689f3660ca1299
 ====GameObjectStart:
 gid: 5
 name: Wall2
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -125,7 +120,6 @@ materialGUID: 81689f3660ca1299
 ====GameObjectStart:
 gid: 6
 name: obstacle1
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -150,7 +144,6 @@ materialGUID: 81689f3660ca1299
 ====GameObjectStart:
 gid: 7
 name: obstacle2
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -175,7 +168,6 @@ materialGUID: 81689f3660ca1299
 ====GameObjectStart:
 gid: 8
 name: obstacle3
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10
@@ -200,7 +192,6 @@ materialGUID: 81689f3660ca1299
 ====GameObjectStart:
 gid: 10
 name: Root
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 0
@@ -229,7 +220,6 @@ guid: 5781b19e1ef7aab3
 ====GameObjectStart:
 gid: 9
 name: Nanosuit
-
 --ComponentStart:
 componentType: ComponentType_Transform
 fatherGID: 10

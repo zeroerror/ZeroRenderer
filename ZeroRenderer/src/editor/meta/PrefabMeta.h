@@ -9,15 +9,14 @@ using namespace std;
 class PrefabMeta {
 
 public:
-	TransformMeta transformMeta;
+	TransformMeta* transformMeta;
 	vector<ComponentMeta*> componentMetas;
 
 	string guid;
 	string name;
 
-	PrefabMeta() {
-		transformMeta = TransformMeta();
-	};
+	PrefabMeta();
+	~PrefabMeta();
 
 	template <typename T, typename = enable_if_t<is_base_of<ComponentMeta, T>::value>>
 	T* AddComponentMeta() {
@@ -25,7 +24,6 @@ public:
 		componentMetas.push_back(comMeta);
 		return comMeta;
 	}
-
 
 	template <typename T, typename = std::enable_if_t<std::is_base_of<ComponentMeta, T>::value>>
 	T* GetComponentMeta() {
