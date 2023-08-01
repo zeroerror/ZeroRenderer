@@ -21,6 +21,7 @@ public:
 	Transform* transform() const;
 	vector<Component*> GetAllComponents();
 	GameObject* Find(const string& path);
+	int GetGID();
 
 	template <typename T, typename = enable_if_t<is_base_of<Component, T>::value>>
 	T* AddComponent() {
@@ -67,6 +68,7 @@ public:
 
 private:
 	string _name;
+	int _gid;
 	Transform* _transform;
 	vector<Component*> _components;
 	GameObject* _Find(const string& path, GameObject* gameObject) const;

@@ -35,17 +35,17 @@ private:
 	vec3 m_right;
 
 public:
+	void SetFather(Transform* father);
 	void AddChild(Transform* child);
-	void RemoveChild(Transform* child);
-	void SetParent(Transform* parent);
-	Transform* GetParent() const;
+	void RemoveChild(const Transform& child);
+	Transform* GetFather() const;
 	Transform* GetChild(int index) const;
 	Transform* Find(const string& path);
 	int GetChildCount() const;
 
 private:
-	Transform* _parent;
-	vector<Transform*> _children;
+	Transform* _father;
+	vector<Transform*>* _children;
 	Transform* _Find(const string& path, Transform* transform) const;
 	Transform* _Find(const string& name) const;
 	string GetName() const;

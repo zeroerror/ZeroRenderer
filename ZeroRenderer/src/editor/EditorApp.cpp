@@ -101,18 +101,14 @@ void EditorApp::_InitSceneViewFrameBuffer() {
 }
 
 void EditorApp::_InitSceneView() {
-	SceneMeta currentSceneMeta;
-	Scene* scene = _runtimeDomain->OpenScene("asset/DefaultScene.scene", currentSceneMeta);
-
-	_runtimeContext->currentScene = scene;
-
-	Camera* mainCamera = scene->Find("Camera")->GetComponent<Camera>();
-	_runtimeContext->mainCamera = mainCamera;
-	_runtimeContext->sceneDirectLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
+	SceneMeta* currentSceneMeta = new SceneMeta();
+	_runtimeDomain->OpenScene("asset/DefaultScene.scene", *currentSceneMeta);
 
 	GameObject* sceneViewCameraGO = new GameObject();
 	sceneViewCameraGO->SetName("SceneViewCamera");
 	Camera* sceneViewCamera = sceneViewCameraGO->AddComponent<Camera>();
+
+	Camera* mainCamera = _runtimeContext->mainCamera;
 	if (mainCamera != nullptr) {
 		sceneViewCamera->CopyFrom(*mainCamera);
 		sceneViewCamera->transform->SetPosition(mainCamera->transform->GetPosition());

@@ -43,14 +43,6 @@ namespace Serialization {
 	void GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMeta, stringstream& ss);
 
 	/**
-	 * @param path : the path of the file to be serialized. ps: the path must be a file path and the file's suffix must be .prefab
-	 */
-	void PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const string& path);
-	/**
-	 * @param path : the path of the file to be deserialized. ps: the path must be a file path and the file's suffix must be .prefab
-	 */
-	void PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const string& path);
-	/**
 	 * @param path : the path of the file to be serialized. ps: the path must be a file path and the file's suffix must be .scene
 	 */
 	void SceneMeta_SerializeTo(const SceneMeta& sceneMeta, const string& path);
@@ -58,6 +50,14 @@ namespace Serialization {
 	 * @param path : the path of the file to be deserialized. ps: the path must be a file path and the file's suffix must be .scene
 	 */
 	void SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string& path);
+	/**
+	 * @param path : the path of the file to be serialized. ps: the path must be a file path and the file's suffix must be .prefab
+	 */
+	void PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const string& path);
+	/**
+	 * @param path : the path of the file to be deserialized. ps: the path must be a file path and the file's suffix must be .prefab
+	 */
+	void PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const string& path);
 	/**
 	* @param path : the path of the file to be serialized. ps: the path must be a file path and the file's suffix must be .mat
 	*/

@@ -426,9 +426,9 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	CameraMeta* cameraMeta = cameraGOMeta->AddComponentMeta<CameraMeta>();
 	cameraMeta->scrWidth = scrWidth;
 	cameraMeta->scrHeight = scrHeight;
-	cameraGOMeta->transformMeta.position = vec3(0, 20, -10);
-	cameraGOMeta->transformMeta.rotation = quat(vec3(radians(30.0f), radians(0.0f), radians(0.0f)));
-	cameraGOMeta->transformMeta.gid = gid++;
+	cameraGOMeta->transformMeta->position = vec3(0, 20, -10);
+	cameraGOMeta->transformMeta->rotation = quat(vec3(radians(30.0f), radians(0.0f), radians(0.0f)));
+	cameraGOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(cameraGOMeta);
 
 	MeshFilterMeta* meshFilterMeta;
@@ -440,22 +440,22 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	directLightMeta->scrWidth = scrWidth;
 	directLightMeta->scrHeight = scrHeight;
 	directLightMeta->shadowType = ShadowType::Hard;
-	directLightGOMeta->transformMeta.position = vec3(0, 10.0f, 0);
-	directLightGOMeta->transformMeta.rotation = quat(vec3(0, 0.5f, 0));
+	directLightGOMeta->transformMeta->position = vec3(0, 10.0f, 0);
+	directLightGOMeta->transformMeta->rotation = quat(vec3(0, 0.5f, 0));
 	directLightMeta->fov = cameraMeta->fov;
 	directLightMeta->scrWidth = cameraMeta->scrWidth;
 	directLightMeta->scrHeight = cameraMeta->scrHeight;
 	directLightMeta->nearPlane = cameraMeta->nearPlane;
 	directLightMeta->farPlane = cameraMeta->farPlane;
 	directLightMeta->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	directLightGOMeta->transformMeta.gid = gid++;
+	directLightGOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(directLightGOMeta);
 
 	// Create a depth map 2D image. 
 	//GameObjectMeta* depthMapImageGOMeta = new GameObjectMeta();
 	//depthMapImageGOMeta->name = "DepthMapImage";
-	//depthMapImageGOMeta->transformMeta.position = vec3(0.0f, 10.0f, 20.0f);
-	//depthMapImageGOMeta->transformMeta.rotation = vec3(0.0f, radians(180.0f), 0.0f);
+	//depthMapImageGOMeta->transformMeta->position = vec3(0.0f, 10.0f, 20.0f);
+	//depthMapImageGOMeta->transformMeta->rotation = vec3(0.0f, radians(180.0f), 0.0f);
 	//meshFilterMeta = cameraGOMeta->AddComponentMeta<MeshFilterMeta>();
 	//meshRendererMeta = cameraGOMeta->AddComponentMeta<MeshRendererMeta>();
 	//meshRendererMeta->materialGUID = depthMapMatGUID;
@@ -464,7 +464,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	//// ---- Create a central light source cube
 	//GameObjectMeta* lightCubeGOMeta = new GameObjectMeta();
 	//lightCubeGOMeta->name = "LightCube";
-	//lightCubeGOMeta->transformMeta.scale = vec3(0.2f, 0.2f, 1.0f);
+	//lightCubeGOMeta->transformMeta->scale = vec3(0.2f, 0.2f, 1.0f);
 	//meshFilterMeta = lightCubeGOMeta->AddComponentMeta<MeshFilterMeta>();
 	//meshRendererMeta = lightCubeGOMeta->AddComponentMeta<MeshRendererMeta>();
 	//meshRendererMeta->materialGUID = lightCubeMatGUID;
@@ -473,67 +473,67 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	// ---- Create the ground
 	GameObjectMeta* groundCubeGOMeta = new GameObjectMeta();
 	groundCubeGOMeta->name = "GroundCube";
-	groundCubeGOMeta->transformMeta.position = vec3(0.0f, -0.05f, 0.0f);
-	groundCubeGOMeta->transformMeta.scale = vec3(20.0f, 0.1f, 30.0f);
+	groundCubeGOMeta->transformMeta->position = vec3(0.0f, -0.05f, 0.0f);
+	groundCubeGOMeta->transformMeta->scale = vec3(20.0f, 0.1f, 30.0f);
 	meshFilterMeta = groundCubeGOMeta->AddComponentMeta<MeshFilterMeta>();
 	meshRendererMeta = groundCubeGOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
-	groundCubeGOMeta->transformMeta.gid = gid++;
+	groundCubeGOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(groundCubeGOMeta);
 
 	// ---- Create wall 1
 	GameObjectMeta* wall1GOMeta = new GameObjectMeta();
 	wall1GOMeta->name = "Wall1";
-	wall1GOMeta->transformMeta.position = vec3(-8.0f, 2.5f, 0.0f);
-	wall1GOMeta->transformMeta.scale = vec3(1.0f, 5.0f, 10.0f);
+	wall1GOMeta->transformMeta->position = vec3(-8.0f, 2.5f, 0.0f);
+	wall1GOMeta->transformMeta->scale = vec3(1.0f, 5.0f, 10.0f);
 	meshFilterMeta = wall1GOMeta->AddComponentMeta<MeshFilterMeta>();
 	meshRendererMeta = wall1GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
-	wall1GOMeta->transformMeta.gid = gid++;
+	wall1GOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(wall1GOMeta);
 
 	// ---- Create wall 2
 	GameObjectMeta* wall2GOMeta = new GameObjectMeta();
 	wall2GOMeta->name = "Wall2";
-	wall2GOMeta->transformMeta.position = vec3(0.0f, 2.5f, -8.0f);
-	wall2GOMeta->transformMeta.scale = vec3(10.0f, 5.0f, 1.0f);
+	wall2GOMeta->transformMeta->position = vec3(0.0f, 2.5f, -8.0f);
+	wall2GOMeta->transformMeta->scale = vec3(10.0f, 5.0f, 1.0f);
 	meshFilterMeta = wall2GOMeta->AddComponentMeta<MeshFilterMeta>();
 	meshRendererMeta = wall2GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
-	wall2GOMeta->transformMeta.gid = gid++;
+	wall2GOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(wall2GOMeta);
 
 	// Create obstacles 1
 	GameObjectMeta* obstacle1GOMeta = new GameObjectMeta();
 	obstacle1GOMeta->name = "obstacle1";
-	obstacle1GOMeta->transformMeta.position = vec3(-4.0f, 1.0f, 4.0f);
-	obstacle1GOMeta->transformMeta.scale = vec3(2.0f, 2.0f, 2.0f);
+	obstacle1GOMeta->transformMeta->position = vec3(-4.0f, 1.0f, 4.0f);
+	obstacle1GOMeta->transformMeta->scale = vec3(2.0f, 2.0f, 2.0f);
 	meshFilterMeta = obstacle1GOMeta->AddComponentMeta<MeshFilterMeta>();
 	meshRendererMeta = obstacle1GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
-	obstacle1GOMeta->transformMeta.gid = gid++;
+	obstacle1GOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(obstacle1GOMeta);
 
 	// Create obstacles 2
 	GameObjectMeta* obstacle2GOMeta = new GameObjectMeta();
 	obstacle2GOMeta->name = "obstacle2";
-	obstacle2GOMeta->transformMeta.position = vec3(4.0f, 1.0f, -4.0f);
-	obstacle2GOMeta->transformMeta.scale = vec3(2.0f, 2.0f, 2.0f);
+	obstacle2GOMeta->transformMeta->position = vec3(4.0f, 1.0f, -4.0f);
+	obstacle2GOMeta->transformMeta->scale = vec3(2.0f, 2.0f, 2.0f);
 	meshFilterMeta = obstacle2GOMeta->AddComponentMeta<MeshFilterMeta>();
 	meshRendererMeta = obstacle2GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
-	obstacle2GOMeta->transformMeta.gid = gid++;
+	obstacle2GOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(obstacle2GOMeta);
 
 	// Create obstacles 3
 	GameObjectMeta* obstacle3GOMeta = new GameObjectMeta();
 	obstacle3GOMeta->name = "obstacle3";
-	obstacle3GOMeta->transformMeta.position = vec3(6.0f, 0.5f, 6.0f);
-	obstacle3GOMeta->transformMeta.scale = vec3(3.0f, 1.0f, 2.0f);
+	obstacle3GOMeta->transformMeta->position = vec3(6.0f, 0.5f, 6.0f);
+	obstacle3GOMeta->transformMeta->scale = vec3(3.0f, 1.0f, 2.0f);
 	meshFilterMeta = obstacle3GOMeta->AddComponentMeta<MeshFilterMeta>();
 	meshRendererMeta = obstacle3GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
-	obstacle3GOMeta->transformMeta.gid = gid++;
+	obstacle3GOMeta->transformMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(obstacle3GOMeta);
 
 	string prefabGUID;
@@ -541,15 +541,21 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 		PrefabInstanceMeta* prefabInstanceMeta = new PrefabInstanceMeta();
 		prefabInstanceMeta->guid = prefabGUID;
 		prefabInstanceMeta->name = "Nanosuit";
-		prefabInstanceMeta->transformMeta.gid = gid++;
-		prefabInstanceMeta->transformMeta.position = vec3(0, 0, 0);
-		prefabInstanceMeta->transformMeta.rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
+		prefabInstanceMeta->transformMeta->gid = gid++;
+		prefabInstanceMeta->transformMeta->position = vec3(0, 0, 0);
+		prefabInstanceMeta->transformMeta->rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
 		sceneMeta.prefabInstanceMetas.push_back(prefabInstanceMeta);
 	}
 
 	GameObjectMeta* rootGOMeta = new GameObjectMeta();
 	rootGOMeta->name = "Root";
-	rootGOMeta->transformMeta.gid = gid++;
+	rootGOMeta->transformMeta->gid = gid++;
+	for(auto goMeta : sceneMeta.gameObjectMetas){
+		rootGOMeta->transformMeta->AddChild(goMeta->transformMeta);
+	}
+	for(auto prefabInstanceMeta : sceneMeta.prefabInstanceMetas){
+		rootGOMeta->transformMeta->AddChild(prefabInstanceMeta->transformMeta);
+	}
 	sceneMeta.gameObjectMetas.push_back(rootGOMeta);
 
 	SceneMeta_SerializeTo(sceneMeta, EditorDefaultConfig::DefaultScenePath());

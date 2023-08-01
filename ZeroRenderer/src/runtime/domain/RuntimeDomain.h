@@ -47,8 +47,7 @@ public:
 	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 	bool TryLoadMesh(const string& modelGUID, const int& meshIndex, Mesh*& mesh);
 
-	// =======================================================================
-	// All meta's methods that convert to a runtime object.
+	// ============================ All meta's methods that convert to a runtime object. =====================================
 	void MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight);
 	void MetaToCamera(const CameraMeta& cameraMeta, Camera& camera);
 	void MetaToMeshFilter(const MeshFilterMeta& meshFilterMeta, MeshFilter& meshFilter);
@@ -60,7 +59,6 @@ public:
 	void MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject);
 	void MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject);
 	void MetaToScene(const SceneMeta& sceneMeta, Scene& scene);
-
 
 private:
 	void _MetaToGameObject(const TransformMeta& transformMeta, const vector<ComponentMeta*> componentMetas, GameObject& gameObject);

@@ -21,7 +21,13 @@ public:
 public:
 	int gid;
 	int fatherGID;
-	vector<int> childrenGIDs;
+	TransformMeta* father;
+	vector<int>* childrenGIDs;
+	vector<TransformMeta*>* children;
+
+	void SetFather(TransformMeta* father);
+	void AddChild(TransformMeta* child);
+	void RemoveChild(const TransformMeta& child);
 
 };
 

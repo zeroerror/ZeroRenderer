@@ -10,10 +10,14 @@ public:
 	RuntimeDomain* runtimeDomain;
 	void Inject(EditorContext* editorContext, RuntimeDomain* runtimeDomain);
 
-	void TransformMeta_SetFather(TransformMeta& child, TransformMeta& father);
-	void TransformMeta_AddChild(TransformMeta& father, TransformMeta& child);
-	void TransformMeta_RemoveChild(TransformMeta& father, TransformMeta& child);
+	;
+	vector<TransformMeta*>* children;
+	void TransformMeta_LinkChildren(TransformMeta& src, const vector<int>* childrenGIDs);
+	void TransformMeta_LinkFather(TransformMeta& src, int fatherGID);
+
+	int GenerateGID();
 
 private:
+	int _gid;
 
 };

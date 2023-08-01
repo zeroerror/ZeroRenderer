@@ -5,14 +5,23 @@ void EditorDomain::Inject(EditorContext* editorContext, RuntimeDomain* runtimeDo
 	this->runtimeDomain = runtimeDomain;
 }
 
-void EditorDomain::TransformMeta_SetFather(TransformMeta& child, TransformMeta& father) {
-
+void EditorDomain::TransformMeta_LinkChildren(TransformMeta& src, const vector<int>* childrenGIDs){
+	SceneMeta* curSceneMeta = editorContext->currentSceneMeta;
+	for (int i = 0; i < childrenGIDs->size(); i++) {
+		int childGID = childrenGIDs->at(i);
+		GameObjectMeta* childGO = curSceneMeta->Find(childGID);
+		TransformMeta* child = childGO->transformMeta;
+		src.AddChild(child);
+	}
 }
 
-void EditorDomain::TransformMeta_AddChild(TransformMeta& father, TransformMeta& child) {
-
+void EditorDomain::TransformMeta_LinkFather(TransformMeta& src, int fatherGID){
+	SceneMeta* curSceneMeta = editorContext->currentSceneMeta;
+	GameObjectMeta* fatherGO = curSceneMeta->Find(fatherGID);
+	TransformMeta* father = fatherGO->transformMeta;
+	src.SetFather(father);
 }
 
-void EditorDomain::TransformMeta_RemoveChild(TransformMeta& father, TransformMeta& child) {
-
+int EditorDomain::GenerateGID() {
+	return ++_gid;
 }

@@ -1,5 +1,9 @@
 #include "PrefabInstanceMeta.h"
 
 PrefabInstanceMeta::PrefabInstanceMeta() {
-	transformMeta = TransformMeta();
+	transformMeta = new TransformMeta();
+}
+
+PrefabInstanceMeta::~PrefabInstanceMeta() {
+	delete transformMeta;
 }

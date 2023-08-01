@@ -34,3 +34,14 @@ GameObject* Scene::Find(const string& path) {
 
 	return nullptr;
 }
+
+GameObject* Scene::Find(const int& gid) {
+	for (auto go : gameObjects) {
+		int id = go->GetGID();
+		if (id == gid) {
+			return go;
+		}
+	}
+
+	return nullptr;
+}

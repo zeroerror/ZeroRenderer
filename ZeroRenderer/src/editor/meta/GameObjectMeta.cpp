@@ -3,6 +3,7 @@
 
 GameObjectMeta::GameObjectMeta() {
 	componentMetas = vector<ComponentMeta*>();
+	transformMeta = new TransformMeta();
 }
 
 GameObjectMeta::~GameObjectMeta() {
@@ -10,4 +11,5 @@ GameObjectMeta::~GameObjectMeta() {
 		delete componentMeta;
 	}
 	componentMetas.clear();
+	delete transformMeta;
 }

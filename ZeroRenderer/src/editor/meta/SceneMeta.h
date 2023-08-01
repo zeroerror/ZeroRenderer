@@ -13,4 +13,6 @@ public:
 
 	vector<GameObjectMeta*> gameObjectMetas;
 	vector<PrefabInstanceMeta*> prefabInstanceMetas;
+
+	GameObjectMeta* Find(const int gid);
 };

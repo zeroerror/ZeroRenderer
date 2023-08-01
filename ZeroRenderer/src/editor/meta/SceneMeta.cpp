@@ -13,3 +13,13 @@ SceneMeta::~SceneMeta() {
 		delete prefabInstanceMeta;
 	}
 }
+
+GameObjectMeta* SceneMeta::Find(const int gid){
+	for (GameObjectMeta* gameObjectMeta : gameObjectMetas) {
+		if (gameObjectMeta->gid == gid) {
+			return gameObjectMeta;
+		}
+	}
+	
+	return nullptr;
+}

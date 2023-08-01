@@ -8,9 +8,11 @@ class PrefabInstanceMeta {
 
 public:
 	PrefabInstanceMeta();
+	~PrefabInstanceMeta();
 
-	TransformMeta transformMeta;
+	TransformMeta* transformMeta;
 	string guid;
+	int gid;
 	string name;
 };
 

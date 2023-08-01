@@ -32,6 +32,8 @@ GameObject* GameObject::Find(const string& path) {
 	return _Find(path, this);
 }
 
+int GameObject::GetGID(){return _gid;}
+
 GameObject* GameObject::_Find(const string& path, GameObject* gameObject) const {
 	if (gameObject == nullptr) {
 		return nullptr;
@@ -65,4 +67,3 @@ GameObject* GameObject::_Find(const string& name) const {
 
 	return res->gameObject;
 }
-

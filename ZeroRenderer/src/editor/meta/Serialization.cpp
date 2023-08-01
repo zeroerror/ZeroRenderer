@@ -7,79 +7,12 @@
 
 using namespace std;
 
-void Serialization::GameObjectMeta_SerializeTo(const GameObjectMeta& gameObjectMeta, stringstream& ss) {
-	ss << EditorDefaultConfig::DefaultGameObjectStartStr() << endl;
-
-	ss << "name: " << gameObjectMeta.name << endl;
-	ss << EditorDefaultConfig::DefaultComponentStartStr() << endl;
-	TransformMeta_SerializeTo(gameObjectMeta.transformMeta, ss);
-	ss << EditorDefaultConfig::DefaultComponentEndStr() << endl;
-	ss << endl;
-
-	for (auto comMeta : gameObjectMeta.componentMetas) {
-		ComponentMeta_SerializeTo(*comMeta, ss);
-	}
-	ss << EditorDefaultConfig::DefaultGameObjectEndStr() << endl;
-}
-
-void Serialization::GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMeta, stringstream& ss) {
-	string line;
-	while (getline(ss, line)) {
-		istringstream iss(line);
-		string key;
-
-		if (!(iss >> key)) continue;
-		if (key == EditorDefaultConfig::DefaultGameObjectEndStr()) break;
-
-		if (key == "name:") {
-			iss >> key;
-			gameObjectMeta->name = key;
-			continue;
-		}
-
-		if (key != "componentType:")continue;
-
-		iss >> key;
-		ComponentType_ comType = GetComponentType(key);
-		if (ComponentType_Transform == comType) {
-			TransformMeta_DeserializeFrom(&gameObjectMeta->transformMeta, ss);
-			continue;
-		}
-
-		if (ComponentType_Camera == comType) {
-			CameraMeta* cameraMeta = gameObjectMeta->AddComponentMeta<CameraMeta>();
-			CameraMeta_DeserializeFrom(cameraMeta, ss);
-			continue;
-		}
-
-		if (ComponentType_DirectLight == comType) {
-			DirectLightMeta* directLightMeta = gameObjectMeta->AddComponentMeta<DirectLightMeta>();
-			DirectLightMeta_DeserializeFrom(directLightMeta, ss);
-			continue;
-		}
-
-		if (ComponentType_MeshRenderer == comType) {
-			MeshRendererMeta* meshRendererMeta = gameObjectMeta->AddComponentMeta<MeshRendererMeta>();
-			MeshRendererMeta_DeserializeFrom(meshRendererMeta, ss);
-			continue;
-		}
-
-		if (ComponentType_MeshFilter == comType) {
-			MeshFilterMeta* meshFilterMeta = gameObjectMeta->AddComponentMeta<MeshFilterMeta>();
-			MeshFilterMeta_DeserializeFrom(meshFilterMeta, ss);
-			continue;
-		}
-
-		cout << "################ Don't know what this component type is!!! Please check!!! comType: " << comType << endl;
-	}
-}
-
 void Serialization::TransformMeta_SerializeTo(const TransformMeta& transformMeta, stringstream& ss) {
 	ss << "componentType: " << ComponentType_Names[transformMeta.componentType] << endl;
 	ss << "gid: " << transformMeta.gid << endl;
 	ss << "fatherGID: " << transformMeta.fatherGID << endl;
 	ss << "childrenGIDs: " << endl;
-	for (auto childGID : transformMeta.childrenGIDs) {
+	for (auto childGID : *transformMeta.childrenGIDs) {
 		ss << "childGID: " << childGID << endl;
 	}
 	ss << "------childrenGIDs" << endl;
@@ -134,7 +67,7 @@ void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, 
 		}
 
 		if (key == "childrenGIDs:") {
-			vector<int> childrenGIDs;
+			vector<int>* childrenGIDs = new vector<int>();
 			while (getline(ss, line)) {
 				istringstream iss(line);
 				if (!(iss >> key)) continue;
@@ -142,7 +75,7 @@ void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, 
 
 				if (key == "childGID:") {
 					iss >> key;
-					childrenGIDs.push_back(stoi(key));
+					childrenGIDs->push_back(stoi(key));
 					continue;
 				}
 			}
@@ -357,7 +290,7 @@ void Serialization::PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabIns
 	ss << EditorDefaultConfig::DefaultPrefabInstanceStartStr() << endl;
 	ss << "guid: " << prefabInstanceMeta.guid << endl;
 	ss << "name: " << prefabInstanceMeta.name << endl;
-	ComponentMeta_SerializeTo(prefabInstanceMeta.transformMeta, ss);
+	ComponentMeta_SerializeTo(*prefabInstanceMeta.transformMeta, ss);
 	ss << EditorDefaultConfig::DefaultPrefabInstanceEndStr() << endl;
 }
 
@@ -388,115 +321,80 @@ void Serialization::PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefa
 
 		ComponentType_ comType = GetComponentType(key);
 		if (ComponentType_Transform == comType) {
-			TransformMeta_DeserializeFrom(&prefabInstanceMeta->transformMeta, ss);
+			TransformMeta_DeserializeFrom(prefabInstanceMeta->transformMeta, ss);
 			continue;
 		}
 	}
 }
 
-void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const string& path) {
-	stringstream ss;
-	for (auto comMeta : prefabMeta.componentMetas) {
+void Serialization::GameObjectMeta_SerializeTo(const GameObjectMeta& gameObjectMeta, stringstream& ss) {
+	ss << EditorDefaultConfig::DefaultGameObjectStartStr() << endl;
+
+	ss << "name: " << gameObjectMeta.name << endl;
+	ss << EditorDefaultConfig::DefaultComponentStartStr() << endl;
+	TransformMeta_SerializeTo(*gameObjectMeta.transformMeta, ss);
+	ss << EditorDefaultConfig::DefaultComponentEndStr() << endl;
+	ss << endl;
+
+	for (auto comMeta : gameObjectMeta.componentMetas) {
 		ComponentMeta_SerializeTo(*comMeta, ss);
 	}
-
-	string result = ss.str();
-	size_t len = result.length() + 1;
-	char* charResult = new char[len];
-	memcpy(charResult, result.c_str(), len);
-	FileHelper::WriteCharsTo(path, charResult);
-	ss << "Prefab Serialize : " << path << endl;
-
-	{
-		stringstream ss;
-		ss << "guid: " << prefabMeta.guid;
-		ss << "name: " << prefabMeta.name;
-
-		string result = ss.str();
-		size_t len = result.length() + 1;
-		char* charResult = new char[len];
-		memcpy(charResult, result.c_str(), len);
-		string prefabMetaPath = path + FileSuffix::SUFFIX_META;
-		FileHelper::WriteCharsTo(prefabMetaPath, charResult);
-		ss << "Prefab Meta Serialize : " << prefabMetaPath << endl;
-	}
-
+	ss << EditorDefaultConfig::DefaultGameObjectEndStr() << endl;
 }
 
-void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const string& path) {
-	unsigned int charCount = FileHelper::GetFileCharSize(path);
-	if (charCount == 0) {
-		cout << "############### no bytes. path: " << path << endl;
-		return;
-	}
-
-	char* res = new char[charCount];
-
-	FileHelper::ReadCharsFrom(path, res);
-	string str(res);
-
-	stringstream ss(str);
+void Serialization::GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMeta, stringstream& ss) {
 	string line;
 	while (getline(ss, line)) {
 		istringstream iss(line);
 		string key;
-		if (!(iss >> key)) {
-			break;
-		}
-		if (key != "componentType:") {
+
+		if (!(iss >> key)) continue;
+		if (key == EditorDefaultConfig::DefaultGameObjectEndStr()) break;
+
+		if (key == "name:") {
+			iss >> key;
+			gameObjectMeta->name = key;
 			continue;
 		}
-		if (!(iss >> key)) {
-			break;
-		}
-		;
+
+		if (key != "componentType:")continue;
+
+		iss >> key;
 		ComponentType_ comType = GetComponentType(key);
 		if (ComponentType_Transform == comType) {
-			TransformMeta transformMeta = prefabMeta.transformMeta;
-			TransformMeta_DeserializeFrom(&transformMeta, ss);
+			TransformMeta_DeserializeFrom(gameObjectMeta->transformMeta, ss);
+			continue;
 		}
-		else if (ComponentType_Camera == comType) {
-			CameraMeta* cameraMeta = static_cast<CameraMeta*>(prefabMeta.AddComponentMeta<CameraMeta>());
+
+		if (ComponentType_Camera == comType) {
+			CameraMeta* cameraMeta = gameObjectMeta->AddComponentMeta<CameraMeta>();
 			CameraMeta_DeserializeFrom(cameraMeta, ss);
+			continue;
 		}
-		else if (ComponentType_MeshFilter == comType) {
-			MeshFilterMeta* meshFilterMeta = static_cast<MeshFilterMeta*>(prefabMeta.AddComponentMeta<MeshFilterMeta>());
-			MeshFilterMeta_DeserializeFrom(meshFilterMeta, ss);
+
+		if (ComponentType_DirectLight == comType) {
+			DirectLightMeta* directLightMeta = gameObjectMeta->AddComponentMeta<DirectLightMeta>();
+			DirectLightMeta_DeserializeFrom(directLightMeta, ss);
+			continue;
 		}
-		else if (ComponentType_MeshRenderer == comType) {
-			MeshRendererMeta* meshRendererMeta = static_cast<MeshRendererMeta*>(prefabMeta.AddComponentMeta<MeshRendererMeta>());
+
+		if (ComponentType_MeshRenderer == comType) {
+			MeshRendererMeta* meshRendererMeta = gameObjectMeta->AddComponentMeta<MeshRendererMeta>();
 			MeshRendererMeta_DeserializeFrom(meshRendererMeta, ss);
+			continue;
 		}
-		else if (ComponentType_SkinMeshRenderer == comType) {
-			SkinMeshRendererMeta* skinMeshRendererMeta = static_cast<SkinMeshRendererMeta*>(prefabMeta.AddComponentMeta<SkinMeshRendererMeta>());
-			SkinMeshRendererMeta_DeserializeFrom(skinMeshRendererMeta, ss);
-		}
-	}
 
-	{
-		string metaPath = path + FileSuffix::SUFFIX_META;
-		FileHelper::ReadCharsFrom(metaPath, res);
-		string str(res);
-		stringstream ss(str);
-		string line;
-		while (getline(ss, line)) {
-			istringstream iss(line);
-			string key;
-			if (!(iss >> key)) {
-				break;
-			}
-			if (key == "guid:") {
-				prefabMeta.guid = key.c_str();
-				continue;
-			}
-
-			if (key == "name:") {
-				prefabMeta.name = key.c_str();
-				continue;
-			}
+		if (ComponentType_MeshFilter == comType) {
+			MeshFilterMeta* meshFilterMeta = gameObjectMeta->AddComponentMeta<MeshFilterMeta>();
+			MeshFilterMeta_DeserializeFrom(meshFilterMeta, ss);
+			continue;
 		}
+
+		cout << "################ Don't know what this component type is!!! Please check!!! comType: " << comType << endl;
 	}
 }
+
+
 
 void Serialization::SceneMeta_SerializeTo(const SceneMeta& sceneMeta, const string& path) {
 	stringstream ss;
@@ -606,6 +504,110 @@ void Serialization::SceneMeta_DeserializeFrom(SceneMeta* sceneMeta, const string
 			}
 		}
 		delete[] res;
+	}
+}
+
+void Serialization::PrefabMeta_SerializeTo(const PrefabMeta& prefabMeta, const string& path) {
+	stringstream ss;
+	for (auto comMeta : prefabMeta.componentMetas) {
+		ComponentMeta_SerializeTo(*comMeta, ss);
+	}
+
+	string result = ss.str();
+	size_t len = result.length() + 1;
+	char* charResult = new char[len];
+	memcpy(charResult, result.c_str(), len);
+	FileHelper::WriteCharsTo(path, charResult);
+	ss << "Prefab Serialize : " << path << endl;
+
+	{
+		stringstream ss;
+		ss << "guid: " << prefabMeta.guid;
+		ss << "name: " << prefabMeta.name;
+
+		string result = ss.str();
+		size_t len = result.length() + 1;
+		char* charResult = new char[len];
+		memcpy(charResult, result.c_str(), len);
+		string prefabMetaPath = path + FileSuffix::SUFFIX_META;
+		FileHelper::WriteCharsTo(prefabMetaPath, charResult);
+		ss << "Prefab Meta Serialize : " << prefabMetaPath << endl;
+	}
+
+}
+
+void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta& prefabMeta, const string& path) {
+	unsigned int charCount = FileHelper::GetFileCharSize(path);
+	if (charCount == 0) {
+		cout << "############### no bytes. path: " << path << endl;
+		return;
+	}
+
+	char* res = new char[charCount];
+
+	FileHelper::ReadCharsFrom(path, res);
+	string str(res);
+
+	stringstream ss(str);
+	string line;
+	while (getline(ss, line)) {
+		istringstream iss(line);
+		string key;
+		if (!(iss >> key)) {
+			break;
+		}
+		if (key != "componentType:") {
+			continue;
+		}
+		if (!(iss >> key)) {
+			break;
+		}
+		;
+		ComponentType_ comType = GetComponentType(key);
+		if (ComponentType_Transform == comType) {
+			TransformMeta transformMeta = prefabMeta.transformMeta;
+			TransformMeta_DeserializeFrom(&transformMeta, ss);
+		}
+		else if (ComponentType_Camera == comType) {
+			CameraMeta* cameraMeta = static_cast<CameraMeta*>(prefabMeta.AddComponentMeta<CameraMeta>());
+			CameraMeta_DeserializeFrom(cameraMeta, ss);
+		}
+		else if (ComponentType_MeshFilter == comType) {
+			MeshFilterMeta* meshFilterMeta = static_cast<MeshFilterMeta*>(prefabMeta.AddComponentMeta<MeshFilterMeta>());
+			MeshFilterMeta_DeserializeFrom(meshFilterMeta, ss);
+		}
+		else if (ComponentType_MeshRenderer == comType) {
+			MeshRendererMeta* meshRendererMeta = static_cast<MeshRendererMeta*>(prefabMeta.AddComponentMeta<MeshRendererMeta>());
+			MeshRendererMeta_DeserializeFrom(meshRendererMeta, ss);
+		}
+		else if (ComponentType_SkinMeshRenderer == comType) {
+			SkinMeshRendererMeta* skinMeshRendererMeta = static_cast<SkinMeshRendererMeta*>(prefabMeta.AddComponentMeta<SkinMeshRendererMeta>());
+			SkinMeshRendererMeta_DeserializeFrom(skinMeshRendererMeta, ss);
+		}
+	}
+
+	{
+		string metaPath = path + FileSuffix::SUFFIX_META;
+		FileHelper::ReadCharsFrom(metaPath, res);
+		string str(res);
+		stringstream ss(str);
+		string line;
+		while (getline(ss, line)) {
+			istringstream iss(line);
+			string key;
+			if (!(iss >> key)) {
+				break;
+			}
+			if (key == "guid:") {
+				prefabMeta.guid = key.c_str();
+				continue;
+			}
+
+			if (key == "name:") {
+				prefabMeta.name = key.c_str();
+				continue;
+			}
+		}
 	}
 }
 

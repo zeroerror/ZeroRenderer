@@ -398,11 +398,17 @@ Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
 	Scene* scene;
 	if (!sceneRepo->TryGetScene(sceneGUID, scene)) {
 		scene = new Scene();
+		_runtimeContext->currentScene = scene;
 
 		sceneRepo->TryAddScene(sceneGUID, scene);
 		SceneMeta_DeserializeFrom(&resSceneMeta, path);
 		MetaToScene(resSceneMeta, *scene);
+	}else{
+		_runtimeContext->currentScene = scene;
 	}
+
+	_runtimeContext->mainCamera = scene->Find("Camera")->GetComponent<Camera>();
+	_runtimeContext->sceneDirectLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
 
 	return scene;
 }
@@ -503,6 +509,17 @@ void RuntimeDomain::MetaToTransform(const TransformMeta& transformMeta, Transfor
 	transform.SetPosition(transformMeta.position);
 	transform.SetRotation(transformMeta.rotation);
 	transform.scale = transformMeta.scale;
+
+	vector<int>* childrenGIDs = transformMeta.childrenGIDs;
+	Scene* curScene = _runtimeContext->currentScene;
+	for(auto childGID : *childrenGIDs) {
+		GameObject* childGO = curScene->Find(childGID);
+		if (childGO == nullptr) {
+			cout << "RuntimeDomain::MetaToTransform: Can't find child gameobject by gid: " << childGID << endl;
+			continue;
+		}
+		transform.AddChild(childGO->transform());
+	}
 }
 
 void RuntimeDomain::GUIDToPrefabMeta(const string& guid, PrefabMeta& prefabMeta) {
@@ -519,7 +536,7 @@ void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMet
 	PrefabMeta prefabMeta = PrefabMeta();
 	GUIDToPrefabMeta(prefabInstanceMeta.guid, prefabMeta);
 	MetaToGameObject(prefabMeta, gameObject);
-	MetaToTransform(prefabInstanceMeta.transformMeta, *gameObject.transform());
+	MetaToTransform(*prefabInstanceMeta.transformMeta, *gameObject.transform());
 	gameObject.SetName(prefabInstanceMeta.name);
 }
 
@@ -574,9 +591,8 @@ void RuntimeDomain::MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& g
 
 void RuntimeDomain::MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject) {
 	gameObject.SetName(gameObjectMeta.name);
-	_MetaToGameObject(gameObjectMeta.transformMeta, gameObjectMeta.componentMetas, gameObject);
+	_MetaToGameObject(*gameObjectMeta.transformMeta, gameObjectMeta.componentMetas, gameObject);
 }
-
 
 void RuntimeDomain::MetaToScene(const SceneMeta& sceneMeta, Scene& scene) {
 	for (GameObjectMeta* meta : sceneMeta.gameObjectMetas) {

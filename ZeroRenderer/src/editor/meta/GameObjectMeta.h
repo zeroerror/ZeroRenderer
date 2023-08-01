@@ -16,8 +16,9 @@ public:
 	~GameObjectMeta();
 
 	string name;
+	int gid;
 
-	TransformMeta transformMeta;
+	TransformMeta* transformMeta;
 	vector<ComponentMeta*> componentMetas;
 
 	template <typename T, typename = enable_if_t<is_base_of<ComponentMeta, T>::value>>

@@ -5,7 +5,7 @@
 class EditorContext {
 
 public:
-	SceneMeta currentSceneMeta;
+	SceneMeta* currentSceneMeta;
 	Camera* sceneViewCamera;
 
 };
