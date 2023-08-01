@@ -1,9 +1,9 @@
 #include "GameObjectMeta.h"
-#include "CameraMeta.h"
+#include "TransformMeta.h"
 
 GameObjectMeta::GameObjectMeta() {
 	componentMetas = vector<ComponentMeta*>();
-	transformMeta = new TransformMeta();
+	transformMeta = AddComponentMeta<TransformMeta>();
 }
 
 GameObjectMeta::~GameObjectMeta() {
@@ -11,5 +11,5 @@ GameObjectMeta::~GameObjectMeta() {
 		delete componentMeta;
 	}
 	componentMetas.clear();
-	delete transformMeta;
+	//delete transformMeta; // todo bug cant delete
 }

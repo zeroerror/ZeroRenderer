@@ -532,14 +532,6 @@ void RuntimeDomain::GUIDToPrefabMeta(const string& guid, PrefabMeta& prefabMeta)
 	PrefabMeta_DeserializeFrom(prefabMeta, prefabPath);
 }
 
-void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject) {
-	PrefabMeta prefabMeta = PrefabMeta();
-	GUIDToPrefabMeta(prefabInstanceMeta.guid, prefabMeta);
-	MetaToGameObject(prefabMeta, gameObject);
-	MetaToTransform(*prefabInstanceMeta.transformMeta, *gameObject.transform());
-	gameObject.SetName(prefabInstanceMeta.name);
-}
-
 inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta, const vector<ComponentMeta*> componentMetas, GameObject& gameObject) {
 	MetaToTransform(transformMeta, *gameObject.transform());
 	for (ComponentMeta* componentMeta : componentMetas) {
@@ -584,12 +576,24 @@ inline void RuntimeDomain::_MetaToGameObject(const TransformMeta& transformMeta,
 	}
 }
 
+void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject) {
+	gameObject.SetGID(prefabInstanceMeta.gid);
+
+	PrefabMeta prefabMeta = PrefabMeta();
+	GUIDToPrefabMeta(prefabInstanceMeta.guid, prefabMeta);
+	MetaToGameObject(prefabMeta, gameObject);
+	MetaToTransform(*prefabInstanceMeta.transformMeta, *gameObject.transform());
+	
+	gameObject.SetName(prefabInstanceMeta.name);
+}
+
 void RuntimeDomain::MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& gameObject) {
 	gameObject.SetName(prefabMeta.name);
 	_MetaToGameObject(prefabMeta.transformMeta, prefabMeta.componentMetas, gameObject);
 }
 
 void RuntimeDomain::MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject) {
+	gameObject.SetGID(gameObjectMeta.gid);
 	gameObject.SetName(gameObjectMeta.name);
 	_MetaToGameObject(*gameObjectMeta.transformMeta, gameObjectMeta.componentMetas, gameObject);
 }

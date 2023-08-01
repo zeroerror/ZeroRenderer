@@ -16,12 +16,14 @@ public:
 	GameObject();
 	~GameObject();
 
-	void SetName(const string& name);
-	string GetName() const;
 	Transform* transform() const;
 	vector<Component*> GetAllComponents();
 	GameObject* Find(const string& path);
-	int GetGID();
+	
+	string GetName() const;
+	void SetName(const string& name);
+	int GetGID() const;
+	void SetGID(const int& gid);
 
 	template <typename T, typename = enable_if_t<is_base_of<Component, T>::value>>
 	T* AddComponent() {

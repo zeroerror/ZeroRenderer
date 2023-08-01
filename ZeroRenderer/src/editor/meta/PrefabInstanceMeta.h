@@ -10,9 +10,9 @@ public:
 	PrefabInstanceMeta();
 	~PrefabInstanceMeta();
 
-	TransformMeta* transformMeta;
-	string guid;
 	int gid;
+	string guid;
 	string name;
+	TransformMeta* transformMeta;
 };
 

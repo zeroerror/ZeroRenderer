@@ -38,6 +38,7 @@ namespace Serialization {
 
 	void PrefabInstanceMeta_SerializeTo(PrefabInstanceMeta& prefabInstanceMeta, stringstream& ss);
 	void PrefabInstanceMeta_DeserializeFrom(PrefabInstanceMeta* prefabInstanceMeta, stringstream& ss);
+	void PrefabInstanceMetaTransformMeta_DeserializeFrom(TransformMeta* transformMeta, stringstream& ss);
 
 	void GameObjectMeta_SerializeTo(const GameObjectMeta& gameObjectMeta, stringstream& ss);
 	void GameObjectMeta_DeserializeFrom(GameObjectMeta* gameObjectMeta, stringstream& ss);

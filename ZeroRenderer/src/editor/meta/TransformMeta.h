@@ -1,11 +1,15 @@
 #pragma once
 #include "CameraType.h"
 #include "ComponentMeta.h"
-#include "Transform.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <vector>
+
+class GameObjectMeta;
+class ComponentMeta;
 
 using namespace glm;
+using namespace std;
 
 class TransformMeta :public ComponentMeta
 {
@@ -19,7 +23,6 @@ public:
 	vec3 scale;
 
 public:
-	int gid;
 	int fatherGID;
 	TransformMeta* father;
 	vector<int>* childrenGIDs;

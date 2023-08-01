@@ -4,8 +4,7 @@
 #include "Camera.h"
 
 GameObject::GameObject() {
-	_transform = new Transform();
-	_transform->gameObject = this;
+	_transform = AddComponent<Transform>();
 	_components = vector<Component*>();
 }
 
@@ -20,19 +19,15 @@ vector<Component*> GameObject::GetAllComponents() {
 	return _components;
 }
 
-void GameObject::SetName(const string& name) {
-	_name = name;
-}
-
-string GameObject::GetName() const {
-	return _name;
-}
+void GameObject::SetName(const string& name) {_name = name;}
+string GameObject::GetName() const {return _name;}
+int GameObject::GetGID() const {return _gid;}
+void GameObject::SetGID(const int& gid) {_gid = gid;}
 
 GameObject* GameObject::Find(const string& path) {
 	return _Find(path, this);
 }
 
-int GameObject::GetGID(){return _gid;}
 
 GameObject* GameObject::_Find(const string& path, GameObject* gameObject) const {
 	if (gameObject == nullptr) {

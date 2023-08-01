@@ -1,6 +1,7 @@
 ########AllGameObjectsStart:
 
 ====GameObjectStart:
+gid: 0
 name: Camera
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -24,6 +25,7 @@ orthoSize: 20
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: DirectLight
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -48,6 +50,7 @@ farPlane: 100
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: GroundCube
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -73,6 +76,7 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: Wall1
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -98,6 +102,7 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: Wall2
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -123,6 +128,7 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: obstacle1
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -148,6 +154,7 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: obstacle2
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -173,6 +180,7 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: obstacle3
 --ComponentStart:
 componentType: ComponentType_Transform
@@ -198,6 +206,7 @@ materialGUID: 81689f3660ca1299
 ====GameObjectEnd
 
 ====GameObjectStart:
+gid: 0
 name: Root
 --ComponentStart:
 componentType: ComponentType_Transform
