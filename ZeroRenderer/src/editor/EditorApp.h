@@ -148,7 +148,7 @@ private:
 private:
 	void _ShowTitleBar();
 	void _ShowSceneView();
-	// void _ShowHierarchyPanel();
+	void _ShowHierarchyPanel();
 	void _ShowProjectPanel();
 	void _ShowProjectMainPanel();
 	void _ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset);

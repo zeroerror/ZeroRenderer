@@ -352,7 +352,6 @@ void EditorApp::_ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOf
 	}
 }
 
-
 void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 	ImGui::Text(_curProjectChoosedNode->assetPath.c_str());
 	ImGui::Spacing();
