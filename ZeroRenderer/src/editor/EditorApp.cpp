@@ -56,9 +56,9 @@ int EditorApp::Tick() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_ImGui_NewFrame();
-	_ShowEditorProjectPanle();
-	_ShowEditorTitleBar();
-	_ShowEditorSceneView();
+	_ShowProjectPanel();
+	_ShowTitleBar();
+	_ShowSceneView();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -252,9 +252,68 @@ void EditorApp::_TickEditorInput() {
 
 #pragma endregion
 
-#pragma region [Project Panel]
+#pragma region [Editor Panel]
 
-void EditorApp::_ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset) {
+void EditorApp::_ShowTitleBar() {
+	ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
+	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
+	ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+	if (ImGui::Button("Clear All Meta Files")) {
+		vector<string> suffixes = vector<string>();
+		suffixes.push_back(FileSuffix::SUFFIX_META);
+		unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
+		EditorDatabase::ClearFile(suffixFlag);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Generate Default Scene")) {
+		EditorDatabase::GenerateDefaultSceneMeta();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Generate Default Shader")) {
+		EditorDatabase::GenerateDefaultShader();
+	}
+	ImGui::End();
+}
+
+void EditorApp::_ShowSceneView() {
+	_RenderSceneViewFrameBuffer();
+
+	ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
+	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
+	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+	ImDrawList* drawList = ImGui::GetWindowDrawList();
+	ImVec2 panelPos = ImGui::GetCursorScreenPos();
+	ImVec2 panelPosMax = ImVec2(panelPos.x + EDITOR_WINDOW_SCENE_WIDTH, panelPos.y + EDITOR_WINDOW_SCENE_HEIGHT);
+	drawList->PushTextureID((ImTextureID)(uintptr_t)_sceneViewTexture);
+	drawList->AddImage((ImTextureID)(uintptr_t)_sceneViewTexture, panelPos, panelPosMax, ImVec2(0, 1), ImVec2(1, 0));
+	drawList->PopTextureID();
+	ImGui::End();
+}
+
+void EditorApp::_ShowProjectPanel() {
+	ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POS);
+	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
+	ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+
+	ImGui::Columns(2);
+	ImGui::SetColumnWidth(0, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH);
+	ImGui::SetColumnWidth(1, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH);
+	_ShowProjectMainPanel();
+
+	ImGui::NextColumn();
+
+	if (_curProjectChoosedNode != nullptr) {
+		_ShowProjectDetailsPanel(_curProjectChoosedNode);
+	}
+	ImGui::End();
+}
+
+void EditorApp::_ShowProjectMainPanel() {
+	float xoffset = 0;
+	_ShowProjectMainPanel(_rootNode, "", xoffset);
+}
+
+void EditorApp::_ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset) {
 	// Self GUI
 	ImGui::Indent(xOffset);
 	if (node->isDir) {
@@ -289,14 +348,10 @@ void EditorApp::_ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset
 	choosedPath += "/";
 	for (auto kvp : node->childNodes) {
 		AssetTreeNode* childNode = kvp.second;
-		_ShowProjectPanel(childNode, choosedPath, xOffset);
+		_ShowProjectMainPanel(childNode, choosedPath, xOffset);
 	}
 }
 
-void EditorApp::_ShowProjectPanel() {
-	float xoffset = 0;
-	_ShowProjectPanel(_rootNode, "", xoffset);
-}
 
 void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 	ImGui::Text(_curProjectChoosedNode->assetPath.c_str());
@@ -416,60 +471,6 @@ void EditorApp::_ImGui_NewFrame() {
 void EditorApp::_ShowFPS(GLFWwindow* window) {
 	int fps = (int)(1.0f / _deltaTime);
 	glfwSetWindowTitle(window, ("Zero Engine v0.0.1 FPS: " + to_string(fps)).c_str());
-}
-
-void EditorApp::_ShowEditorProjectPanle() {
-	ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POS);
-	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
-	ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-
-	ImGui::Columns(2);
-	ImGui::SetColumnWidth(0, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH);
-	ImGui::SetColumnWidth(1, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH);
-	_ShowProjectPanel();
-
-	ImGui::NextColumn();
-
-	if (_curProjectChoosedNode != nullptr) {
-		_ShowProjectDetailsPanel(_curProjectChoosedNode);
-	}
-	ImGui::End();
-}
-
-void EditorApp::_ShowEditorTitleBar() {
-	ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
-	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
-	ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-	if (ImGui::Button("Clear All Meta Files")) {
-		vector<string> suffixes = vector<string>();
-		suffixes.push_back(FileSuffix::SUFFIX_META);
-		unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
-		EditorDatabase::ClearFile(suffixFlag);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Generate Default Scene")) {
-		EditorDatabase::GenerateDefaultSceneMeta();
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Generate Default Shader")) {
-		EditorDatabase::GenerateDefaultShader();
-	}
-	ImGui::End();
-}
-
-void EditorApp::_ShowEditorSceneView() {
-	_RenderSceneViewFrameBuffer();
-
-	ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
-	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
-	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-	ImDrawList* drawList = ImGui::GetWindowDrawList();
-	ImVec2 panelPos = ImGui::GetCursorScreenPos();
-	ImVec2 panelPosMax = ImVec2(panelPos.x + EDITOR_WINDOW_SCENE_WIDTH, panelPos.y + EDITOR_WINDOW_SCENE_HEIGHT);
-	drawList->PushTextureID((ImTextureID)(uintptr_t)_sceneViewTexture);
-	drawList->AddImage((ImTextureID)(uintptr_t)_sceneViewTexture, panelPos, panelPosMax, ImVec2(0, 1), ImVec2(1, 0));
-	drawList->PopTextureID();
-	ImGui::End();
 }
 
 void EditorApp::_ImGuiShutDown() {

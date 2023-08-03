@@ -143,11 +143,15 @@ private:
 
 #pragma endregion
 
-#pragma region [Project Panel]
+#pragma region [Editor Panel]
 
 private:
-	void _ShowProjectPanel(AssetTreeNode* node, string dir, float xOffset);
+	void _ShowTitleBar();
+	void _ShowSceneView();
+	// void _ShowHierarchyPanel();
 	void _ShowProjectPanel();
+	void _ShowProjectMainPanel();
+	void _ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset);
 	void _ShowProjectDetailsPanel(const AssetTreeNode* node);
 
 #pragma endregion
@@ -178,9 +182,6 @@ private:
 private:
 	void _ShowFPS(GLFWwindow* window);
 	void _ImGui_NewFrame();
-	void _ShowEditorProjectPanle();
-	void _ShowEditorTitleBar();
-	void _ShowEditorSceneView();
 	void _ImGuiShutDown();
 	void _GLShutDown();
 
