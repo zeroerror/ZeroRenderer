@@ -12,13 +12,11 @@ public:
 
 private:
     EditorUICanvasNode* _root;
-    vector<EditorUICanvasNode*> _childrens;
-
     int _id;
 
 public: 
-    void Add(EditorUICanvasNode node);
-    void Remove(EditorUICanvasNode node);
+    void Add(EditorUICanvasNode* node);
+    void Remove(EditorUICanvasNode* node);
 
     unsigned int GetChildCount();
     

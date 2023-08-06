@@ -2,18 +2,20 @@
 
 EditorUICanvas::EditorUICanvas(EditorUICanvasNode root) {
     _root = root;
-    _childrens = vector<EditorUICanvasNode*>();
 }
 
 EditorUICanvas::~EditorUICanvas() {
     delete _root;
-    for (int i = 0; i < _childrens.size(); i++) {
-        delete _childrens[i];
-    }
-    delete _childrens;
 }
 
-void EditorUICanvas::addChild(EditorUICanvasNode* node) {
-    _childrens.push_back(node);
+void EditorUICanvas::Add(EditorUICanvasNode* node){
+    _root->Add(node);
 }
 
+void EditorUICanvas::Remove(EditorUICanvasNode* node){
+    _root->Remove(node);
+}
+
+unsigned int EditorUICanvas::GetChildCount(){
+    return _childrens.size();
+}

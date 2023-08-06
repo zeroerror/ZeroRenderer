@@ -22,6 +22,10 @@ void EditorDomain::TransformMeta_LinkFather(TransformMeta& src, int fatherGID){
 	src.SetFather(father);
 }
 
+void EditorDomain::EditorUICanvas_Draw(const EditorUICanvas& canvas){
+	
+}
+
 int EditorDomain::GenerateGID() {
 	return ++_gid;
 }

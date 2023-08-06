@@ -1,12 +1,11 @@
 #pragma once
 
 enum AnchorPointType {
-    None,
+    Center,
     LeftTop,
     LeftCenter,
     LeftBottom,
     CenterTop,
-    Center,
     CenterBottom,
     RightTop,
     RightCenter,
