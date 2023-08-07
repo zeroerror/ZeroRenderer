@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\editor\canvas\EditorUICanvas.cpp" />
+    <ClCompile Include="src\editor\canvas\EditorUICanvasNode.cpp" />
     <ClCompile Include="src\editor\context\EditorContext.cpp" />
     <ClCompile Include="src\editor\domain\EditorDomain.cpp" />
     <ClCompile Include="src\editor\EditorApp.cpp" />
@@ -30,6 +32,7 @@
     <ClCompile Include="src\editor\meta\SceneMeta.cpp" />
     <ClCompile Include="src\editor\meta\Serialization.cpp" />
     <ClCompile Include="src\editor\meta\ShaderMeta.cpp" />
+    <ClCompile Include="src\generic\Rect.cpp" />
     <ClCompile Include="src\runtime\component\Camera.cpp" />
     <ClCompile Include="src\runtime\domain\RuntimeDomain.cpp" />
     <ClCompile Include="src\editor\FileHelper.cpp" />
@@ -72,6 +75,8 @@
     <ClCompile Include="src\ZeroEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\editor\canvas\EditorUICanvas.h" />
+    <ClInclude Include="src\editor\canvas\EditorUICanvasNode.h" />
     <ClInclude Include="src\editor\context\EditorContext.h" />
     <ClInclude Include="src\editor\domain\EditorDomain.h" />
     <ClInclude Include="src\editor\EditorApp.h" />
@@ -88,6 +93,9 @@
     <ClInclude Include="src\editor\meta\PrefabMeta.h" />
     <ClInclude Include="src\editor\meta\SceneMeta.h" />
     <ClInclude Include="src\editor\meta\Serialization.h" />
+    <ClInclude Include="src\generic\AlignType.h" />
+    <ClInclude Include="src\generic\AnchorPointType.h" />
+    <ClInclude Include="src\generic\Rect.h" />
     <ClInclude Include="src\generic\ShaderUniformType.h" />
     <ClInclude Include="src\runtime\component\Camera.h" />
     <ClInclude Include="src\runtime\component\Component.h" />
@@ -808,7 +816,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\debug;$(SolutionDir)src\generic;$(SolutionDir)src\editor;$(SolutionDir)src\editor\meta;$(SolutionDir)src\editor\manager;$(SolutionDir)src\editor\context;$(SolutionDir)src\editor\domain;$(SolutionDir)src\editor\generic;$(SolutionDir)src\runtime\scene;$(SolutionDir)src\runtime\domain;$(SolutionDir)src\runtime\context;$(SolutionDir)src\runtime\geometry;$(SolutionDir)src\runtime\component;$(SolutionDir)src\runtime\gameObject;$(SolutionDir)src\runtime\model;$(SolutionDir)src\runtime\mesh;$(SolutionDir)src\runtime\material;$(SolutionDir)src\runtime\renderer;$(SolutionDir)src\runtime\repo;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\x64\include;$(SolutionDir)Dependencies\Assimp\include;$(SolutionDir)src\debug;$(SolutionDir)src\generic;$(SolutionDir)src\editor;$(SolutionDir)src\editor\meta;$(SolutionDir)src\editor\manager;$(SolutionDir)src\editor\context;$(SolutionDir)src\editor\domain;$(SolutionDir)src\editor\generic;$(SolutionDir)src\editor\canvas;$(SolutionDir)src\runtime\scene;$(SolutionDir)src\runtime\domain;$(SolutionDir)src\runtime\context;$(SolutionDir)src\runtime\geometry;$(SolutionDir)src\runtime\component;$(SolutionDir)src\runtime\gameObject;$(SolutionDir)src\runtime\model;$(SolutionDir)src\runtime\mesh;$(SolutionDir)src\runtime\material;$(SolutionDir)src\runtime\renderer;$(SolutionDir)src\runtime\repo;$(SolutionDir)src\vendor</AdditionalIncludeDirectories>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>

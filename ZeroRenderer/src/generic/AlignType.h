@@ -1,5 +1,5 @@
 #pragma once
 
-enum AlignType {
-    Left,
+enum class AlignType {
+    LeftTop,
 };

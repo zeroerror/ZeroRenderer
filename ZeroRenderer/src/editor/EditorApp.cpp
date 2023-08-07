@@ -1,4 +1,6 @@
 #include "EditorApp.h"
+#include "EditorUICanvas.h"
+#include "AlignType.h"
 
 // ********************** EDITOR USER CONFIG **********************
 EditorApp::EditorApp() {
@@ -36,6 +38,13 @@ EditorApp::EditorApp() {
 
 	_InitSceneView();
 	_InitSceneViewFrameBuffer();
+
+	// Test
+	EditorUICanvas canvas = EditorUICanvas(Rect(1920, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	EditorUICanvasNode* node1 = new EditorUICanvasNode(Rect(1920 / 2, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	canvas.Add(node1);
+	EditorUICanvasNode* node2 = new EditorUICanvasNode(Rect(1920 / 2, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	canvas.Add(node2);
 }
 
 EditorApp::~EditorApp() {

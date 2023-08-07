@@ -3,23 +3,19 @@
 #include "AlignType.h"
 
 #include <vector>
-
 using namespace std;
 
-class EditorUICanvasNode{
+class EditorUICanvasNode {
 
 public:
-    EditorUICanvasNode(const Rect& rect, AlignType alignType);
-    ~EditorUICanvasNode();
+	EditorUICanvasNode(const Rect& rect, const AlignType& alignType);
+	~EditorUICanvasNode();
 
-    Rect rect;
-    AlignType alignType;
+	Rect rect;
+	AlignType alignType;
 
-private:
-    EditorUICanvasNode* _father;
-    vector<EditorUICanvasNode*> _children;
-
-    void Add(EditorUICanvasNode* node);
-    void Remove(EditorUICanvasNode* node);
+public:
+	EditorUICanvasNode* father;
+	EditorUICanvasNode* child;
 
 };

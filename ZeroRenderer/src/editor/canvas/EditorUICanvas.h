@@ -7,7 +7,7 @@ using namespace std;
 class EditorUICanvas{
 
 public:
-    EditorUICanvas(EditorUICanvasNode root);
+    EditorUICanvas(const Rect& rect, const AlignType& alignType);
     ~EditorUICanvas();
 
 private:
@@ -17,8 +17,5 @@ private:
 public: 
     void Add(EditorUICanvasNode* node);
     void Remove(EditorUICanvasNode* node);
-
-    unsigned int GetChildCount();
-    
 
 };

@@ -52,6 +52,9 @@
     <ClCompile Include="src\editor\domain\EditorDomain.cpp" />
     <ClCompile Include="src\editor\meta\PrefabInstanceMeta.cpp" />
     <ClCompile Include="src\editor\meta\PrefabMeta.cpp" />
+    <ClCompile Include="src\editor\canvas\EditorUICanvas.cpp" />
+    <ClCompile Include="src\editor\canvas\EditorUICanvasNode.cpp" />
+    <ClCompile Include="src\generic\Rect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\runtime\component\CameraController.h" />
@@ -408,6 +411,11 @@
     <ClInclude Include="src\editor\context\EditorContext.h" />
     <ClInclude Include="src\editor\domain\EditorDomain.h" />
     <ClInclude Include="src\runtime\component\Component.h" />
+    <ClInclude Include="src\editor\canvas\EditorUICanvas.h" />
+    <ClInclude Include="src\editor\canvas\EditorUICanvasNode.h" />
+    <ClInclude Include="src\generic\Rect.h" />
+    <ClInclude Include="src\generic\AnchorPointType.h" />
+    <ClInclude Include="src\generic\AlignType.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />
