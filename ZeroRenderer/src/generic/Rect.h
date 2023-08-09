@@ -20,15 +20,15 @@ public:
     ~Rect();
 
     AnchorPointType GetAnchorPointType();
-    vec2 GetLeftTop();
-    vec2 GetLeftCenter();
-    vec2 GetLeftBottom();
-    vec2 GetCenterTop();
-    vec2 GetCenter();
-    vec2 GetCenterBottom();
-    vec2 GetRightTop();
-    vec2 GetRightCenter();
-    vec2 GetRightBottom();
+    vec2 GetLeftTop() const;
+    vec2 GetLeftCenter() const;
+    vec2 GetLeftBottom() const;
+    vec2 GetCenterTop() const;
+    vec2 GetCenter() const;
+    vec2 GetCenterBottom() const;
+    vec2 GetRightTop() const;
+    vec2 GetRightCenter() const;
+    vec2 GetRightBottom() const;
 
     void SetAnchorPointType(const AnchorPointType& anchorPointType);
     void SetWidth(const float& width);

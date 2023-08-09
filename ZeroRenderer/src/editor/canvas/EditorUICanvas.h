@@ -17,5 +17,6 @@ private:
 public: 
     void Add(EditorUICanvasNode* node);
     void Remove(EditorUICanvasNode* node);
+    void Draw();
 
 };

@@ -1,6 +1,6 @@
 #include "EditorApp.h"
-#include "EditorUICanvas.h"
 #include "AlignType.h"
+#include "EditorUICanvas.h"
 
 // ********************** EDITOR USER CONFIG **********************
 EditorApp::EditorApp() {
@@ -39,12 +39,27 @@ EditorApp::EditorApp() {
 	_InitSceneView();
 	_InitSceneViewFrameBuffer();
 
-	// Test
-	EditorUICanvas canvas = EditorUICanvas(Rect(1920, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	EditorUICanvasNode* node1 = new EditorUICanvasNode(Rect(1920 / 2, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	canvas.Add(node1);
-	EditorUICanvasNode* node2 = new EditorUICanvasNode(Rect(1920 / 2, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	canvas.Add(node2);
+	// Editor Canvas
+	_editorContext->_rootCanvas = new EditorUICanvas(Rect(1920, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+
+	_editorContext->_titleBarCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->_titleBarCanvasNode->callback = [this](const Rect& rect) {
+		_ShowTitleBarCanvas();
+	};
+
+	_editorContext->_sceneViewCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->_sceneViewCanvasNode->callback = [this](const Rect& rect) {
+		_ShowSceneViewCanvas(rect.GetLeftTop(), rect.GetRightBottom());
+	};
+
+	_editorContext->_projectCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->_projectCanvasNode->callback = [this](const Rect& rect) {
+		_ShowProjectCanvas();
+	};
+
+	_editorContext->_rootCanvas->Add(_editorContext->_titleBarCanvasNode);
+	_editorContext->_rootCanvas->Add(_editorContext->_sceneViewCanvasNode);
+	_editorContext->_rootCanvas->Add(_editorContext->_projectCanvasNode);
 }
 
 EditorApp::~EditorApp() {
@@ -57,6 +72,8 @@ int EditorApp::Tick() {
 		return 0;
 	}
 
+	_RenderSceneViewFrameBuffer();
+
 	_TickDeltaTime();
 	_TickEvents();
 	_ShowFPS(window);
@@ -65,9 +82,7 @@ int EditorApp::Tick() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	_ImGui_NewFrame();
-	_ShowProjectPanel();
-	_ShowTitleBar();
-	_ShowSceneView();
+	_editorContext->_rootCanvas->Draw();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -263,9 +278,7 @@ void EditorApp::_TickEditorInput() {
 
 #pragma region [Editor Panel]
 
-void EditorApp::_ShowTitleBar() {
-	ImGui::SetNextWindowPos(EDITOR_WINDOW_TITLE_BAR_POS);
-	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT));
+void EditorApp::_ShowTitleBarCanvas() {
 	ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 	if (ImGui::Button("Clear All Meta Files")) {
 		vector<string> suffixes = vector<string>();
@@ -284,26 +297,17 @@ void EditorApp::_ShowTitleBar() {
 	ImGui::End();
 }
 
-void EditorApp::_ShowSceneView() {
-	_RenderSceneViewFrameBuffer();
-
-	ImGui::SetNextWindowPos(EDITOR_WINDOW_SCENE_POS);
-	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT));
+void EditorApp::_ShowSceneViewCanvas(const vec2& min, const vec2& max) {
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
-	ImVec2 panelPos = ImGui::GetCursorScreenPos();
-	ImVec2 panelPosMax = ImVec2(panelPos.x + EDITOR_WINDOW_SCENE_WIDTH, panelPos.y + EDITOR_WINDOW_SCENE_HEIGHT);
 	drawList->PushTextureID((ImTextureID)(uintptr_t)_sceneViewTexture);
-	drawList->AddImage((ImTextureID)(uintptr_t)_sceneViewTexture, panelPos, panelPosMax, ImVec2(0, 1), ImVec2(1, 0));
+	drawList->AddImage((ImTextureID)(uintptr_t)_sceneViewTexture, ImVec2(min.x, min.y), ImVec2(max.x, max.y), ImVec2(0, 1), ImVec2(1, 0));
 	drawList->PopTextureID();
 	ImGui::End();
 }
 
-void EditorApp::_ShowProjectPanel() {
-	ImGui::SetNextWindowPos(EDITOR_WINDOW_PROJECT_POS);
-	ImGui::SetNextWindowSize(ImVec2(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT));
+void EditorApp::_ShowProjectCanvas() {
 	ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-
 	ImGui::Columns(2);
 	ImGui::SetColumnWidth(0, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH);
 	ImGui::SetColumnWidth(1, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH);

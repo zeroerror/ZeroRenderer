@@ -32,15 +32,15 @@ Rect::~Rect() {
 }
 
 AnchorPointType Rect::GetAnchorPointType() { return _anchorPointType; }
-vec2 Rect::GetLeftTop() { return _leftTop; }
-vec2 Rect::GetLeftCenter() { return _leftCenter; }
-vec2 Rect::GetLeftBottom() { return _leftBottom; }
-vec2 Rect::GetCenterTop() { return _centerTop; }
-vec2 Rect::GetCenter() { return _center; }
-vec2 Rect::GetCenterBottom() { return _centerBottom; }
-vec2 Rect::GetRightTop() { return _rightTop; }
-vec2 Rect::GetRightCenter() { return _rightCenter; }
-vec2 Rect::GetRightBottom() { return _rightBottom; }
+vec2 Rect::GetLeftTop() const { return _leftTop; }
+vec2 Rect::GetLeftCenter() const { return _leftCenter; }
+vec2 Rect::GetLeftBottom() const { return _leftBottom; }
+vec2 Rect::GetCenterTop() const { return _centerTop; }
+vec2 Rect::GetCenter() const { return _center; }
+vec2 Rect::GetCenterBottom() const { return _centerBottom; }
+vec2 Rect::GetRightTop() const { return _rightTop; }
+vec2 Rect::GetRightCenter() const { return _rightCenter; }
+vec2 Rect::GetRightBottom() const { return _rightBottom; }
 
 void Rect::SetAnchorPointType(const AnchorPointType& anchorPointType) {
 	if (this->_anchorPointType == anchorPointType) return;

@@ -12,6 +12,8 @@
 #include <EditorDomain.h>
 #include "FileSuffix.h"
 
+#include "EditorUICanvas.h"
+
 using namespace Serialization;
 using namespace glm;
 using namespace std;
@@ -143,13 +145,12 @@ private:
 
 #pragma endregion
 
-#pragma region [Editor Panel]
+#pragma region [Editor Canvas]
 
 private:
-	void _ShowTitleBar();
-	void _ShowSceneView();
-	void _ShowHierarchyPanel();
-	void _ShowProjectPanel();
+	void _ShowTitleBarCanvas();
+	void _ShowSceneViewCanvas(const vec2& min, const vec2& max);
+	void _ShowProjectCanvas();
 	void _ShowProjectMainPanel();
 	void _ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset);
 	void _ShowProjectDetailsPanel(const AssetTreeNode* node);

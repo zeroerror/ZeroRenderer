@@ -17,17 +17,14 @@ void EditorUICanvas::Add(EditorUICanvasNode* node) {
 	vec2 canvasRT = this->_root->rect.GetRightTop();
 
 	vec2 curNodePos;
-
 	if (alignType == AlignType::LeftTop) {
 		curNodePos = canvasLT;
 		EditorUICanvasNode* cur = this->_root;
 		while (cur->child != nullptr) {
 			cur = cur->child;
-
 			cur->rect.SetXY_AsLeftTop(curNodePos);
-
 			curNodePos.x += cur->rect.width;
-			if (curNodePos.x > canvasRT.x) {
+			if (curNodePos.x >= canvasRT.x) {
 				curNodePos.y += cur->rect.height;
 				curNodePos.x = 0;
 			}
@@ -43,4 +40,8 @@ void EditorUICanvas::Add(EditorUICanvasNode* node) {
 }
 
 void EditorUICanvas::Remove(EditorUICanvasNode* node) {
+}
+
+void EditorUICanvas::Draw() {
+	_root->Draw();
 }
