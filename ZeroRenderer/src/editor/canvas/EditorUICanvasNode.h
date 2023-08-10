@@ -17,10 +17,15 @@ public:
 
 	typedef function<void(const Rect& rect)> Callback;
 	Callback callback;
+
     void Draw();
+
+	string name;
 
 public:
 	EditorUICanvasNode* father;
 	EditorUICanvasNode* child;
+
+	bool IsInCanvas(const vec2& pos);
 
 };

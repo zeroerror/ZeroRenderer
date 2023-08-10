@@ -22,22 +22,9 @@ enum EditorPanelFlags_ {
 	EditorPanelFlags_None = 0,
 	EditorPanelFlags_TitleBar,
 	EditorPanelFlags_SceneView,
+	EditorPanelFlags_Hierarchy,
 	EditorPanelFlags_ProjectLeftColunm,
 	EditorPanelFlags_ProjectRightColunm,
-};
-
-enum KeyStatus_ {
-	KeyStatus_None = 0,
-	KeyStatus_Up = 1,
-	KeyStatus_Down = 2,
-	KeyStatus_Pressing = 3,
-};
-
-enum MouseButtons_ {
-	MouseButtons_None = -1,
-	MouseButtons_Left = 0,
-	MouseButtons_Right = 1,
-	MouseButtons_Middle = 2,
 };
 
 class EditorApp {
@@ -62,31 +49,22 @@ private:
 private:
 	int EDITOR_WINDOW_WIDTH;
 	int EDITOR_WINDOW_HEIGHT;
-	ImVec2 EDITOR_WINDOW_TITLE_BAR_POS;
+
 	int EDITOR_WINDOW_TITLE_BAR_WIDTH;
 	int EDITOR_WINDOW_TITLE_BAR_HEIGHT;
-	ImVec2 EDITOR_WINDOW_TITLE_BAR_POS_MIN;
-	ImVec2 EDITOR_WINDOW_TITLE_BAR_POS_MAX;
 
-	ImVec2 EDITOR_WINDOW_SCENE_POS;
 	int EDITOR_WINDOW_SCENE_WIDTH;
 	int EDITOR_WINDOW_SCENE_HEIGHT;
-	ImVec2 EDITOR_WINDOW_SCENE_POS_MIN;
-	ImVec2 EDITOR_WINDOW_SCENE_POS_MAX;
 
-	ImVec2 EDITOR_WINDOW_PROJECT_POS;
-	int EDITOR_WINDOW_PROJECT_WIDTH;
-	int EDITOR_WINDOW_PROJECT_HEIGHT;
+	int EDITOR_WINDOW_HIERARCHY_WIDTH;
+	int EDITOR_WINDOW_HIERARCHY_HEIGHT;
 
 	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
 	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT;
-	ImVec2 EDITOR_WINDOW_PROJECT_LEFT_POS_MIN;
-	ImVec2 EDITOR_WINDOW_PROJECT_LEFT_POS_MAX;
 
 	int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH;
 	int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT;
-	ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN;
-	ImVec2 EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX;
+
 	float EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED;
 	float EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED;
 
@@ -117,40 +95,13 @@ private:
 
 #pragma endregion
 
-#pragma region [Device Input]
-
-public:
-	vec2 GetMousePosDelta();
-	vec2 GetMousePos();
-	bool GetMouseButtonDown(const MouseButtons_& button);
-	bool GetMouseButtonPressing(const MouseButtons_& button);
-	bool GetMouseButtonUp(const MouseButtons_& button);
-	bool GetKeyDown(const ImGuiKey& key);
-	bool GetKeyPressing(const ImGuiKey& key);
-	bool GetKeyUp(const ImGuiKey& key);
-
-private:
-	KeyStatus_ _allKeyStatus[1024];
-	vec2 _lastMousePos;
-	vec2 _mousePosDelta;
-
-	bool _CheckMouseDown(const MouseButtons_& button);
-	bool _CheckKeyDown(const ImGuiKey& key);
-	bool _IsInAABB(const vec2& v, const ImVec2& min, const ImVec2& max);
-	int _Clamp(const int& v, const int& min, const int& max);
-
-	void _TickMouseKeyStatus(const MouseButtons_& key);
-	void _TickKeyStatus(const ImGuiKey& key);
-	void _TickEditorInput();
-
-#pragma endregion
-
 #pragma region [Editor Canvas]
 
 private:
 	void _ShowTitleBarCanvas();
 	void _ShowSceneViewCanvas(const vec2& min, const vec2& max);
-	void _ShowProjectCanvas();
+	void _ShowProjectLeftColumnCanvas();
+	void _ShowProjectRightColumnCanvas();
 	void _ShowProjectMainPanel();
 	void _ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset);
 	void _ShowProjectDetailsPanel(const AssetTreeNode* node);
@@ -171,10 +122,9 @@ private:
 #pragma region [EDITOR EVENT]
 
 private:
-	void _Event_PanelSelection();
-	void _Event_DirectoryBackward();
-	void _Event_SceneView(const float& deltaTime);
-	void _TickEvents();
+	void _Tick_Event_DirectoryBackward();
+	void _Tick_Event_SceneView(const float& deltaTime);
+	void _Tick_Events();
 
 #pragma endregion
 
@@ -185,6 +135,12 @@ private:
 	void _ImGui_NewFrame();
 	void _ImGuiShutDown();
 	void _GLShutDown();
+
+#pragma endregion
+
+#pragma region [EDITOR INPUT]
+
+	void _Tick_EditorInput();
 
 #pragma endregion
 

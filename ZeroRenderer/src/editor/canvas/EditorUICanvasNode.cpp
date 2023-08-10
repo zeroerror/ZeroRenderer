@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+using namespace glm;
+
 EditorUICanvasNode::EditorUICanvasNode(const Rect& rect, const AlignType& alignType) {
 	this->rect = rect;
 	this->alignType = alignType;
@@ -29,4 +31,10 @@ void EditorUICanvasNode::Draw() {
 	}
 
 	if (child != nullptr) child->Draw();
+}
+
+bool EditorUICanvasNode::IsInCanvas(const glm::vec2& pos) {
+	vec2 leftTop = this->rect.GetLeftTop();
+	vec2 rightBottom = this->rect.GetRightBottom();
+	return pos.x >= leftTop.x && pos.x <= rightBottom.x && pos.y >= leftTop.y && pos.y <= rightBottom.y;
 }

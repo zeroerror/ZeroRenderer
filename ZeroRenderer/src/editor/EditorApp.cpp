@@ -1,6 +1,7 @@
 #include "EditorApp.h"
 #include "AlignType.h"
 #include "EditorUICanvas.h"
+#include "EditorInputManager.h"
 
 // ********************** EDITOR USER CONFIG **********************
 EditorApp::EditorApp() {
@@ -40,26 +41,43 @@ EditorApp::EditorApp() {
 	_InitSceneViewFrameBuffer();
 
 	// Editor Canvas
-	_editorContext->_rootCanvas = new EditorUICanvas(Rect(1920, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->rootCanvas = new EditorUICanvas(Rect(1920, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
 
-	_editorContext->_titleBarCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->_titleBarCanvasNode->callback = [this](const Rect& rect) {
+	_editorContext->titleBarCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->titleBarCanvasNode->callback = [this](const Rect& rect) {
 		_ShowTitleBarCanvas();
 	};
 
-	_editorContext->_sceneViewCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->_sceneViewCanvasNode->callback = [this](const Rect& rect) {
+	_editorContext->sceneViewCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->sceneViewCanvasNode->callback = [this](const Rect& rect) {
 		_ShowSceneViewCanvas(rect.GetLeftTop(), rect.GetRightBottom());
 	};
 
-	_editorContext->_projectCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_PROJECT_WIDTH, EDITOR_WINDOW_PROJECT_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->_projectCanvasNode->callback = [this](const Rect& rect) {
-		_ShowProjectCanvas();
+	_editorContext->hierarchyCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_HIERARCHY_WIDTH, EDITOR_WINDOW_HIERARCHY_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->hierarchyCanvasNode->callback = [this](const Rect& rect) {
 	};
 
-	_editorContext->_rootCanvas->Add(_editorContext->_titleBarCanvasNode);
-	_editorContext->_rootCanvas->Add(_editorContext->_sceneViewCanvasNode);
-	_editorContext->_rootCanvas->Add(_editorContext->_projectCanvasNode);
+	_editorContext->projectLeftCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->projectLeftCanvasNode->callback = [this](const Rect& rect) {
+		_ShowProjectLeftColumnCanvas();
+	};
+
+	_editorContext->projectRightCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->projectRightCanvasNode->callback = [this](const Rect& rect) {
+		_ShowProjectRightColumnCanvas();
+	};
+
+	_editorContext->titleBarCanvasNode->name = "TitleBarCanvasNode";
+	_editorContext->sceneViewCanvasNode->name = "SceneViewCanvasNode";
+	_editorContext->hierarchyCanvasNode->name = "HierarchyCanvasNode";
+	_editorContext->projectLeftCanvasNode->name = "ProjectLeftCanvasNode";
+	_editorContext->projectRightCanvasNode->name = "ProjectRightCanvasNode";
+
+	_editorContext->rootCanvas->Add(_editorContext->titleBarCanvasNode);
+	_editorContext->rootCanvas->Add(_editorContext->sceneViewCanvasNode);
+	_editorContext->rootCanvas->Add(_editorContext->hierarchyCanvasNode);
+	_editorContext->rootCanvas->Add(_editorContext->projectLeftCanvasNode);
+	_editorContext->rootCanvas->Add(_editorContext->projectRightCanvasNode);
 }
 
 EditorApp::~EditorApp() {
@@ -72,17 +90,22 @@ int EditorApp::Tick() {
 		return 0;
 	}
 
-	_RenderSceneViewFrameBuffer();
+	// ======== Input ========
+	_Tick_EditorInput();
 
+	// ======== Logic ========
 	_TickDeltaTime();
-	_TickEvents();
-	_ShowFPS(window);
+	_Tick_Events();
 
+	// ======== Renderer ========
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	_RenderSceneViewFrameBuffer();
+	_ShowFPS(window);
+
 	_ImGui_NewFrame();
-	_editorContext->_rootCanvas->Draw();
+	_editorContext->rootCanvas->Draw();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -158,31 +181,20 @@ void EditorApp::_InitEditorWindowCongfig() {
 	EDITOR_WINDOW_WIDTH = 1920;
 	EDITOR_WINDOW_HEIGHT = 1080;
 
-	EDITOR_WINDOW_TITLE_BAR_POS = ImVec2(0, 0);
 	EDITOR_WINDOW_TITLE_BAR_WIDTH = EDITOR_WINDOW_WIDTH;
-	EDITOR_WINDOW_TITLE_BAR_HEIGHT = 1.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
-	EDITOR_WINDOW_TITLE_BAR_POS_MIN = EDITOR_WINDOW_TITLE_BAR_POS;
-	EDITOR_WINDOW_TITLE_BAR_POS_MAX = ImVec2(EDITOR_WINDOW_TITLE_BAR_POS_MIN.x + EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_POS_MIN.y + EDITOR_WINDOW_TITLE_BAR_HEIGHT);
+	EDITOR_WINDOW_TITLE_BAR_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.1f;
 
-	EDITOR_WINDOW_SCENE_POS = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT);
-	EDITOR_WINDOW_SCENE_WIDTH = EDITOR_WINDOW_WIDTH;
-	EDITOR_WINDOW_SCENE_HEIGHT = 6.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
-	EDITOR_WINDOW_SCENE_POS_MIN = EDITOR_WINDOW_SCENE_POS;
-	EDITOR_WINDOW_SCENE_POS_MAX = ImVec2(EDITOR_WINDOW_SCENE_POS_MIN.x + EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_POS_MIN.y + EDITOR_WINDOW_SCENE_HEIGHT);
+	EDITOR_WINDOW_SCENE_WIDTH = EDITOR_WINDOW_WIDTH * 0.75f;
+	EDITOR_WINDOW_SCENE_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.6f;
 
-	EDITOR_WINDOW_PROJECT_POS = ImVec2(0, EDITOR_WINDOW_TITLE_BAR_HEIGHT + EDITOR_WINDOW_SCENE_HEIGHT);
-	EDITOR_WINDOW_PROJECT_WIDTH = EDITOR_WINDOW_WIDTH;
-	EDITOR_WINDOW_PROJECT_HEIGHT = 3.0f * EDITOR_WINDOW_HEIGHT / 10.0f;
+	EDITOR_WINDOW_HIERARCHY_WIDTH = EDITOR_WINDOW_WIDTH * 0.25f;
+	EDITOR_WINDOW_HIERARCHY_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.6f;
 
-	EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH = EDITOR_WINDOW_PROJECT_WIDTH / 4.0f;
-	EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
-	EDITOR_WINDOW_PROJECT_LEFT_POS_MIN = EDITOR_WINDOW_PROJECT_POS;
-	EDITOR_WINDOW_PROJECT_LEFT_POS_MAX = ImVec2(EDITOR_WINDOW_PROJECT_LEFT_POS_MIN.x + EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_LEFT_POS_MIN.y + EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT);
+	EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH = EDITOR_WINDOW_WIDTH * 0.25f;
+	EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.3f;
 
 	EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH = EDITOR_WINDOW_WIDTH - EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
-	EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT = EDITOR_WINDOW_PROJECT_HEIGHT;
-	EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN = ImVec2(EDITOR_WINDOW_PROJECT_LEFT_POS_MAX.x, EDITOR_WINDOW_PROJECT_LEFT_POS_MAX.y - EDITOR_WINDOW_PROJECT_HEIGHT);
-	EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX = ImVec2(EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.x + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN.y + EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT);
+	EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.3f;
 
 	EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED = 1.0f;
 	EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED = 10.0f;
@@ -197,7 +209,6 @@ void EditorApp::_TickDeltaTime() {
 AssetTreeNode* _rootNode = nullptr;
 AssetTreeNode* _curProjectChoosedNode = nullptr;
 AssetTreeNode* _curProjectDetailsChoosedNode = nullptr;
-EditorPanelFlags_ _curChoosedPanelFlags = EditorPanelFlags_None;
 double _assetClickTime;
 unsigned int _texture_id;
 
@@ -212,66 +223,6 @@ void EditorApp::_InitEditorGLIcon() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
-}
-
-#pragma endregion
-
-#pragma region [Device Input]
-
-KeyStatus_ _allKeyStatus[1024] = {};
-
-bool EditorApp::EditorApp::_CheckMouseDown(const MouseButtons_& button) {
-	ImGuiIO& io = ImGui::GetIO();
-	return io.MouseDown[button];
-}
-
-bool EditorApp::_CheckKeyDown(const ImGuiKey& key) {
-	ImGuiIO& io = ImGui::GetIO();
-	return io.KeysDown[key];
-}
-
-bool EditorApp::_IsInAABB(const vec2& v, const ImVec2& min, const ImVec2& max) {
-	return v.x > min.x && v.x < max.x&& v.y>min.y && v.y < max.y;
-}
-
-int EditorApp::_Clamp(const int& v, const int& min, const int& max) {
-	return v<min ? min : v>max ? max : v;
-}
-
-vec2 EditorApp::GetMousePosDelta() { return _mousePosDelta; }
-vec2 EditorApp::GetMousePos() {
-	ImVec2 p = ImGui::GetMousePos();
-	return vec2(p.x, p.y);
-}
-
-bool EditorApp::GetMouseButtonDown(const MouseButtons_& button) { return _allKeyStatus[button] == KeyStatus_Down; }
-bool EditorApp::GetMouseButtonPressing(const MouseButtons_& button) { return _allKeyStatus[button] == KeyStatus_Pressing; }
-bool EditorApp::GetMouseButtonUp(const MouseButtons_& button) { return _allKeyStatus[button] == KeyStatus_Up; }
-bool EditorApp::GetKeyDown(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Down; }
-bool EditorApp::GetKeyPressing(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Pressing; }
-bool EditorApp::GetKeyUp(const ImGuiKey& key) { return _allKeyStatus[key] == KeyStatus_Up; }
-
-void EditorApp::_TickMouseKeyStatus(const MouseButtons_& key) {
-	if (_CheckMouseDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
-	else _allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] - 1), KeyStatus_None, KeyStatus_Up);
-}
-void EditorApp::_TickKeyStatus(const ImGuiKey& key) {
-	if (_CheckKeyDown(key))_allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] + 1), KeyStatus_Down, KeyStatus_Pressing);
-	else _allKeyStatus[key] = (KeyStatus_)_Clamp((_allKeyStatus[key] - 1), KeyStatus_None, KeyStatus_Up);
-}
-void EditorApp::_TickEditorInput() {
-	vec2 curMousePos = GetMousePos();
-	_mousePosDelta = curMousePos - _lastMousePos;
-	_lastMousePos = curMousePos;
-
-	_TickMouseKeyStatus(MouseButtons_Left);
-	_TickMouseKeyStatus(MouseButtons_Right);
-	_TickMouseKeyStatus(MouseButtons_Middle);
-	_TickKeyStatus(ImGuiKey_Backspace);
-	_TickKeyStatus(ImGuiKey_W);
-	_TickKeyStatus(ImGuiKey_S);
-	_TickKeyStatus(ImGuiKey_A);
-	_TickKeyStatus(ImGuiKey_D);
 }
 
 #pragma endregion
@@ -306,15 +257,14 @@ void EditorApp::_ShowSceneViewCanvas(const vec2& min, const vec2& max) {
 	ImGui::End();
 }
 
-void EditorApp::_ShowProjectCanvas() {
-	ImGui::Begin("Project", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-	ImGui::Columns(2);
-	ImGui::SetColumnWidth(0, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH);
-	ImGui::SetColumnWidth(1, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH);
+void EditorApp::_ShowProjectLeftColumnCanvas() {
+	ImGui::Begin("Project Left Column", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 	_ShowProjectMainPanel();
+	ImGui::End();
+}
 
-	ImGui::NextColumn();
-
+void EditorApp::_ShowProjectRightColumnCanvas() {
+	ImGui::Begin("Project Right Column", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 	if (_curProjectChoosedNode != nullptr) {
 		_ShowProjectDetailsPanel(_curProjectChoosedNode);
 	}
@@ -327,7 +277,6 @@ void EditorApp::_ShowProjectMainPanel() {
 }
 
 void EditorApp::_ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset) {
-	// Self GUI
 	ImGui::Indent(xOffset);
 	if (node->isDir) {
 		ImGui::Image(reinterpret_cast<ImTextureID>(_texture_id), ImVec2(32, 32)); // 调整图标大小
@@ -369,7 +318,6 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 	ImGui::Text(_curProjectChoosedNode->assetPath.c_str());
 	ImGui::Spacing();
 	ImGui::Indent(10.0f);
-	unsigned int colunmCount = EDITOR_WINDOW_PROJECT_HEIGHT;
 	ImGui::PushID(2);
 	for (auto kvp : node->childNodes) {
 		AssetTreeNode* node = kvp.second;
@@ -399,27 +347,8 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 
 #pragma region [EDITOR EVENT]
 
-void EditorApp::_Event_PanelSelection() {
-	if (GetMouseButtonDown(MouseButtons_Left)) {
-		vec2 mousePos = GetMousePos();
-		if (_IsInAABB(mousePos, EDITOR_WINDOW_TITLE_BAR_POS_MIN, EDITOR_WINDOW_TITLE_BAR_POS_MAX)) {
-			_curChoosedPanelFlags = EditorPanelFlags_TitleBar;
-		}
-		else if (_IsInAABB(mousePos, EDITOR_WINDOW_SCENE_POS_MIN, EDITOR_WINDOW_SCENE_POS_MAX)) {
-			_curChoosedPanelFlags = EditorPanelFlags_SceneView;
-		}
-		else if (_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_LEFT_POS_MIN, EDITOR_WINDOW_PROJECT_LEFT_POS_MAX)) {
-			_curChoosedPanelFlags = EditorPanelFlags_ProjectLeftColunm;
-		}
-		else if (_IsInAABB(mousePos, EDITOR_WINDOW_PROJECT_RIGHT_POS_MIN, EDITOR_WINDOW_PROJECT_RIGHT_POS_MAX)) {
-			_curChoosedPanelFlags = EditorPanelFlags_ProjectRightColunm;
-		}
-		std::cout << "Choosed Panel: " << _curChoosedPanelFlags << std::endl;
-	}
-}
-
-void EditorApp::_Event_DirectoryBackward() {
-	if (GetKeyDown(ImGuiKey_Backspace)) {
+void EditorApp::_Tick_Event_DirectoryBackward() {
+	if (EditorInputManager::GetKeyDown(ImGuiKey_Backspace)) {
 		if (_curProjectChoosedNode != nullptr && _curProjectChoosedNode->fatherNode != nullptr) {
 			_curProjectChoosedNode = _curProjectChoosedNode->fatherNode;
 			_curProjectDetailsChoosedNode = nullptr;
@@ -427,7 +356,7 @@ void EditorApp::_Event_DirectoryBackward() {
 	}
 }
 
-void EditorApp::_Event_SceneView(const float& deltaTime) {
+void EditorApp::_Tick_Event_SceneView(const float& deltaTime) {
 	if (_curChoosedPanelFlags != EditorPanelFlags_SceneView)return;
 
 	auto sceneViewCamera = _editorContext->sceneViewCamera;
@@ -436,8 +365,8 @@ void EditorApp::_Event_SceneView(const float& deltaTime) {
 	auto camForward = sceneViewCamera->transform->GetForward();
 	auto camRight = sceneViewCamera->transform->GetRight();
 
-	if (GetMouseButtonPressing(MouseButtons_Right)) {
-		vec2 mousePosDelta = GetMousePosDelta();
+	if (EditorInputManager::GetMouseButtonPressing(MouseButtons_Right)) {
+		vec2 mousePosDelta = EditorInputManager::GetMousePosDelta();
 		float rotateFactor = EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED * deltaTime;
 		auto yawRadius = -mousePosDelta.x * rotateFactor;
 		auto pitchRadius = mousePosDelta.y * rotateFactor;
@@ -445,29 +374,28 @@ void EditorApp::_Event_SceneView(const float& deltaTime) {
 	}
 	sceneViewCamera->transform->SetRotation(rot);
 
-	if (GetKeyPressing(ImGuiKey_W)) {
+	if (EditorInputManager::GetKeyPressing(ImGuiKey_W)) {
 		pos += camForward * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
 	}
 
-	if (GetKeyPressing(ImGuiKey_S)) {
+	if (EditorInputManager::GetKeyPressing(ImGuiKey_S)) {
 		pos += -camForward * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
 	}
 
-	if (GetKeyPressing(ImGuiKey_A)) {
+	if (EditorInputManager::GetKeyPressing(ImGuiKey_A)) {
 		pos += camRight * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
 	}
 
-	if (GetKeyPressing(ImGuiKey_D)) {
+	if (EditorInputManager::GetKeyPressing(ImGuiKey_D)) {
 		pos += -camRight * EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED * deltaTime;
 	}
 	sceneViewCamera->transform->SetPosition(pos);
 }
 
-void EditorApp::_TickEvents() {
-	_TickEditorInput();
-	_Event_PanelSelection();
-	_Event_DirectoryBackward();
-	_Event_SceneView(_deltaTime);
+void EditorApp::_Tick_Events() {
+	EditorInputManager::_TickEditorInput();
+	_Tick_Event_DirectoryBackward();
+	_Tick_Event_SceneView(_deltaTime);
 }
 
 #pragma endregion
@@ -493,6 +421,38 @@ void EditorApp::_ImGuiShutDown() {
 
 void EditorApp::_GLShutDown() {
 	glfwTerminate();
+}
+
+#pragma endregion
+
+#pragma region [EDITOR INPUT]
+
+void EditorApp::_Tick_EditorInput() {
+	if (!EditorInputManager::GetMouseButtonDown(MouseButtons_Left)) {
+		return;
+	}
+
+	vec2 mousePos = EditorInputManager::GetMousePos();
+	EditorUICanvasNode* hitCanvasNode;
+	if (!_editorContext->rootCanvas->RaycastHitCanvas(mousePos, hitCanvasNode)) {
+		return;
+	}
+
+	if (hitCanvasNode == _editorContext->titleBarCanvasNode) {
+		this->_curChoosedPanelFlags = EditorPanelFlags_TitleBar;
+	}
+	else if (hitCanvasNode == _editorContext->sceneViewCanvasNode) {
+		this->_curChoosedPanelFlags = EditorPanelFlags_SceneView;
+	}
+	else if (hitCanvasNode == _editorContext->hierarchyCanvasNode) {
+		this->_curChoosedPanelFlags = EditorPanelFlags_Hierarchy;
+	}
+	else if (hitCanvasNode == _editorContext->projectLeftCanvasNode) {
+		this->_curChoosedPanelFlags = EditorPanelFlags_ProjectLeftColunm;
+	}
+	else if (hitCanvasNode == _editorContext->projectLeftCanvasNode) {
+		this->_curChoosedPanelFlags = EditorPanelFlags_ProjectRightColunm;
+	}
 }
 
 #pragma endregion

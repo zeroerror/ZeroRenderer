@@ -55,6 +55,8 @@
     <ClCompile Include="src\editor\canvas\EditorUICanvas.cpp" />
     <ClCompile Include="src\editor\canvas\EditorUICanvasNode.cpp" />
     <ClCompile Include="src\generic\Rect.cpp" />
+    <ClCompile Include="src\editor\manager\EditorInputManager.cpp" />
+    <ClCompile Include="src\util\ZeroMathUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\runtime\component\CameraController.h" />
@@ -416,6 +418,10 @@
     <ClInclude Include="src\generic\Rect.h" />
     <ClInclude Include="src\generic\AnchorPointType.h" />
     <ClInclude Include="src\generic\AlignType.h" />
+    <ClInclude Include="src\editor\manager\EditorInputManager.h" />
+    <ClInclude Include="src\generic\MouseButton.h" />
+    <ClInclude Include="src\generic\KeyStatus.h" />
+    <ClInclude Include="src\util\ZeroMathUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

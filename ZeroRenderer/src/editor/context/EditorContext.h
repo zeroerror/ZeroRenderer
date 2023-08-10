@@ -6,12 +6,17 @@
 class EditorContext {
 
 public:
+	EditorContext();
+	~EditorContext();
+
 	SceneMeta* currentSceneMeta;
 	Camera* sceneViewCamera;
 
-	EditorUICanvas* _rootCanvas;
-	EditorUICanvasNode* _titleBarCanvasNode;
-	EditorUICanvasNode* _sceneViewCanvasNode;
-	EditorUICanvasNode* _projectCanvasNode;
+	EditorUICanvas* rootCanvas;
+	EditorUICanvasNode* titleBarCanvasNode;
+	EditorUICanvasNode* sceneViewCanvasNode;
+	EditorUICanvasNode* hierarchyCanvasNode;
+	EditorUICanvasNode* projectLeftCanvasNode;
+	EditorUICanvasNode* projectRightCanvasNode;
 
 };
