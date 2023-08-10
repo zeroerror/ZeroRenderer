@@ -23,6 +23,10 @@ EditorApp::EditorApp() {
 	_editorDomain = new EditorDomain();
 	_editorDomain->Inject(_editorContext, _runtimeDomain);
 
+	// Init Editor
+	_InitEditorGLIcon();
+	_InitEditorWindowCongfig();
+
 	// Init GL
 	glfwInit();
 	window = glfwCreateWindow(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, "Zero Engine v0.0.1", nullptr, nullptr);
@@ -34,11 +38,12 @@ EditorApp::EditorApp() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
-	_InitEditorGLIcon();
-	_InitEditorWindowCongfig();
-
+	// Init Scene View
 	_InitSceneView();
 	_InitSceneViewFrameBuffer();
+
+	// Init Hierarchy
+	_InitHierarchy();
 
 	// Editor Canvas
 	_editorContext->rootCanvas = new EditorUICanvas(Rect(1920, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
@@ -55,6 +60,7 @@ EditorApp::EditorApp() {
 
 	_editorContext->hierarchyCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_HIERARCHY_WIDTH, EDITOR_WINDOW_HIERARCHY_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
 	_editorContext->hierarchyCanvasNode->callback = [this](const Rect& rect) {
+		_ShowHierarchyCanvas();
 	};
 
 	_editorContext->projectLeftCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
@@ -209,15 +215,15 @@ void EditorApp::_TickDeltaTime() {
 AssetTreeNode* _rootNode = nullptr;
 AssetTreeNode* _curProjectChoosedNode = nullptr;
 AssetTreeNode* _curProjectDetailsChoosedNode = nullptr;
-double _assetClickTime;
-unsigned int _texture_id;
+double _projectAssetClickTime;
+unsigned int _projectFolderTextureID;
 
 void EditorApp::_InitEditorGLIcon() {
 	string path = "asset/texture/folder.png";
 	int width, height, channels;
 	unsigned char* imgData = stbi_load(path.c_str(), &width, &height, &channels, 4);
-	glGenTextures(1, &_texture_id);
-	glBindTexture(GL_TEXTURE_2D, _texture_id);
+	glGenTextures(1, &_projectFolderTextureID);
+	glBindTexture(GL_TEXTURE_2D, _projectFolderTextureID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -227,7 +233,7 @@ void EditorApp::_InitEditorGLIcon() {
 
 #pragma endregion
 
-#pragma region [Editor Panel]
+#pragma region [Title Bar]
 
 void EditorApp::_ShowTitleBarCanvas() {
 	ImGui::Begin("Edit", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
@@ -248,6 +254,10 @@ void EditorApp::_ShowTitleBarCanvas() {
 	ImGui::End();
 }
 
+#pragma endregion
+
+#pragma region [Scene View]
+
 void EditorApp::_ShowSceneViewCanvas(const vec2& min, const vec2& max) {
 	ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -256,6 +266,72 @@ void EditorApp::_ShowSceneViewCanvas(const vec2& min, const vec2& max) {
 	drawList->PopTextureID();
 	ImGui::End();
 }
+
+#pragma endregion
+
+#pragma region [Hierarchy]
+
+void EditorApp::_InitHierarchy() {
+	_hierarchyGameObjectFoldExpandMap = unordered_map<GameObject*, bool>();
+	_hierarchyRootGameObjects = vector<GameObject*>();
+
+	vector<GameObject*>* gameObjects = _runtimeContext->currentScene->gameObjects;
+	for (GameObject* go : *gameObjects) {
+		_hierarchyGameObjectFoldExpandMap.insert(make_pair(go, false));
+		if (go->transform()->GetFather() == nullptr) {
+			_hierarchyRootGameObjects.push_back(go);
+		}
+	}
+}
+
+bool EditorApp::_IsHierarchyGameObjectShow(const GameObject* go) {
+	if (go == nullptr) return false;
+	Transform* father = go->transform()->GetFather();
+	if (father == nullptr) return true;
+
+	return _hierarchyGameObjectFoldExpandMap[father->gameObject];
+}
+
+void EditorApp::_ShowHierarchyCanvas() {
+	ImGui::Begin("Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+
+	for (GameObject* go : _hierarchyRootGameObjects) {
+		Transform* curTrans = go->transform();
+		_ShowHierarchy(curTrans, 0);
+	}
+
+	ImGui::End();
+}
+
+void EditorApp::_ShowHierarchy(const Transform* tran, int depth){
+	if (tran == nullptr) return;
+
+	GameObject* go = tran->gameObject;
+
+	ImGui::Indent(depth * 20.0f);
+	if (ImGui::Selectable(go->GetName().c_str(), _curHierarchyChoosedGameObject == go)) {
+		double nowClickTime = glfwGetTime();
+		double clickTimeOffset = nowClickTime - _hierarchyGameObjectClickTime;
+		_hierarchyGameObjectClickTime = nowClickTime;
+
+		if (clickTimeOffset < 0.2f && go->transform()->GetChildCount() > 0) {
+			_hierarchyGameObjectFoldExpandMap.at(go) = !_hierarchyGameObjectFoldExpandMap.at(go);
+		}
+	}
+
+	if (_hierarchyGameObjectFoldExpandMap.at(go)) {
+		int childCount = tran->GetChildCount();
+		for (int i = 0; i < childCount; i++) {
+			_ShowHierarchy(tran->GetChild(i), depth + 1);
+		}
+	}
+
+	ImGui::Unindent(depth * 20.0f);
+}
+
+#pragma endregion
+
+#pragma region [Project]
 
 void EditorApp::_ShowProjectLeftColumnCanvas() {
 	ImGui::Begin("Project Left Column", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
@@ -279,17 +355,17 @@ void EditorApp::_ShowProjectMainPanel() {
 void EditorApp::_ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset) {
 	ImGui::Indent(xOffset);
 	if (node->isDir) {
-		ImGui::Image(reinterpret_cast<ImTextureID>(_texture_id), ImVec2(32, 32)); // 调整图标大小
+		ImGui::Image(reinterpret_cast<ImTextureID>(_projectFolderTextureID), ImVec2(32, 32)); // 调整图标大小
 		ImGui::SameLine();
 	}
 	string assetName = node->assetName;
 	const char* assetNamec = assetName.c_str();
 	string choosedPath = dir + assetName;
 	ImGui::PushID(1);
-	if (ImGui::Selectable(assetNamec, _curProjectChoosedNode != nullptr ? choosedPath == _curProjectChoosedNode->assetPath : false)) {
+	if (ImGui::Selectable(assetNamec, _curProjectChoosedNode == node)) {
 		double nowClickTime = glfwGetTime();
-		double clickTimeOffset = nowClickTime - _assetClickTime;
-		_assetClickTime = nowClickTime;
+		double clickTimeOffset = nowClickTime - _projectAssetClickTime;
+		_projectAssetClickTime = nowClickTime;
 
 		if (node->isDir) {
 			_curProjectChoosedNode = node;
@@ -322,15 +398,15 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode* node) {
 	for (auto kvp : node->childNodes) {
 		AssetTreeNode* node = kvp.second;
 		if (node->isDir) {
-			ImGui::Image(reinterpret_cast<ImTextureID>(_texture_id), ImVec2(32, 32));
+			ImGui::Image(reinterpret_cast<ImTextureID>(_projectFolderTextureID), ImVec2(32, 32));
 			ImGui::SameLine();
 		}
 		const char* assetNamec = node->assetName.c_str();
-		if (ImGui::Selectable(assetNamec, _curProjectDetailsChoosedNode != nullptr ? assetNamec == _curProjectDetailsChoosedNode->assetPath : false, ImGuiSelectableFlags_None, ImVec2(0, 0))) {
+		if (ImGui::Selectable(assetNamec, _curProjectDetailsChoosedNode == node)) {
 			_curProjectDetailsChoosedNode = node;
 			double nowClickTime = glfwGetTime();
-			double clickTimeOffset = nowClickTime - _assetClickTime;
-			_assetClickTime = nowClickTime;
+			double clickTimeOffset = nowClickTime - _projectAssetClickTime;
+			_projectAssetClickTime = nowClickTime;
 			if (clickTimeOffset < 0.2f) {
 				AssetTreeNode* detailNode;
 				if (_curProjectDetailsChoosedNode->isDir) {

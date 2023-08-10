@@ -40,6 +40,7 @@ public:
 	void RemoveChild(const Transform& child);
 	Transform* GetFather() const;
 	Transform* GetChild(int index) const;
+	void ForEachChild(void(*func)(Transform* transform));
 	Transform* Find(const string& path);
 	int GetChildCount() const;
 

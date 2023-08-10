@@ -415,7 +415,7 @@ Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
 }
 
 void RuntimeDomain::RenderScene(const Scene& scene, const Camera& camera) {
-	for (auto go : scene.gameObjects) {
+	for (auto go : *scene.gameObjects) {
 		vector<SkinMeshRenderer*> skinMeshRenderers = vector<SkinMeshRenderer*>();
 		go->GetAllComponents<SkinMeshRenderer>(skinMeshRenderers);
 		for (auto skinMeshRenderer : skinMeshRenderers) {
@@ -597,17 +597,17 @@ void RuntimeDomain::MetaToScene(const SceneMeta& sceneMeta, Scene& scene) {
 	for (GameObjectMeta* meta : sceneMeta.gameObjectMetas) {
 		GameObject* go = new GameObject();
 		MetaToGameObject(*meta, *go);
-		scene.gameObjects.push_back(go);
+		scene.gameObjects->push_back(go);
 	}
 
 	for (PrefabInstanceMeta* meta : sceneMeta.prefabInstanceMetas) {
 		GameObject* go = new GameObject();
 		MetaToGameObject(*meta, *go);
-		scene.gameObjects.push_back(go);
+		scene.gameObjects->push_back(go);
 	}
 
 	// Serialize Transform Father And Children.
-	for (auto go : scene.gameObjects) {
+	for (auto go : *scene.gameObjects) {
 		Transform* trans = go->transform();
 		Scene* curScene = _runtimeContext->currentScene;
 		for (auto childGID : trans->childrenGIDs_forSerialize) {

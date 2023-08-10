@@ -11,7 +11,7 @@ public:
 	Scene();
 	~Scene();
 
-	vector<GameObject*> gameObjects;
+	vector<GameObject*>* gameObjects;
 
 	GameObject* Find(const string& name);
 	GameObject* Find(const int& gid);

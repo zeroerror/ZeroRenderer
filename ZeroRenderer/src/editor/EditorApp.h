@@ -44,40 +44,11 @@ private:
 	bool _alreadyShutDown;
 	void _ShutDown();
 
-#pragma region [EDITOR WINDOW Config]
-
-private:
-	int EDITOR_WINDOW_WIDTH;
-	int EDITOR_WINDOW_HEIGHT;
-
-	int EDITOR_WINDOW_TITLE_BAR_WIDTH;
-	int EDITOR_WINDOW_TITLE_BAR_HEIGHT;
-
-	int EDITOR_WINDOW_SCENE_WIDTH;
-	int EDITOR_WINDOW_SCENE_HEIGHT;
-
-	int EDITOR_WINDOW_HIERARCHY_WIDTH;
-	int EDITOR_WINDOW_HIERARCHY_HEIGHT;
-
-	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
-	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT;
-
-	int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH;
-	int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT;
-
-	float EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED;
-	float EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED;
-
-	void _InitEditorWindowCongfig();
-
-#pragma endregion
-
 #pragma region [EDITOR TIME]
 
 private:
 	float _lastTime;
 	float _deltaTime;
-
 	void _TickDeltaTime();
 
 #pragma endregion
@@ -86,20 +57,39 @@ private:
 
 private:
 	AssetTreeNode* _rootNode;
-	AssetTreeNode* _curProjectChoosedNode;
-	AssetTreeNode* _curProjectDetailsChoosedNode;
 	EditorPanelFlags_ _curChoosedPanelFlags;
-	double _assetClickTime;
-	unsigned int _texture_id;
 	void _InitEditorGLIcon();
 
 #pragma endregion
 
-#pragma region [Editor Canvas]
+#pragma region [Title Bar]
 
 private:
 	void _ShowTitleBarCanvas();
-	void _ShowSceneViewCanvas(const vec2& min, const vec2& max);
+
+#pragma endregion
+
+#pragma region [Hierarchy]
+
+private:
+	GameObject* _curHierarchyChoosedGameObject;
+	unordered_map<GameObject*, bool> _hierarchyGameObjectFoldExpandMap;
+	vector<GameObject*> _hierarchyRootGameObjects;
+	double _hierarchyGameObjectClickTime;
+	void _InitHierarchy();
+	bool _IsHierarchyGameObjectShow(const GameObject* gameObject);
+	void _ShowHierarchyCanvas();
+	void _ShowHierarchy(const Transform* transform, int depth);
+
+#pragma endregion
+
+#pragma region [Project]
+
+private:
+	AssetTreeNode* _curProjectChoosedNode;
+	AssetTreeNode* _curProjectDetailsChoosedNode;
+	unsigned int _projectFolderTextureID;
+	double _projectAssetClickTime;
 	void _ShowProjectLeftColumnCanvas();
 	void _ShowProjectRightColumnCanvas();
 	void _ShowProjectMainPanel();
@@ -116,6 +106,7 @@ private:
 	void _InitSceneView();
 	void _InitSceneViewFrameBuffer();
 	void _RenderSceneViewFrameBuffer();
+	void _ShowSceneViewCanvas(const vec2& min, const vec2& max);
 
 #pragma endregion
 
@@ -141,6 +132,34 @@ private:
 #pragma region [EDITOR INPUT]
 
 	void _Tick_EditorInput();
+
+#pragma endregion
+
+#pragma region [EDITOR WINDOW Config]
+
+private:
+	int EDITOR_WINDOW_WIDTH;
+	int EDITOR_WINDOW_HEIGHT;
+
+	int EDITOR_WINDOW_TITLE_BAR_WIDTH;
+	int EDITOR_WINDOW_TITLE_BAR_HEIGHT;
+
+	int EDITOR_WINDOW_SCENE_WIDTH;
+	int EDITOR_WINDOW_SCENE_HEIGHT;
+
+	int EDITOR_WINDOW_HIERARCHY_WIDTH;
+	int EDITOR_WINDOW_HIERARCHY_HEIGHT;
+
+	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
+	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT;
+
+	int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH;
+	int EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT;
+
+	float EDITOR_WINDOW_SCENE_VIEW_ROTATE_SPEED;
+	float EDITOR_WINDOW_SCENE_VIEW_MOVE_SPEED;
+
+	void _InitEditorWindowCongfig();
 
 #pragma endregion
 

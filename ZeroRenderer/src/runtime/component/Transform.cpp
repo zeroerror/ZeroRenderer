@@ -75,6 +75,12 @@ Transform* Transform::GetChild(int index) const {
 	return (*_children)[index];
 }
 
+void Transform::ForEachChild(void(*func)(Transform* transform)) {
+	for (auto child : *_children) {
+		func(child);
+	}
+}
+
 Transform* Transform::Find(const string& path) {
 	return _Find(path, this);
 }
