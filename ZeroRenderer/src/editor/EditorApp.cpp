@@ -9,8 +9,8 @@ EditorApp::EditorApp() {
 
 	// Import Editor Database
 	EditorDatabase::ImportAssets();
-	_rootNode = EditorDatabase::GetRootAssetTreeNode();
-	_rootNode->isExpanded = true;
+	_projectRootNode = EditorDatabase::GetRootAssetTreeNode();
+	_projectRootNode->isExpanded = true;
 
 	// Init Editor's Runtime Context And Domain
 	_runtimeContext = new RuntimeContext();
@@ -212,7 +212,7 @@ void EditorApp::_TickDeltaTime() {
 	_lastTime = curTime;
 }
 
-AssetTreeNode* _rootNode = nullptr;
+AssetTreeNode* _projectRootNode = nullptr;
 AssetTreeNode* _curProjectChoosedNode = nullptr;
 AssetTreeNode* _curProjectDetailsChoosedNode = nullptr;
 double _projectAssetClickTime;
@@ -337,7 +337,8 @@ void EditorApp::_ShowHierarchy(const Transform* tran, int depth){
 
 void EditorApp::_ShowProjectLeftColumnCanvas() {
 	ImGui::Begin("Project Left Column", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-	_ShowProjectMainPanel();
+	float xoffset = 0;
+	_ShowProjectMainPanel(_projectRootNode, "", xoffset);
 	ImGui::End();
 }
 
@@ -347,11 +348,6 @@ void EditorApp::_ShowProjectRightColumnCanvas() {
 		_ShowProjectDetailsPanel(_curProjectChoosedNode);
 	}
 	ImGui::End();
-}
-
-void EditorApp::_ShowProjectMainPanel() {
-	float xoffset = 0;
-	_ShowProjectMainPanel(_rootNode, "", xoffset);
 }
 
 void EditorApp::_ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset) {

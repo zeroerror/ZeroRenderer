@@ -17,9 +17,4 @@ public:
 
 	void EditorUICanvas_Draw(const EditorUICanvas& rootCanvas);
 
-	int GenerateGID();
-
-private:
-	int _gid;
-
 };

@@ -56,7 +56,6 @@ private:
 #pragma region [EDITOR CACHE]
 
 private:
-	AssetTreeNode* _rootNode;
 	EditorPanelFlags_ _curChoosedPanelFlags;
 	void _InitEditorGLIcon();
 
@@ -76,23 +75,24 @@ private:
 	unordered_map<GameObject*, bool> _hierarchyGameObjectFoldExpandMap;
 	vector<GameObject*> _hierarchyRootGameObjects;
 	double _hierarchyGameObjectClickTime;
+	void _ShowHierarchy(const Transform* transform, int depth);
 	void _InitHierarchy();
 	bool _IsHierarchyGameObjectShow(const GameObject* gameObject);
 	void _ShowHierarchyCanvas();
-	void _ShowHierarchy(const Transform* transform, int depth);
 
 #pragma endregion
 
 #pragma region [Project]
 
 private:
+	AssetTreeNode* _projectRootNode;
 	AssetTreeNode* _curProjectChoosedNode;
 	AssetTreeNode* _curProjectDetailsChoosedNode;
 	unsigned int _projectFolderTextureID;
 	double _projectAssetClickTime;
+
 	void _ShowProjectLeftColumnCanvas();
 	void _ShowProjectRightColumnCanvas();
-	void _ShowProjectMainPanel();
 	void _ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset);
 	void _ShowProjectDetailsPanel(const AssetTreeNode* node);
 
