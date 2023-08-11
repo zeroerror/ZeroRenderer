@@ -2,6 +2,7 @@
 #include "SceneMeta.h"
 #include "Camera.h"
 #include "EditorUICanvas.h"
+#include "SceneView.h"
 
 class EditorContext {
 
@@ -10,7 +11,7 @@ public:
 	~EditorContext();
 
 	SceneMeta* currentSceneMeta;
-	Camera* sceneViewCamera;
+	SceneView* sceneView;
 
 	EditorUICanvas* rootCanvas;
 	EditorUICanvasNode* titleBarCanvasNode;

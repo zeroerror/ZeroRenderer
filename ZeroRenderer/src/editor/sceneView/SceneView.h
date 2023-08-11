@@ -3,17 +3,19 @@
 #include "Camera.h"
 #include "SceneViewFSMCom.h"
 
-class SceneView{
-    
-public:
-    SceneView();
-    ~SceneView();
+class SceneView {
 
-	Camera* camera;
-    SceneViewFSMCom* FSMCom();
+public:
+	SceneView(Camera* camera);
+	~SceneView();
+
+	SceneViewFSMCom* FSMCom();
+	float cameraDistance;
+	Camera* SceneViewCamera();
 
 private:
-    SceneViewFSMCom* _fsmCom;
+	SceneViewFSMCom* _fsmCom;
+	Camera* _sceneViewCamera;
 
 };
 

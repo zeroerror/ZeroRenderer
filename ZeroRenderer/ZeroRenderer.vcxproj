@@ -103,6 +103,7 @@
     <ClInclude Include="src\editor\sceneView\SceneView.h" />
     <ClInclude Include="src\editor\sceneView\SceneViewFSMCom.h" />
     <ClInclude Include="src\editor\sceneView\SceneViewFSMFocusingModel.h" />
+    <ClInclude Include="src\editor\sceneView\SceneViewFSMState.h" />
     <ClInclude Include="src\generic\AlignType.h" />
     <ClInclude Include="src\generic\AnchorPointType.h" />
     <ClInclude Include="src\generic\KeyStatus.h" />

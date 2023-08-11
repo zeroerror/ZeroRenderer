@@ -102,6 +102,7 @@ int EditorApp::Tick() {
 	// ======== Logic ========
 	_TickDeltaTime();
 	_Tick_Events();
+	_TickSceneView(_deltaTime);
 
 	// ======== Renderer ========
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -167,7 +168,8 @@ void EditorApp::_InitSceneView() {
 		sceneViewCamera->transform->SetPosition(mainCamera->transform->GetPosition());
 		sceneViewCamera->transform->SetRotation(mainCamera->transform->GetRotation());
 	}
-	_editorContext->sceneViewCamera = sceneViewCamera;
+
+	_editorContext->sceneView = new SceneView(sceneViewCamera);
 	_editorContext->currentSceneMeta = currentSceneMeta;
 }
 
@@ -178,7 +180,7 @@ void EditorApp::_RenderSceneViewFrameBuffer() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
-		_runtimeDomain->RenderScene(*_runtimeContext->currentScene, *_editorContext->sceneViewCamera);
+		_runtimeDomain->RenderScene(*_runtimeContext->currentScene, *_editorContext->sceneView->SceneViewCamera());
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
@@ -267,6 +269,31 @@ void EditorApp::_ShowSceneViewCanvas(const vec2& min, const vec2& max) {
 	ImGui::End();
 }
 
+void EditorApp::_TickSceneView(const float& dt) {
+	SceneView* sceneView = _editorContext->sceneView;
+	if (sceneView == nullptr) return;
+
+	auto fsmCom = sceneView->FSMCom();
+	auto fsmState = fsmCom->FSMState();
+	if (fsmState == SceneViewFSMState_None) return;
+
+	if (fsmState == SceneViewFSMState_Focusing) {
+		auto focusingModel = fsmCom->FocusingModel();
+		if (focusingModel->isEntering) {
+			focusingModel->isEntering = false;
+		}
+
+		focusingModel->Tick(dt);
+
+		vec3 curCamPos = focusingModel->GetCurrentPos();
+		sceneView->SceneViewCamera()->transform->SetPosition(curCamPos);
+
+		if (focusingModel->IsExiting()) {
+			fsmCom->Enter_None();
+		}
+	}
+}
+
 #pragma endregion
 
 #pragma region [Hierarchy]
@@ -303,7 +330,7 @@ void EditorApp::_ShowHierarchyCanvas() {
 	ImGui::End();
 }
 
-void EditorApp::_ShowHierarchy(const Transform* tran, int depth){
+void EditorApp::_ShowHierarchy(const Transform* tran, int depth) {
 	if (tran == nullptr) return;
 
 	GameObject* go = tran->gameObject;
@@ -314,8 +341,11 @@ void EditorApp::_ShowHierarchy(const Transform* tran, int depth){
 		double clickTimeOffset = nowClickTime - _hierarchyGameObjectClickTime;
 		_hierarchyGameObjectClickTime = nowClickTime;
 
-		if (clickTimeOffset < 0.2f && go->transform()->GetChildCount() > 0) {
-			_hierarchyGameObjectFoldExpandMap.at(go) = !_hierarchyGameObjectFoldExpandMap.at(go);
+		if (clickTimeOffset < 0.2f) {
+			_editorDomain->SceneView_FocusOn(go->transform()->GetPosition());
+			if (go->transform()->GetChildCount() > 0) {
+				_hierarchyGameObjectFoldExpandMap.at(go) = !_hierarchyGameObjectFoldExpandMap.at(go);
+			}
 		}
 
 		_curHierarchyChoosedGameObject = go;
@@ -433,7 +463,7 @@ void EditorApp::_Tick_Event_DirectoryBackward() {
 void EditorApp::_Tick_Event_SceneView(const float& deltaTime) {
 	if (_curChoosedPanelFlags != EditorPanelFlags_SceneView)return;
 
-	auto sceneViewCamera = _editorContext->sceneViewCamera;
+	auto sceneViewCamera = _editorContext->sceneView->SceneViewCamera();
 	auto pos = sceneViewCamera->transform->GetPosition();
 	auto rot = sceneViewCamera->transform->rotation;
 	auto camForward = sceneViewCamera->transform->GetForward();

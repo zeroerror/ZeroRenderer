@@ -107,6 +107,7 @@ private:
 	void _InitSceneViewFrameBuffer();
 	void _RenderSceneViewFrameBuffer();
 	void _ShowSceneViewCanvas(const vec2& min, const vec2& max);
+	void _TickSceneView(const float& dt);
 
 #pragma endregion
 

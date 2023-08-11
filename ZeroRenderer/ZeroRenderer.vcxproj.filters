@@ -429,6 +429,7 @@
     <ClInclude Include="src\editor\sceneView\SceneViewFSMCom.h" />
     <ClInclude Include="src\editor\sceneView\SceneViewFSMFocusingModel.h" />
     <ClInclude Include="src\editor\generic\EditorPanelFlag.h" />
+    <ClInclude Include="src\editor\sceneView\SceneViewFSMState.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl" />

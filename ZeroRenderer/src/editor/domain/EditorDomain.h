@@ -15,6 +15,5 @@ public:
 	void TransformMeta_LinkChildren(TransformMeta& src, const vector<int>* childrenGIDs);
 	void TransformMeta_LinkFather(TransformMeta& src, int fatherGID);
 
-	void EditorUICanvas_Draw(const EditorUICanvas& rootCanvas);
-
+	void SceneView_FocusOn(const vec3& pos);
 };

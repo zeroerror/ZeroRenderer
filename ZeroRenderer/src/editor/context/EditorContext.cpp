@@ -5,7 +5,7 @@ EditorContext::EditorContext() {
 
 EditorContext::~EditorContext() {
     if(currentSceneMeta != nullptr) delete currentSceneMeta;
-    if(sceneViewCamera != nullptr) delete sceneViewCamera;
+    if(sceneView != nullptr) delete sceneView;
 
     if(rootCanvas != nullptr) delete rootCanvas;
     if(hierarchyCanvasNode != nullptr) delete hierarchyCanvasNode;
