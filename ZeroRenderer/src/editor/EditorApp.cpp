@@ -317,6 +317,8 @@ void EditorApp::_ShowHierarchy(const Transform* tran, int depth){
 		if (clickTimeOffset < 0.2f && go->transform()->GetChildCount() > 0) {
 			_hierarchyGameObjectFoldExpandMap.at(go) = !_hierarchyGameObjectFoldExpandMap.at(go);
 		}
+
+		_curHierarchyChoosedGameObject = go;
 	}
 
 	if (_hierarchyGameObjectFoldExpandMap.at(go)) {
