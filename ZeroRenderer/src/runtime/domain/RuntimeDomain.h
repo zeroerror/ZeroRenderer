@@ -27,14 +27,13 @@ public:
 	void Inject(RuntimeContext* ctxt);
 	void PreprocessModelMeshes();
 
-	void ProcessModelMeshFromPath(const string& path);
-	void ProcessMeshFromSkinMeshRendererMeta(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta);
-	void ProcessMeshFromMeshFilterMeta(const aiScene* aScene, MeshFilterMeta* meshFilterMeta, Mesh* mesh);
+	void PreprocessModelMeshFromPath(const string& path);
+	void PreprocessSMRMetaToMesh(const aiScene* aScene, const SkinMeshRendererMeta& skinMeshRendererMeta);
+	void ProcessModelToMesh(const aiScene* aScene, const int& meshIndex, Mesh* mesh);
 
 	void BindShader(const Transform* transform, Shader* shader, const Camera& camera);
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
 
-	SkinMeshRenderer* LoadSkinMeshRenderer(const aiScene* aScene, SkinMeshRendererMeta& skinMeshRendererMeta);
 	void BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 	void BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 
@@ -45,7 +44,6 @@ public:
 	void DrawMeshRenderer(const MeshRenderer* meshRenderer, const Camera& camera);
 
 	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
-	bool TryLoadMesh(const string& modelGUID, const int& meshIndex, Mesh*& mesh);
 
 	// ============================ All meta's methods that convert to a runtime object. =====================================
 	void MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight);

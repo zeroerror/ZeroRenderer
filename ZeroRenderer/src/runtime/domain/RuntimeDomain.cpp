@@ -34,11 +34,11 @@ void RuntimeDomain::PreprocessModelMeshes() {
 	vector<string> filePaths;
 	FileHelper::GetFilePaths("asset", suffixFlag, filePaths);
 	for (auto path : filePaths) {
-		ProcessModelMeshFromPath(path);
+		PreprocessModelMeshFromPath(path);
 	}
 }
 
-void RuntimeDomain::ProcessModelMeshFromPath(const string& path) {
+void RuntimeDomain::PreprocessModelMeshFromPath(const string& path) {
 	const aiScene* aScene = nullptr;
 	if (!EditorModelManager::TryLoadModel(path, aScene)) {
 		return;
@@ -49,20 +49,16 @@ void RuntimeDomain::ProcessModelMeshFromPath(const string& path) {
 	PrefabMeta_DeserializeFrom(prefabMeta, prefabPath);
 
 	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
-	ProcessMeshFromSkinMeshRendererMeta(aScene, skinMeshRendererMeta);
+	PreprocessSMRMetaToMesh(aScene, *skinMeshRendererMeta);
 }
 
-void RuntimeDomain::ProcessMeshFromSkinMeshRendererMeta(const aiScene* aScene, SkinMeshRendererMeta* skinMeshRendererMeta) {
-	if (skinMeshRendererMeta == nullptr) {
-		return;
-	}
-
+void RuntimeDomain::PreprocessSMRMetaToMesh(const aiScene* aScene, const SkinMeshRendererMeta& skinMeshRendererMeta) {
 	MeshRepo* meshRepo = _runtimeContext->GetMeshRepo();
 
-	for (size_t i = 0; i < skinMeshRendererMeta->meshFilterMetas.size(); i++) {
+	for (size_t i = 0; i < skinMeshRendererMeta.meshFilterMetas.size(); i++) {
 		Mesh* mesh = new Mesh();
-		auto meshFilterMeta = skinMeshRendererMeta->meshFilterMetas[i];
-		ProcessMeshFromMeshFilterMeta(aScene, meshFilterMeta, mesh);
+		auto meshFilterMeta = skinMeshRendererMeta.meshFilterMetas[i];
+		ProcessModelToMesh(aScene, meshFilterMeta->meshIndex, mesh);
 
 		string modelGUID = meshFilterMeta->modelGUID;
 		int meshIndex = meshFilterMeta->meshIndex;
@@ -70,9 +66,7 @@ void RuntimeDomain::ProcessMeshFromSkinMeshRendererMeta(const aiScene* aScene, S
 	}
 }
 
-void RuntimeDomain::ProcessMeshFromMeshFilterMeta(const aiScene* aScene, MeshFilterMeta* meshFilterMeta, Mesh* mesh) {
-	string modelGUID = meshFilterMeta->modelGUID;
-	int meshIndex = meshFilterMeta->meshIndex;
+void RuntimeDomain::ProcessModelToMesh(const aiScene* aScene, const int& meshIndex, Mesh* mesh) {
 	aiMesh* aMesh = aScene->mMeshes[meshIndex];
 	mesh->meshName = aMesh->mName.C_Str();
 	auto vertices = mesh->vertices;
@@ -108,7 +102,6 @@ void RuntimeDomain::ProcessMeshFromMeshFilterMeta(const aiScene* aScene, MeshFil
 			indices->push_back(face.mIndices[j]);
 		}
 	}
-
 }
 
 void RuntimeDomain::BindShader(const Transform* transform, Shader* shader, const Camera& camera) {
@@ -246,104 +239,6 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 	return 	materialRepo->TryAddMaterial(guid, material);
 }
 
-bool RuntimeDomain::TryLoadMesh(const string& modelGUID, const int& meshIndex, Mesh*& mesh) {
-	string modelPath;
-	if (!EditorDatabase::TryGetAssetPathFromGUID(modelGUID, modelPath)) {
-		return false;
-	}
-
-	MeshRepo* meshRepo = _runtimeContext->GetMeshRepo();
-	if (!meshRepo->TryGetMesh(modelGUID, meshIndex, mesh)) {
-		const aiScene* aScene = nullptr;
-		if (!EditorModelManager::TryLoadModel(modelPath, aScene)) {
-			return false;
-		}
-
-		mesh = new Mesh();
-		aiMesh* amesh = aScene->mMeshes[meshIndex];
-		mesh->meshName = amesh->mName.C_Str();
-		return meshRepo->TryAddMesh(modelGUID, meshIndex, mesh);
-	}
-
-	return true;
-}
-
-SkinMeshRenderer* RuntimeDomain::LoadSkinMeshRenderer(const aiScene* aScene, SkinMeshRendererMeta& skinMeshRendererMeta) {
-	SkinMeshRenderer* skinMeshRenderer = new SkinMeshRenderer();
-	MeshRepo* meshRepo = _runtimeContext->GetMeshRepo();
-
-	vector<MeshFilter*>* meshFilters = skinMeshRenderer->meshFilters;
-	vector<MeshRenderer*>* meshRenderers = skinMeshRenderer->meshRenderers;
-	for (size_t i = 0; i < skinMeshRendererMeta.meshFilterMetas.size(); i++) {
-
-		MeshFilterMeta* meshFilterMeta = skinMeshRendererMeta.meshFilterMetas[i];
-		MeshRendererMeta* meshRendererMeta = skinMeshRendererMeta.meshRendererMetas[i];
-
-		Mesh* mesh;
-		string modelGUID = meshFilterMeta->modelGUID;
-		int meshIndex = meshFilterMeta->meshIndex;
-
-		if (!meshRepo->TryGetMesh(modelGUID, meshIndex, mesh)) {
-			mesh = new Mesh();
-			aiMesh* amesh = aScene->mMeshes[meshIndex];
-			mesh->meshName = amesh->mName.C_Str();
-			ProcessMeshFromMeshFilterMeta(aScene, meshFilterMeta, mesh);
-			meshRepo->TryAddMesh(modelGUID, meshIndex, mesh);
-		}
-
-		aiMesh* aMesh = aScene->mMeshes[meshIndex];
-		auto vertices = mesh->vertices;
-		for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
-			aiVector3D aPosition = aMesh->mVertices[i];
-			aiVector3D aNormal = aMesh->mNormals[i];
-			Vertex* vertex = new Vertex();
-			if (aMesh->mTextureCoords[0] != nullptr) {
-				vec2 texCoord;
-				texCoord.x = aMesh->mTextureCoords[0][i].x;
-				texCoord.y = aMesh->mTextureCoords[0][i].y;
-				if (texCoord.x > 1.0f) {
-					texCoord.x -= 1.0f;
-				}
-				if (texCoord.y > 1.0f) {
-					texCoord.y -= 1.0f;
-				}
-				vertex->SetTexCoords(texCoord.x, texCoord.y);
-			}
-			else {
-				vertex->SetTexCoords(0, 0);
-			}
-
-			vertex->SetPosition(aPosition.x, aPosition.y, aPosition.z);
-			vertex->SetNormal(aNormal.x, aNormal.y, aNormal.z);
-			vertices->push_back(vertex);
-		}
-
-		vector<unsigned int>* indices = mesh->indices;
-		for (unsigned int i = 0; i < aMesh->mNumFaces; i++) {
-			aiFace face = aMesh->mFaces[i];
-			for (unsigned int j = 0; j < face.mNumIndices; j++) {
-				indices->push_back(face.mIndices[j]);
-			}
-		}
-
-		MeshFilter* meshFilter = new MeshFilter();
-		meshFilter->transform = skinMeshRenderer->transform;
-		meshFilter->gameObject = skinMeshRenderer->gameObject;
-		meshFilter->mesh = mesh;
-		meshFilters->push_back(meshFilter);
-
-		// Mesh Renderer
-		MeshRenderer* meshRenderer = new MeshRenderer();
-		meshRenderer->transform = skinMeshRenderer->transform;
-		meshRenderer->gameObject = skinMeshRenderer->gameObject;
-		meshRenderer->materialGUID = meshRendererMeta->materialGUID;
-		meshRenderer->GenerateRenderer(meshFilter);
-		meshRenderers->push_back(meshRenderer);
-	}
-
-	return skinMeshRenderer;
-}
-
 void RuntimeDomain::BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
 	vector<float> vertexData;
 	vector<unsigned int> indiceArray;
@@ -421,6 +316,14 @@ void RuntimeDomain::RenderScene(const Scene& scene, const Camera& camera) {
 		for (auto skinMeshRenderer : skinMeshRenderers) {
 			DrawSkinMeshRenderer(skinMeshRenderer, camera);
 		}
+
+		if (skinMeshRenderers.size() > 0)continue;
+
+		// vector<MeshRenderer*> meshRenderers = vector<MeshRenderer*>();
+		// go->GetAllComponents<MeshRenderer>(meshRenderers);
+		// for (auto meshRenderer : meshRenderers) {
+		// 	DrawMeshRenderer(meshRenderer, camera);
+		// }
 	}
 }
 
@@ -440,7 +343,7 @@ void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer, const Cam
 		if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 	}
 	else {
-		cout << "########################Dont have any material to draw MeshRenderer !!!!!!!!!!!!!! " << endl;
+		//cout << "########################Dont have any material to draw MeshRenderer !!!!!!!!!!!!!! " << endl;
 		return;
 	}
 
@@ -473,12 +376,13 @@ void RuntimeDomain::MetaToDirectLight(const DirectLightMeta& directLightMeta, Di
 
 void RuntimeDomain::MetaToMeshFilter(const MeshFilterMeta& meshFilterMeta, MeshFilter& meshFilter) {
 	Mesh* mesh = new Mesh();
-	TryLoadMesh(meshFilterMeta.modelGUID, meshFilterMeta.meshIndex, mesh);
+	_runtimeContext->GetMeshRepo()->TryGetMesh(meshFilterMeta.modelGUID, meshFilterMeta.meshIndex, mesh);
 	meshFilter.mesh = mesh;
 }
 
 void RuntimeDomain::MetaToMeshRenderer(const MeshRendererMeta& meshRendererMeta, MeshRenderer& meshRenderer) {
 	meshRenderer.materialGUID = meshRenderer.materialGUID;
+
 }
 
 void RuntimeDomain::MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshRendererMeta, SkinMeshRenderer& skinMeshRenderer) {
@@ -490,7 +394,7 @@ void RuntimeDomain::MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshR
 		MeshFilter* meshFilter = new MeshFilter();
 		meshFilter->gameObject = skinMeshRenderer.gameObject;
 		meshFilter->transform = skinMeshRenderer.transform;
-		TryLoadMesh(mfMeta->modelGUID, mfMeta->meshIndex, meshFilter->mesh);
+		_runtimeContext->GetMeshRepo()->TryGetMesh(mfMeta->modelGUID, mfMeta->meshIndex, meshFilter->mesh);
 		meshFilters->push_back(meshFilter);
 
 		MeshRendererMeta* mrMeta = skinMeshRendererMeta.meshRendererMetas[i];
@@ -557,6 +461,10 @@ inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta*> compon
 			MeshRenderer* meshRenderer = gameObject.AddComponent<MeshRenderer>();
 			MeshRendererMeta* meshRendererMeta = static_cast<MeshRendererMeta*>(componentMeta);
 			MetaToMeshRenderer(*meshRendererMeta, *meshRenderer);
+			MeshFilter* meshFilter = gameObject.GetComponent<MeshFilter>();
+			if(meshFilter != nullptr) {
+				meshRenderer->GenerateRenderer(meshFilter);
+			}
 			continue;
 		}
 

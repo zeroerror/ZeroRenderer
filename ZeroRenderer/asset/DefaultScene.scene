@@ -59,7 +59,7 @@ rotation: 0 0 0 1
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
-meshIndex: -1
+meshIndex: -1001
 --ComponentEnd
 --ComponentEnd
 --ComponentStart:
@@ -83,7 +83,7 @@ rotation: 0 0 0 1
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
-meshIndex: -1
+meshIndex: -1001
 --ComponentEnd
 --ComponentEnd
 --ComponentStart:
@@ -107,7 +107,7 @@ rotation: 0 0 0 1
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
-meshIndex: -1
+meshIndex: -1001
 --ComponentEnd
 --ComponentEnd
 --ComponentStart:
@@ -131,7 +131,7 @@ rotation: 0 0 0 1
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
-meshIndex: -1
+meshIndex: -1001
 --ComponentEnd
 --ComponentEnd
 --ComponentStart:
@@ -155,7 +155,7 @@ rotation: 0 0 0 1
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
-meshIndex: -1
+meshIndex: -1001
 --ComponentEnd
 --ComponentEnd
 --ComponentStart:
@@ -179,7 +179,7 @@ rotation: 0 0 0 1
 --ComponentStart:
 componentType: ComponentType_MeshFilter
 modelGUID: 
-meshIndex: -1
+meshIndex: -1001
 --ComponentEnd
 --ComponentEnd
 --ComponentStart:

@@ -45,6 +45,7 @@
     <ClCompile Include="src\editor\meta\TransformMeta.cpp" />
     <ClCompile Include="src\runtime\context\RuntimeContext.cpp" />
     <ClCompile Include="src\runtime\mesh\Mesh.cpp" />
+    <ClCompile Include="src\runtime\mesh\MeshFilter.cpp" />
     <ClCompile Include="src\runtime\mesh\MeshRenderer.cpp" />
     <ClCompile Include="src\runtime\mesh\SkinMeshRenderer.cpp" />
     <ClCompile Include="src\runtime\repo\MaterialRepo.cpp" />

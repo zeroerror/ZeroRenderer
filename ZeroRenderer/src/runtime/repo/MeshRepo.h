@@ -14,8 +14,12 @@ public:
 	bool TryAddMesh(const string& modelGUID, const int& index, Mesh*& mesh);
 	bool TryGetMesh(const string& modelGUID, const int& index, Mesh*& mesh);
 
+	Mesh* DefaultCubeMesh();
+
 private:
 	unordered_map<string, Mesh*> allMeshs;
+	Mesh* _defaultCubeMesh;
+	inline void _CreateDefaultCubeMesh();
 
 };
 

@@ -60,6 +60,7 @@
     <ClCompile Include="src\editor\sceneView\SceneView.cpp" />
     <ClCompile Include="src\editor\sceneView\SceneViewFSMFocusingModel.cpp" />
     <ClCompile Include="src\editor\sceneView\SceneViewFSMCom.cpp" />
+    <ClCompile Include="src\runtime\mesh\MeshFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\runtime\component\CameraController.h" />

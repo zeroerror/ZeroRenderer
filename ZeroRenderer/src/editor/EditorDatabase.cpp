@@ -476,6 +476,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	groundCubeGOMeta->transformMeta->position = vec3(0.0f, -0.05f, 0.0f);
 	groundCubeGOMeta->transformMeta->scale = vec3(20.0f, 0.1f, 30.0f);
 	meshFilterMeta = groundCubeGOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshFilterMeta->meshIndex = -1001;
 	meshRendererMeta = groundCubeGOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
 	groundCubeGOMeta->gid = gid++;
@@ -487,6 +488,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	wall1GOMeta->transformMeta->position = vec3(-8.0f, 2.5f, 0.0f);
 	wall1GOMeta->transformMeta->scale = vec3(1.0f, 5.0f, 10.0f);
 	meshFilterMeta = wall1GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshFilterMeta->meshIndex = -1001;
 	meshRendererMeta = wall1GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
 	wall1GOMeta->gid = gid++;
@@ -498,6 +500,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	wall2GOMeta->transformMeta->position = vec3(0.0f, 2.5f, -8.0f);
 	wall2GOMeta->transformMeta->scale = vec3(10.0f, 5.0f, 1.0f);
 	meshFilterMeta = wall2GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshFilterMeta->meshIndex = -1001;
 	meshRendererMeta = wall2GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
 	wall2GOMeta->gid = gid++;
@@ -509,6 +512,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	obstacle1GOMeta->transformMeta->position = vec3(-4.0f, 1.0f, 4.0f);
 	obstacle1GOMeta->transformMeta->scale = vec3(2.0f, 2.0f, 2.0f);
 	meshFilterMeta = obstacle1GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshFilterMeta->meshIndex = -1001;
 	meshRendererMeta = obstacle1GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
 	obstacle1GOMeta->gid = gid++;
@@ -520,6 +524,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	obstacle2GOMeta->transformMeta->position = vec3(4.0f, 1.0f, -4.0f);
 	obstacle2GOMeta->transformMeta->scale = vec3(2.0f, 2.0f, 2.0f);
 	meshFilterMeta = obstacle2GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshFilterMeta->meshIndex = -1001;
 	meshRendererMeta = obstacle2GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
 	obstacle2GOMeta->gid = gid++;
@@ -531,6 +536,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 	obstacle3GOMeta->transformMeta->position = vec3(6.0f, 0.5f, 6.0f);
 	obstacle3GOMeta->transformMeta->scale = vec3(3.0f, 1.0f, 2.0f);
 	meshFilterMeta = obstacle3GOMeta->AddComponentMeta<MeshFilterMeta>();
+	meshFilterMeta->meshIndex = -1001;
 	meshRendererMeta = obstacle3GOMeta->AddComponentMeta<MeshRendererMeta>();
 	meshRendererMeta->materialGUID = defaultLightMatGUID;
 	obstacle3GOMeta->gid = gid++;

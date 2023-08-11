@@ -9,6 +9,7 @@ MeshRenderer::MeshRenderer() {
 	vbLayout->Push<float>(3);
 	vbLayout->Push<float>(2);
 	vbLayout->Push<float>(3);
+	componentType = ComponentType_MeshRenderer;
 }
 
 MeshRenderer::~MeshRenderer() {

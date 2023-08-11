@@ -5,6 +5,9 @@
 class MeshFilter :public Component {
 
 public:
+	MeshFilter();
+	~MeshFilter();
+
 	Mesh* mesh;
 };
 
