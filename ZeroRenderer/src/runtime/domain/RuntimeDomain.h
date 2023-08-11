@@ -33,6 +33,7 @@ public:
 
 	void BindShader(const Transform* transform, Shader* shader, const Camera& camera);
 	bool TryLoadMaterialByGUID(const string& guid, Material*& mat);
+	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 
 	void BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
 	void BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer);
@@ -42,8 +43,6 @@ public:
 
 	void DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer, const Camera& camera);
 	void DrawMeshRenderer(const MeshRenderer* meshRenderer, const Camera& camera);
-
-	bool TryLoadMaterialByAssetPath(const string& path, Material*& mat);
 
 	// ============================ All meta's methods that convert to a runtime object. =====================================
 	void MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight);

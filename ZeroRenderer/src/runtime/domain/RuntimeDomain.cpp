@@ -319,11 +319,11 @@ void RuntimeDomain::RenderScene(const Scene& scene, const Camera& camera) {
 
 		if (skinMeshRenderers.size() > 0)continue;
 
-		// vector<MeshRenderer*> meshRenderers = vector<MeshRenderer*>();
-		// go->GetAllComponents<MeshRenderer>(meshRenderers);
-		// for (auto meshRenderer : meshRenderers) {
-		// 	DrawMeshRenderer(meshRenderer, camera);
-		// }
+		 vector<MeshRenderer*> meshRenderers = vector<MeshRenderer*>();
+		 go->GetAllComponents<MeshRenderer>(meshRenderers);
+		 for (auto meshRenderer : meshRenderers) {
+		 	DrawMeshRenderer(meshRenderer, camera);
+		 }
 	}
 }
 
@@ -343,8 +343,7 @@ void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer, const Cam
 		if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 	}
 	else {
-		//cout << "########################Dont have any material to draw MeshRenderer !!!!!!!!!!!!!! " << endl;
-		return;
+		BindShader(transfrom, _runtimeContext->GetShaderRepo()->ErrorShader(), camera);
 	}
 
 	IndexBuffer* ib = meshRenderer->ib;

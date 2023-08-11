@@ -7,14 +7,20 @@
 using namespace std;
 
 struct ShaderProgramSource {
-	std::string VertexSource;
-	std::string FragmentSource;
+	string VertexSource;
+	string FragmentSource;
+};
+
+enum class ShaderType {
+	NONE = -1,
+	VERTEX = 0,
+	FRAGMENT = 1
 };
 
 class Shader {
 
 public:
-	Shader(const std::string& filePath);
+	Shader(const string& filePath);
 	~Shader();
 
 	void Bind() const;
@@ -24,26 +30,26 @@ public:
 	string GetPath()const;
 
 	// Set Uniforms
-	void SetUniform1i(const std::string& name, int v);
-	void SetUniform1f(const std::string& name, float v);
-	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
-	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
-	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
-	int GetUniformLocation(const std::string& name);
+	void SetUniform1i(const string& name, int v);
+	void SetUniform1f(const string& name, float v);
+	void SetUniform3f(const string& name, float v0, float v1, float v2);
+	void SetUniform4f(const string& name, float v0, float v1, float v2, float v3);
+	void SetUniformMat4f(const string& name, const glm::mat4& matrix);
+	int GetUniformLocation(const string& name);
 
 
 private:
 	unsigned int m_programID;
 	unsigned int m_vsID;
 	unsigned int m_fsID;
-	std::string _path;
-	std::unordered_map<std::string, int> m_UniformLocationCache;
+	string _path;
+	unordered_map<string, int> m_UniformLocationCache;
 
-	ShaderProgramSource ParseShader(const std::string& filePath);
-	unsigned int CompileShader(unsigned int type, const std::string& source);
-	unsigned int CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
+	ShaderProgramSource ParseShader(const string& filePath);
+	unsigned int CompileShader(unsigned int type, const string& source);
+	unsigned int CreateShader(const string& vertexShader, const string& fragmentShader);
 
-	std::string ReadShaderFromFile(const char* filepath);
+	string ReadShaderFromFile(const char* filepath);
 	char* GetCurrentDir(size_t count);
 
 };

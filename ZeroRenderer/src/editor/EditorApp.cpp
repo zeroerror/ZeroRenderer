@@ -5,7 +5,23 @@
 
 // ********************** EDITOR USER CONFIG **********************
 EditorApp::EditorApp() {
+
+	// Init Editor Config
 	_InitEditorWindowCongfig();
+
+	// Init Editor
+	_InitEditorGLIcon();
+
+	// Init GL
+	glfwInit();
+	window = glfwCreateWindow(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, "Zero Engine v0.0.1", nullptr, nullptr);
+	glfwMakeContextCurrent(window);
+	glewInit();
+
+	// Init ImGui
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Import Editor Database
 	EditorDatabase::ImportAssets();
@@ -22,21 +38,6 @@ EditorApp::EditorApp() {
 	_editorContext = new EditorContext();
 	_editorDomain = new EditorDomain();
 	_editorDomain->Inject(_editorContext, _runtimeDomain);
-
-	// Init Editor
-	_InitEditorGLIcon();
-	_InitEditorWindowCongfig();
-
-	// Init GL
-	glfwInit();
-	window = glfwCreateWindow(EDITOR_WINDOW_WIDTH, EDITOR_WINDOW_HEIGHT, "Zero Engine v0.0.1", nullptr, nullptr);
-	glfwMakeContextCurrent(window);
-	glewInit();
-
-	// Init ImGui
-	ImGui::CreateContext();
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330");
 
 	// Init Scene View
 	_InitSceneView();

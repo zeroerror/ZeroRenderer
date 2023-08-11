@@ -5,6 +5,7 @@
 ShaderRepo::ShaderRepo() {
 	allShaders_sortedByGUID = std::unordered_map<std::string, Shader*>();
 	allShaders_sortedByPath = std::unordered_map<std::string, Shader*>();
+	_CreateErrorShader();
 }
 
 ShaderRepo::~ShaderRepo() {
@@ -40,4 +41,10 @@ bool ShaderRepo::TryGetShaderByGUID(const std::string& guid, Shader*& shader) {
 
 	shader = it->second;
 	return true;
+}
+
+Shader* ShaderRepo::ErrorShader() {return _errorShader;}
+
+void ShaderRepo::_CreateErrorShader(){
+	this->_errorShader = new Shader("asset/shader/Error.shader");
 }
