@@ -412,7 +412,7 @@ void RuntimeDomain::MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshR
 void RuntimeDomain::MetaToTransform(const TransformMeta& transformMeta, Transform& transform) {
 	transform.SetPosition(transformMeta.position);
 	transform.SetRotation(transformMeta.rotation);
-	transform.scale = transformMeta.scale;
+	transform.SetScale(transformMeta.scale);
 	transform.fatherGID_forSerialize = transformMeta.fatherGID;
 	transform.childrenGIDs_forSerialize = *transformMeta.childrenGIDs;
 }

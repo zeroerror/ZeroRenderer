@@ -20,7 +20,7 @@ public:
 	VertexBuffer* vb;
 	VertexBufferLayout* vbLayout;
 	IndexBuffer* ib;
-	void GenerateRenderer(const MeshFilter* meshFilter);
+	void GenerateRenderer(const MeshFilter* meshFilter, const vec3& scale = vec3(1, 1, 1));
 
 	MeshRenderer();
 	~MeshRenderer();

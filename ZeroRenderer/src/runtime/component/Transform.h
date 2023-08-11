@@ -18,13 +18,13 @@ public:
 	Transform();
 	~Transform();
 
-	vec3 position;
-	quat rotation;
-	vec3 scale;
 	vec3 GetPosition()const;
 	void SetPosition(const vec3& newPosition);
 	quat GetRotation() const;
 	void SetRotation(const quat& newRotation);
+	void SetRotation(const vec3& newRotation);
+	vec3 GetScale() const;
+	void SetScale(const vec3& newScale);
 	vec3 GetForward() const;
 	vec3 GetUp() const;
 	vec3 GetRight() const;
@@ -33,6 +33,10 @@ private:
 	vec3 m_forward;
 	vec3 m_up;
 	vec3 m_right;
+
+	vec3 _position;
+	quat _rotation;
+	vec3 _scale;
 
 public:
 	void SetFather(Transform* father);

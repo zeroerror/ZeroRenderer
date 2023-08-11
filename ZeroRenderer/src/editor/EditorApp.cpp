@@ -466,7 +466,7 @@ void EditorApp::_Tick_Event_SceneView(const float& deltaTime) {
 
 	auto sceneViewCamera = _editorContext->sceneView->SceneViewCamera();
 	auto pos = sceneViewCamera->transform->GetPosition();
-	auto rot = sceneViewCamera->transform->rotation;
+	auto rot = sceneViewCamera->transform->GetRotation();
 	auto camForward = sceneViewCamera->transform->GetForward();
 	auto camRight = sceneViewCamera->transform->GetRight();
 

@@ -1,10 +1,12 @@
 #include "Transform.h"
 #include "FileHelper.h"
 #include <filesystem>
+#include "MeshFilter.h"
+#include "MeshRenderer.h"
 
 Transform::Transform()
-	: position(0.0f),
-	rotation(1.0f, 0.0f, 0.0f, 0.0f),
+	: _position(0.0f),
+	_rotation(1.0f, 0.0f, 0.0f, 0.0f),
 	m_forward(0, 0, 1),
 	m_up(0, 1, 0),
 	m_right(-1, 0, 0) {
@@ -19,15 +21,38 @@ Transform::~Transform() {
 }
 
 glm::vec3 Transform::GetPosition() const {
-	return position;
+	return _position;
 }
 
 void Transform::SetPosition(const glm::vec3& newPosition) {
-	position = newPosition;
+	_position = newPosition;
 }
 
 glm::quat Transform::GetRotation() const {
-	return rotation;
+	return _rotation;
+}
+
+void Transform::SetRotation(const glm::quat& newRotation) {
+	_rotation = newRotation;
+	m_forward = glm::normalize(newRotation * glm::vec3(0.0f, 0.0f, 1.0f));
+	m_up = glm::normalize(newRotation * glm::vec3(0.0f, 1.0f, 0.0f));
+	m_right = glm::normalize(newRotation * glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
+vec3 Transform::GetScale() const {
+	return this->_scale;
+}
+
+void Transform::SetScale(const vec3& scale) {
+	MeshRenderer* mr = gameObject->GetComponent<MeshRenderer>();
+	if (mr != nullptr) {
+		MeshFilter* mf = gameObject->GetComponent<MeshFilter>();
+		if (mf != nullptr) {
+			mr->GenerateRenderer(mf, scale);
+		}
+	}
+
+	this->_scale = scale;
 }
 
 glm::vec3 Transform::GetForward() const {
@@ -40,13 +65,6 @@ glm::vec3 Transform::GetUp() const {
 
 glm::vec3 Transform::GetRight() const {
 	return m_right;
-}
-
-void Transform::SetRotation(const glm::quat& newRotation) {
-	rotation = newRotation;
-	m_forward = glm::normalize(newRotation * glm::vec3(0.0f, 0.0f, 1.0f));
-	m_up = glm::normalize(newRotation * glm::vec3(0.0f, 1.0f, 0.0f));
-	m_right = glm::normalize(newRotation * glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void Transform::SetFather(Transform* father) {
