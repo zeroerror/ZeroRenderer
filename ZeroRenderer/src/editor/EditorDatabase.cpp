@@ -550,6 +550,7 @@ void EditorDatabase::GenerateDefaultSceneMeta() {
 		prefabInstanceMeta->gameObjectMeta->gid= gid++;
 		prefabInstanceMeta->gameObjectMeta->transformMeta->position = vec3(0, 0, 0);
 		prefabInstanceMeta->gameObjectMeta->transformMeta->rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
+		prefabInstanceMeta->gameObjectMeta->transformMeta->scale = vec3(0.25f, 0.25f, 0.25f);
 		sceneMeta.prefabInstanceMetas.push_back(prefabInstanceMeta);
 	}
 

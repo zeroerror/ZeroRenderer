@@ -8,6 +8,8 @@ layout(location = 2) in vec3 normal;
 uniform mat4 u_mvp;
 uniform mat4 u_modRotationMatrix;
 uniform vec3 u_modPosition;
+uniform vec3 u_modScale;
+
 uniform vec3 u_lightPosition;
 
 out vec2 v_texCoord;
@@ -19,6 +21,7 @@ void main()
 {
     v_texCoord = texCoord;
     vec4 relativePosition = u_modRotationMatrix * originPosition;
+    relativePosition.xyz *= u_modScale;
     vec4 glPos = u_mvp * relativePosition;
     gl_Position = glPos;
 

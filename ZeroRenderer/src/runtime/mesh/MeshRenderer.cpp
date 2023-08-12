@@ -19,11 +19,7 @@ MeshRenderer::~MeshRenderer() {
 	delete vbLayout;
 }
 
-void MeshRenderer::GenerateRenderer(const MeshFilter* meshFilter, const vec3& scale) {
-	float scaleX = scale.x;
-	float scaleY = scale.y;
-	float scaleZ = scale.z;
-
+void MeshRenderer::GenerateRenderer(const MeshFilter* meshFilter) {
 	vector<float> vertexData = vector<float>();
 	vector<unsigned int> indiceArray = vector<unsigned int>();
 
@@ -33,7 +29,7 @@ void MeshRenderer::GenerateRenderer(const MeshFilter* meshFilter, const vec3& sc
 		glm::vec3 position = vertex->position;
 		glm::vec2 texCoords = vertex->texCoords;
 		glm::vec3 normal = vertex->normal;
-		vertexData.push_back(position.x * scaleX);
+		vertexData.push_back(position.x);
 		vertexData.push_back(position.y);
 		vertexData.push_back(position.z);
 		vertexData.push_back(texCoords.x);

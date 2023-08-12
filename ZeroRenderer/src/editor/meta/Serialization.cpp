@@ -18,6 +18,7 @@ void Serialization::TransformMeta_SerializeTo(const TransformMeta& transformMeta
 
 	ss << "position: " << transformMeta.position.x << ' ' << transformMeta.position.y << ' ' << transformMeta.position.z << endl;
 	ss << "rotation: " << transformMeta.rotation.x << ' ' << transformMeta.rotation.y << ' ' << transformMeta.rotation.z << ' ' << transformMeta.rotation.w << endl;
+	ss << "scale: " << transformMeta.scale.x << ' ' << transformMeta.scale.y << ' ' << transformMeta.scale.z << endl;
 }
 
 void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, stringstream& ss) {
@@ -50,6 +51,16 @@ void Serialization::TransformMeta_DeserializeFrom(TransformMeta* transformMeta, 
 			transformMeta->rotation.z = atof(key.c_str());
 			iss >> key;
 			transformMeta->rotation.w = atof(key.c_str());
+			continue;
+		}
+
+		if (key == "scale:") {
+			iss >> key;
+			transformMeta->scale.x = atof(key.c_str());
+			iss >> key;
+			transformMeta->scale.y = atof(key.c_str());
+			iss >> key;
+			transformMeta->scale.z = atof(key.c_str());
 			continue;
 		}
 

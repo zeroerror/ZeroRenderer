@@ -113,6 +113,7 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader, const
 	ShaderMeta_DeserializeFrom(&shaderMeta, shader->GetPath());
 	vec3 modelPos = transform->GetPosition();
 	qua modelRot = transform->GetRotation();
+	vec3 modelScale = transform->GetScale();
 
 	DirectLight* light = _runtimeContext->sceneDirectLight;
 	mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
@@ -156,8 +157,9 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader, const
 	shader->SetUniform1i("u_specularMap", TEX_SLOT_SPECULAR_MAP);
 
 	shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
-	shader->SetUniformMat4f("u_modRotationMatrix", modelRotMatrix);
 	shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
+	shader->SetUniformMat4f("u_modRotationMatrix", modelRotMatrix);
+	shader->SetUniform3f("u_modScale", modelScale.x, modelScale.y, modelScale.z);
 
 	shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
 	shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);

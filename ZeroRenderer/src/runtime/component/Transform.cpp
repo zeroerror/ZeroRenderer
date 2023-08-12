@@ -7,6 +7,7 @@
 Transform::Transform()
 	: _position(0.0f),
 	_rotation(1.0f, 0.0f, 0.0f, 0.0f),
+	_scale(1.0f, 1.0f, 1.0f),
 	m_forward(0, 0, 1),
 	m_up(0, 1, 0),
 	m_right(-1, 0, 0) {
@@ -44,14 +45,6 @@ vec3 Transform::GetScale() const {
 }
 
 void Transform::SetScale(const vec3& scale) {
-	MeshRenderer* mr = gameObject->GetComponent<MeshRenderer>();
-	if (mr != nullptr) {
-		MeshFilter* mf = gameObject->GetComponent<MeshFilter>();
-		if (mf != nullptr) {
-			mr->GenerateRenderer(mf, scale);
-		}
-	}
-
 	this->_scale = scale;
 }
 
