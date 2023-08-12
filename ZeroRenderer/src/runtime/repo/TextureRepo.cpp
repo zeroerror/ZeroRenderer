@@ -4,6 +4,7 @@
 TextureRepo::TextureRepo() {
 	allTextures_sortedByPath = std::unordered_map<std::string, Texture*>();
 	allTextures_sortedByGUID = std::unordered_map<std::string, Texture*>();
+	_CreateDefaultDiffuseTexture();
 }
 
 TextureRepo::~TextureRepo() {
@@ -38,4 +39,9 @@ bool TextureRepo::TryGetTextureByGUID(const std::string& guid, Texture*& texture
 		return true;
 	}
 	return false;
+}
+
+Texture* TextureRepo::DefaultDiffuseTexture() { return this->_defaultDiffuseTexture; }
+void TextureRepo::_CreateDefaultDiffuseTexture(){
+	this->_defaultDiffuseTexture = new Texture("asset/texture/default.png");
 }

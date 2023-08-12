@@ -15,6 +15,7 @@ public:
 	bool TryGetShaderByGUID(const std::string& guid, Shader*& shader);
 
 	Shader* ErrorShader();
+	Shader* DefaultLightShader();
 
 private:
 	std::unordered_map<std::string, Shader*> allShaders_sortedByPath;
@@ -23,5 +24,7 @@ private:
 	Shader* _errorShader;
 	void _CreateErrorShader();
 
+	Shader *_defaultLightShader;
+	void _CreateDefaultLightShader();
 };
 

@@ -2,6 +2,7 @@
 
 string EditorDefaultConfig::_defaultScenePath = "asset/DefaultScene.scene";
 string EditorDefaultConfig::_defaultShaderPath = "asset/shader/DefaultLight.shader";
+string EditorDefaultConfig::_errorShaderPath = "asset/shader/DefaultLight.shader";
 
 string EditorDefaultConfig::_defaultComponentStartStr = "--ComponentStart:";
 string EditorDefaultConfig::_defaultGameObjectStartStr = "====GameObjectStart:";
@@ -19,6 +20,7 @@ string EditorDefaultConfig::_defaultAllPrefabInstancesEndStr = "########AllPrefa
 
 const string& EditorDefaultConfig::DefaultScenePath() { return _defaultScenePath; }
 const string& EditorDefaultConfig::DefaultShaderPath() { return _defaultShaderPath; }
+const string& EditorDefaultConfig::ErrorShaderPath() { return _errorShaderPath; }
 
 const string& EditorDefaultConfig::DefaultComponentStartStr() { return _defaultComponentStartStr; }
 const string& EditorDefaultConfig::DefaultGameObjectStartStr() { return _defaultGameObjectStartStr; }

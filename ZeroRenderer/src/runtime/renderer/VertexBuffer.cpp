@@ -6,7 +6,6 @@ VertexBuffer::VertexBuffer() {
 }
 
 VertexBuffer::~VertexBuffer() {
-	std::cout << "VertexBuffer::~VertexBuffer() " << m_RendererID << std::endl;
 	glDeleteBuffers(1, &m_RendererID);
 }
 

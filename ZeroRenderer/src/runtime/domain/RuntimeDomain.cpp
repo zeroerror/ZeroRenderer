@@ -339,19 +339,18 @@ void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRendere
 void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer, const Camera& camera) {
 	const Transform* transfrom = meshRenderer->transform;
 	Material* material;
-	if (TryLoadMaterialByGUID(meshRenderer->materialGUID, material)) {
-		BindShader(transfrom, material->shader, camera);
-		if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
-		if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
+	if (!TryLoadMaterialByGUID(meshRenderer->materialGUID, material)) {
+		material = _runtimeContext->GetMaterialRepo()->defaultMaterial;
 	}
-	else {
-		BindShader(transfrom, _runtimeContext->GetShaderRepo()->ErrorShader(), camera);
-	}
+	
+	BindShader(transfrom, material->shader, camera);
+	if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
+	if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 
 	IndexBuffer* ib = meshRenderer->ib;
 	meshRenderer->va->Bind();
 	ib->Bind();
-	GLCall(glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr));
+	glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
 void RuntimeDomain::MetaToCamera(const CameraMeta& cameraMeta, Camera& camera) {

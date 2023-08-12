@@ -14,9 +14,13 @@ public:
 	bool TryAddTexture(const string& guid, Texture*& texture);
 	bool TryGetTextureByGUID(const std::string& guid, Texture*& texture);
 
+	Texture* DefaultDiffuseTexture();
+
 private:
 	std::unordered_map<std::string, Texture*> allTextures_sortedByPath;
 	std::unordered_map<std::string, Texture*> allTextures_sortedByGUID;
 
+	Texture* _defaultDiffuseTexture;
+	void _CreateDefaultDiffuseTexture();
 };
 

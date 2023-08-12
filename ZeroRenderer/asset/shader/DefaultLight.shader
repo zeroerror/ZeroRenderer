@@ -83,7 +83,7 @@ void main()
 
      // ------ Ambient Light -------
      vec3 ambientColor = texColor.xyz;
-     float ambientStrength = 0.3;
+     float ambientStrength = 0.5;
      vec3 ambient = ambientColor * ambientStrength;
      outColor.rgb += ambient;
     

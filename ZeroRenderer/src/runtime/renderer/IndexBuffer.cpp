@@ -9,8 +9,6 @@ IndexBuffer::IndexBuffer()
 }
 
 IndexBuffer::~IndexBuffer() {
-	std::cout << "IndexBuffer::~IndexBuffer() " << m_RendererID << std::endl;
-
 	if (m_RendererID != 0) {
 		GLCall(glDeleteBuffers(1, &m_RendererID));
 	}

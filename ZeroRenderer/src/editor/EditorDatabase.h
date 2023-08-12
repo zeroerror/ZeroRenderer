@@ -44,6 +44,7 @@ public:
 
 	static void GenerateDefaultSceneMeta();
 	static void GenerateDefaultShader();
+	static void GenerateDefaultMaterial();
 
 private:
 	static unordered_map<string, string> m_assetPath2GUID;

@@ -1,4 +1,4 @@
- #include "VertexArray.h"
+#include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
 #include "Shader.h"
@@ -14,7 +14,6 @@ VertexArray::VertexArray()
 }
 
 VertexArray::~VertexArray() {
-	std::cout << "VertexArray::~VertexArray() " << m_RendererID << std::endl;
 	GLCall(glDeleteVertexArrays(1, &m_RendererID));
 }
 

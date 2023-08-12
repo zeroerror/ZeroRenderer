@@ -9,6 +9,7 @@ class EditorDefaultConfig
 public:
 	static const string& DefaultScenePath();
 	static const string& DefaultShaderPath();
+	static const string& ErrorShaderPath();
 
 	static const string& DefaultComponentStartStr();
 	static const string& DefaultGameObjectStartStr();
@@ -25,7 +26,9 @@ public:
 	static const string& DefaultAllPrefabInstancesEndStr();
 
 private:
+
 	static string _defaultScenePath;
+	static string _errorShaderPath;
 	static string _defaultShaderPath;
 
 	static string _defaultSceneStartStr;

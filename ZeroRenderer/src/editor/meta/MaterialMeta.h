@@ -8,7 +8,6 @@ using namespace glm;
 
 class MaterialMeta {
 
-
 public:
 	string shaderGUID;
 	string diffuseTextureGUID;

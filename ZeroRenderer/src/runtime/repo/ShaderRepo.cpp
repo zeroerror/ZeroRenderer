@@ -1,11 +1,13 @@
 #include "ShaderRepo.h"
 #include "EditorDatabase.h"
+#include "EditorDefaultConfig.h"
 #include <iostream>
 
 ShaderRepo::ShaderRepo() {
 	allShaders_sortedByGUID = std::unordered_map<std::string, Shader*>();
 	allShaders_sortedByPath = std::unordered_map<std::string, Shader*>();
 	_CreateErrorShader();
+	_CreateDefaultLightShader();
 }
 
 ShaderRepo::~ShaderRepo() {
@@ -44,7 +46,11 @@ bool ShaderRepo::TryGetShaderByGUID(const std::string& guid, Shader*& shader) {
 }
 
 Shader* ShaderRepo::ErrorShader() {return _errorShader;}
-
 void ShaderRepo::_CreateErrorShader(){
-	this->_errorShader = new Shader("asset/shader/Error.shader");
+	this->_errorShader = new Shader(EditorDefaultConfig::ErrorShaderPath());
+}
+
+Shader* ShaderRepo::DefaultLightShader() {return _defaultLightShader;}
+void ShaderRepo::_CreateDefaultLightShader(){
+	this->_defaultLightShader = new Shader(EditorDefaultConfig::DefaultShaderPath());
 }
