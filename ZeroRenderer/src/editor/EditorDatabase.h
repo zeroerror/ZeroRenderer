@@ -28,7 +28,7 @@ public:
 	static void ClearFile(const unsigned int& suffixFlag);
 	static void ClearFile(const string& path, const unsigned int& suffixFlag);
 
-	static bool SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
+	static bool SetMat_TextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot);
 	static bool SetMat_ShaderGUID(const string& matPath, const string& shaderPath);
 
 	static string GenerateGUIDFromAssetPath(const string& assetPath);

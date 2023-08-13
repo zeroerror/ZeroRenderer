@@ -23,6 +23,8 @@ public:
 	Camera* mainCamera;
 	DirectLight* sceneDirectLight;
 	Scene* currentScene;
+	unsigned int currentSceneShadowMapFBO;
+	unsigned int currentSceneShadowMapTexture;
 
 private:
 	MaterialRepo* _materialRepo;

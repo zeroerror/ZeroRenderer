@@ -175,6 +175,8 @@ void EditorApp::_InitSceneView() {
 }
 
 void EditorApp::_RenderSceneViewFrameBuffer() {
+	_runtimeDomain->RendererSceneShadowMap(*_runtimeContext->currentScene, *_editorContext->sceneView->SceneViewCamera());
+
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
 		glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
 		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);

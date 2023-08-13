@@ -9,7 +9,6 @@ class GameObject;
 
 using namespace std;
 
-
 class Component {
 public:
 	virtual ~Component() {}

@@ -181,7 +181,6 @@ bool RuntimeDomain::TryLoadMaterialByAssetPath(const string& path, Material*& ma
 bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& material) {
 	string matPath;
 	if (!EditorDatabase::TryGetAssetPathFromGUID(guid, matPath)) {
-		cout << " **************** Error: RuntimeDomain::TryLoadMaterialByGUID: GUID no exist!: " << guid << endl;
 		return false;
 	}
 
@@ -203,9 +202,6 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 			material->shader = new Shader(shaderPath);
 			shaderRepo->TryAddShader(shaderGUID, material->shader);
 		}
-		else {
-			cout << " ################ Warning: RuntimeDomain::TryLoadMaterialByGUID: Shader GUID no exist!: " << shaderGUID << endl;
-		}
 	}
 
 	TextureRepo* textureRepo = _runtimeContext->GetTextureRepo();
@@ -217,9 +213,6 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 			material->diffuseTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(diffuseTextureGUID, material->diffuseTexture);
 		}
-		else {
-			cout << " ################ Warning: RuntimeDomain::TryLoadMaterialByGUID: Texture[Diffuse] GUID no exist!: " << diffuseTextureGUID << endl;
-		}
 	}
 
 	string specularTextureGUID = materialMeta.specularTextureGUID;
@@ -228,9 +221,6 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 		if (EditorDatabase::TryGetAssetPathFromGUID(specularTextureGUID, texturePath)) {
 			material->specularTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(specularTextureGUID, material->specularTexture);
-		}
-		else {
-			cout << " ################ Warning: RuntimeDomain::TryLoadMaterialByGUID: Texture[Specular] GUID no exist!: " << specularTextureGUID << endl;
 		}
 	}
 
@@ -308,6 +298,20 @@ Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
 	_runtimeContext->mainCamera = scene->Find("Camera")->GetComponent<Camera>();
 	_runtimeContext->sceneDirectLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
 
+	// Scene Shadow FBO and Texture
+	glGenFramebuffers(1, &_runtimeContext->currentSceneShadowMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
+	glGenTextures(1, &_runtimeContext->currentSceneShadowMapTexture);
+	glActiveTexture(TEX_SLOT_DEPTH_MAP);
+	glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 2000, 2000, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	return scene;
 }
 
@@ -321,11 +325,28 @@ void RuntimeDomain::RenderScene(const Scene& scene, const Camera& camera) {
 
 		if (skinMeshRenderers.size() > 0)continue;
 
-		 vector<MeshRenderer*> meshRenderers = vector<MeshRenderer*>();
-		 go->GetAllComponents<MeshRenderer>(meshRenderers);
-		 for (auto meshRenderer : meshRenderers) {
-		 	DrawMeshRenderer(meshRenderer, camera);
-		 }
+		vector<MeshRenderer*> meshRenderers = vector<MeshRenderer*>();
+		go->GetAllComponents<MeshRenderer>(meshRenderers);
+		for (auto meshRenderer : meshRenderers) {
+			DrawMeshRenderer(meshRenderer, camera);
+		}
+	}
+}
+
+void RuntimeDomain::RendererSceneShadowMap(const Scene& scene, const Camera& camera) {
+	DirectLight* dl = _runtimeContext->sceneDirectLight;
+	if (dl == nullptr) return;
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+		glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		Camera lightCam = camera;
+		lightCam.transform = new Transform();
+		lightCam.transform->SetPosition(dl->transform->GetPosition());
+		lightCam.transform->SetRotation(dl->transform->GetRotation());
+		RenderScene(scene, lightCam);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		delete lightCam.transform;
 	}
 }
 
@@ -342,7 +363,7 @@ void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer, const Cam
 	if (!TryLoadMaterialByGUID(meshRenderer->materialGUID, material)) {
 		material = _runtimeContext->GetMaterialRepo()->defaultMaterial;
 	}
-	
+
 	BindShader(transfrom, material->shader, camera);
 	if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
 	if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
@@ -462,7 +483,7 @@ inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta*> compon
 			MeshRendererMeta* meshRendererMeta = static_cast<MeshRendererMeta*>(componentMeta);
 			MetaToMeshRenderer(*meshRendererMeta, *meshRenderer);
 			MeshFilter* meshFilter = gameObject.GetComponent<MeshFilter>();
-			if(meshFilter != nullptr) {
+			if (meshFilter != nullptr) {
 				meshRenderer->GenerateRenderer(meshFilter);
 			}
 			continue;

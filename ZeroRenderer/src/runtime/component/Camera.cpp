@@ -23,9 +23,7 @@ Camera::Camera() {
 	componentType = ComponentType_Camera;
 }
 
-Camera::~Camera() {
-	std::cout << "Camera::~Camera()" << std::endl;
-}
+Camera::~Camera() {}
 
 static float u_Time = 0.0f;
 void Camera::Update(const float& dt) {

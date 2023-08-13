@@ -250,7 +250,7 @@ void EditorDatabase::ClearFile(const string& dir, const unsigned int& suffixFlag
 	}
 }
 
-bool EditorDatabase::SetMat_DiffuseTextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot) {
+bool EditorDatabase::SetMat_TextureGUID(const string& matPath, const string& texturePath, const unsigned int& textureSlot) {
 	if (!AssetPathExist(texturePath)) return false;
 	if (!AssetPathExist(matPath)) return false;
 
@@ -262,6 +262,7 @@ bool EditorDatabase::SetMat_DiffuseTextureGUID(const string& matPath, const stri
 	MaterialMeta materialMeta = MaterialMeta();
 	MaterialMeta_DeserializeFrom(&materialMeta, matPath);
 	if (textureSlot == TEX_SLOT_DIFFUSE_MAP)materialMeta.diffuseTextureGUID = texGUID;
+	else if (textureSlot == TEX_SLOT_SPECULAR_MAP)materialMeta.specularTextureGUID = texGUID;
 	MaterialMeta_SerializeTo(materialMeta, matPath);
 	return true;
 }

@@ -40,6 +40,7 @@ public:
 
 	Scene* OpenScene(const string& path, SceneMeta& resSceneMeta);
 	void RenderScene(const Scene& scene, const Camera& camera);
+	void RendererSceneShadowMap(const Scene& scene, const Camera& camera);
 
 	void DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer, const Camera& camera);
 	void DrawMeshRenderer(const MeshRenderer* meshRenderer, const Camera& camera);
@@ -59,6 +60,5 @@ public:
 
 private:
 	void _MetaToGameObject(const vector<ComponentMeta*> componentMetas, GameObject& gameObject);
-
 };
 
