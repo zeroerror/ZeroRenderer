@@ -21,11 +21,13 @@ using namespace glm;
 using namespace filesystem;
 namespace fs = filesystem;
 
-void RuntimeDomain::Inject(RuntimeContext* ctxt) {
+void RuntimeDomain::Inject(RuntimeContext *ctxt)
+{
 	this->_runtimeContext = ctxt;
 }
 
-void RuntimeDomain::PreprocessModelMeshes() {
+void RuntimeDomain::PreprocessModelMeshes()
+{
 	// Load all models'meshes to mesh repo.
 	vector<string> suffixes = vector<string>();
 	suffixes.push_back(FileSuffix::SUFFIX_OBJ);
@@ -33,14 +35,17 @@ void RuntimeDomain::PreprocessModelMeshes() {
 
 	vector<string> filePaths;
 	FileHelper::GetFilePaths("asset", suffixFlag, filePaths);
-	for (auto path : filePaths) {
+	for (auto path : filePaths)
+	{
 		PreprocessModelMeshFromPath(path);
 	}
 }
 
-void RuntimeDomain::PreprocessModelMeshFromPath(const string& path) {
-	const aiScene* aScene = nullptr;
-	if (!EditorModelManager::TryLoadModel(path, aScene)) {
+void RuntimeDomain::PreprocessModelMeshFromPath(const string &path)
+{
+	const aiScene *aScene = nullptr;
+	if (!EditorModelManager::TryLoadModel(path, aScene))
+	{
 		return;
 	}
 
@@ -48,15 +53,17 @@ void RuntimeDomain::PreprocessModelMeshFromPath(const string& path) {
 	string prefabPath = path.substr(0, path.find_last_of(".")) + FileSuffix::SUFFIX_PREFAB;
 	PrefabMeta_DeserializeFrom(prefabMeta, prefabPath);
 
-	SkinMeshRendererMeta* skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
+	SkinMeshRendererMeta *skinMeshRendererMeta = prefabMeta.GetComponentMeta<SkinMeshRendererMeta>();
 	PreprocessSMRMetaToMesh(aScene, *skinMeshRendererMeta);
 }
 
-void RuntimeDomain::PreprocessSMRMetaToMesh(const aiScene* aScene, const SkinMeshRendererMeta& skinMeshRendererMeta) {
-	MeshRepo* meshRepo = _runtimeContext->GetMeshRepo();
+void RuntimeDomain::PreprocessSMRMetaToMesh(const aiScene *aScene, const SkinMeshRendererMeta &skinMeshRendererMeta)
+{
+	MeshRepo *meshRepo = _runtimeContext->GetMeshRepo();
 
-	for (size_t i = 0; i < skinMeshRendererMeta.meshFilterMetas.size(); i++) {
-		Mesh* mesh = new Mesh();
+	for (size_t i = 0; i < skinMeshRendererMeta.meshFilterMetas.size(); i++)
+	{
+		Mesh *mesh = new Mesh();
 		auto meshFilterMeta = skinMeshRendererMeta.meshFilterMetas[i];
 		ProcessModelToMesh(aScene, meshFilterMeta->meshIndex, mesh);
 
@@ -66,27 +73,33 @@ void RuntimeDomain::PreprocessSMRMetaToMesh(const aiScene* aScene, const SkinMes
 	}
 }
 
-void RuntimeDomain::ProcessModelToMesh(const aiScene* aScene, const int& meshIndex, Mesh* mesh) {
-	aiMesh* aMesh = aScene->mMeshes[meshIndex];
+void RuntimeDomain::ProcessModelToMesh(const aiScene *aScene, const int &meshIndex, Mesh *mesh)
+{
+	aiMesh *aMesh = aScene->mMeshes[meshIndex];
 	mesh->meshName = aMesh->mName.C_Str();
 	auto vertices = mesh->vertices;
-	for (unsigned int i = 0; i < aMesh->mNumVertices; i++) {
+	for (unsigned int i = 0; i < aMesh->mNumVertices; i++)
+	{
 		aiVector3D aPosition = aMesh->mVertices[i];
 		aiVector3D aNormal = aMesh->mNormals[i];
-		Vertex* vertex = new Vertex();
-		if (aMesh->mTextureCoords[0] != nullptr) {
+		Vertex *vertex = new Vertex();
+		if (aMesh->mTextureCoords[0] != nullptr)
+		{
 			vec2 texCoord;
 			texCoord.x = aMesh->mTextureCoords[0][i].x;
 			texCoord.y = aMesh->mTextureCoords[0][i].y;
-			if (texCoord.x > 1.0f) {
+			if (texCoord.x > 1.0f)
+			{
 				texCoord.x -= 1.0f;
 			}
-			if (texCoord.y > 1.0f) {
+			if (texCoord.y > 1.0f)
+			{
 				texCoord.y -= 1.0f;
 			}
 			vertex->SetTexCoords(texCoord.x, texCoord.y);
 		}
-		else {
+		else
+		{
 			vertex->SetTexCoords(0, 0);
 		}
 
@@ -95,17 +108,21 @@ void RuntimeDomain::ProcessModelToMesh(const aiScene* aScene, const int& meshInd
 		vertices->push_back(vertex);
 	}
 
-	vector<unsigned int>* indices = mesh->indices;
-	for (unsigned int i = 0; i < aMesh->mNumFaces; i++) {
+	vector<unsigned int> *indices = mesh->indices;
+	for (unsigned int i = 0; i < aMesh->mNumFaces; i++)
+	{
 		aiFace face = aMesh->mFaces[i];
-		for (unsigned int j = 0; j < face.mNumIndices; j++) {
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+		{
 			indices->push_back(face.mIndices[j]);
 		}
 	}
 }
 
-void RuntimeDomain::BindShader(const Transform* transform, Shader* shader, const Camera& camera) {
-	if (shader == nullptr) {
+void RuntimeDomain::BindShader(const Transform *transform, Shader *shader, const Camera &camera)
+{
+	if (shader == nullptr)
+	{
 		return;
 	}
 
@@ -115,7 +132,7 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader, const
 	qua modelRot = transform->GetRotation();
 	vec3 modelScale = transform->GetScale();
 
-	DirectLight* light = _runtimeContext->sceneDirectLight;
+	DirectLight *light = _runtimeContext->sceneDirectLight;
 	mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
 	vec3 lightPos = light->transform->GetPosition();
 	vec3 lightColor = light->color;
@@ -169,23 +186,28 @@ void RuntimeDomain::BindShader(const Transform* transform, Shader* shader, const
 	shader->SetUniform1f("u_farPlane", camera.farPlane);
 }
 
-bool RuntimeDomain::TryLoadMaterialByAssetPath(const string& path, Material*& material) {
+bool RuntimeDomain::TryLoadMaterialByAssetPath(const string &path, Material *&material)
+{
 	string guid;
-	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, guid)) {
+	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, guid))
+	{
 		return false;
 	}
 
 	return TryLoadMaterialByGUID(guid, material);
 }
 
-bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& material) {
+bool RuntimeDomain::TryLoadMaterialByGUID(const string &guid, Material *&material)
+{
 	string matPath;
-	if (!EditorDatabase::TryGetAssetPathFromGUID(guid, matPath)) {
+	if (!EditorDatabase::TryGetAssetPathFromGUID(guid, matPath))
+	{
 		return false;
 	}
 
-	MaterialRepo* materialRepo = _runtimeContext->GetMaterialRepo();
-	if (materialRepo->TryGetMaterialByGUID(guid, material)) {
+	MaterialRepo *materialRepo = _runtimeContext->GetMaterialRepo();
+	if (materialRepo->TryGetMaterialByGUID(guid, material))
+	{
 		return true;
 	}
 
@@ -195,30 +217,36 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 	material = new Material();
 	string shaderGUID = materialMeta.shaderGUID;
 
-	ShaderRepo* shaderRepo = _runtimeContext->GetShaderRepo();
-	if (!shaderRepo->TryGetShaderByGUID(shaderGUID, material->shader)) {
+	ShaderRepo *shaderRepo = _runtimeContext->GetShaderRepo();
+	if (!shaderRepo->TryGetShaderByGUID(shaderGUID, material->shader))
+	{
 		string shaderPath;
-		if (EditorDatabase::TryGetAssetPathFromGUID(shaderGUID, shaderPath)) {
+		if (EditorDatabase::TryGetAssetPathFromGUID(shaderGUID, shaderPath))
+		{
 			material->shader = new Shader(shaderPath);
 			shaderRepo->TryAddShader(shaderGUID, material->shader);
 		}
 	}
 
-	TextureRepo* textureRepo = _runtimeContext->GetTextureRepo();
+	TextureRepo *textureRepo = _runtimeContext->GetTextureRepo();
 
 	string diffuseTextureGUID = materialMeta.diffuseTextureGUID;
-	if (!textureRepo->TryGetTextureByGUID(diffuseTextureGUID, material->diffuseTexture)) {
+	if (!textureRepo->TryGetTextureByGUID(diffuseTextureGUID, material->diffuseTexture))
+	{
 		string texturePath;
-		if (EditorDatabase::TryGetAssetPathFromGUID(diffuseTextureGUID, texturePath)) {
+		if (EditorDatabase::TryGetAssetPathFromGUID(diffuseTextureGUID, texturePath))
+		{
 			material->diffuseTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(diffuseTextureGUID, material->diffuseTexture);
 		}
 	}
 
 	string specularTextureGUID = materialMeta.specularTextureGUID;
-	if (!textureRepo->TryGetTextureByGUID(specularTextureGUID, material->specularTexture)) {
+	if (!textureRepo->TryGetTextureByGUID(specularTextureGUID, material->specularTexture))
+	{
 		string texturePath;
-		if (EditorDatabase::TryGetAssetPathFromGUID(specularTextureGUID, texturePath)) {
+		if (EditorDatabase::TryGetAssetPathFromGUID(specularTextureGUID, texturePath))
+		{
 			material->specularTexture = new Texture(texturePath);
 			textureRepo->TryAddTexture(specularTextureGUID, material->specularTexture);
 		}
@@ -228,17 +256,20 @@ bool RuntimeDomain::TryLoadMaterialByGUID(const string& guid, Material*& materia
 	material->specularIntensity = materialMeta.specularIntensity;
 	material->shininess = materialMeta.shininess;
 
-	return 	materialRepo->TryAddMaterial(guid, material);
+	return materialRepo->TryAddMaterial(guid, material);
 }
 
-void RuntimeDomain::BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
+void RuntimeDomain::BatchSkinMeshRenderer(SkinMeshRenderer *skinMeshRenderer)
+{
 	vector<float> vertexData;
 	vector<unsigned int> indiceArray;
 	unsigned int vertexCount = 0;
 
-	for (auto meshFilter : *skinMeshRenderer->meshFilters) {
-		vector<Vertex*>* vertices = meshFilter->mesh->vertices;
-		for (auto vertex : *vertices) {
+	for (auto meshFilter : *skinMeshRenderer->meshFilters)
+	{
+		vector<Vertex *> *vertices = meshFilter->mesh->vertices;
+		for (auto vertex : *vertices)
+		{
 			vec3 position = vertex->position;
 			vec2 texCoords = vertex->texCoords;
 			vec3 normal = vertex->normal;
@@ -248,18 +279,19 @@ void RuntimeDomain::BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
 			vertexData.push_back(texCoords.x);
 			vertexData.push_back(texCoords.y);
 		}
-		vector<unsigned int>* indices = meshFilter->mesh->indices;
-		for (auto indice : *indices) {
+		vector<unsigned int> *indices = meshFilter->mesh->indices;
+		for (auto indice : *indices)
+		{
 			indiceArray.push_back(indice + vertexCount);
 		}
 
 		vertexCount += vertices->size();
 	}
 
-	VertexArray* va_batched = skinMeshRenderer->va_batched;
-	VertexBuffer* vb_batched = skinMeshRenderer->vb_batched;
-	IndexBuffer* ib_batched = skinMeshRenderer->ib_batched;
-	VertexBufferLayout* vbLayout_batched = skinMeshRenderer->vbLayout_batched;
+	VertexArray *va_batched = skinMeshRenderer->va_batched;
+	VertexBuffer *vb_batched = skinMeshRenderer->vb_batched;
+	IndexBuffer *ib_batched = skinMeshRenderer->ib_batched;
+	VertexBufferLayout *vbLayout_batched = skinMeshRenderer->vbLayout_batched;
 	va_batched->Bind();
 	vb_batched->Ctor(vertexData.data(), vertexData.size());
 	va_batched->AddBuffer(vb_batched, vbLayout_batched);
@@ -269,21 +301,25 @@ void RuntimeDomain::BatchSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
 	cout << "Model BatchSkinMeshRenderer: Vertex float count: " << vertexData.size() << " Indice float count: " << indiceArray.size() << endl;
 }
 
-void RuntimeDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer* skinMeshRenderer) {
+void RuntimeDomain::BatchedDrawSkinMeshRenderer(SkinMeshRenderer *skinMeshRenderer)
+{
 	skinMeshRenderer->va_batched->Bind();
 	skinMeshRenderer->ib_batched->Bind();
 	glDrawElements(GL_TRIANGLES, skinMeshRenderer->ib_batched->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
+Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
+{
 	string sceneGUID;
-	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, sceneGUID)) {
+	if (!EditorDatabase::TryGetGUIDFromAssetPath(path, sceneGUID))
+	{
 		return nullptr;
 	}
 
-	SceneRepo* sceneRepo = _runtimeContext->GetSceneRepo();
-	Scene* scene;
-	if (!sceneRepo->TryGetScene(sceneGUID, scene)) {
+	SceneRepo *sceneRepo = _runtimeContext->GetSceneRepo();
+	Scene *scene;
+	if (!sceneRepo->TryGetScene(sceneGUID, scene))
+	{
 		scene = new Scene();
 		_runtimeContext->currentScene = scene;
 
@@ -291,7 +327,8 @@ Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
 		SceneMeta_DeserializeFrom(&resSceneMeta, path);
 		MetaToScene(resSceneMeta, *scene);
 	}
-	else {
+	else
+	{
 		_runtimeContext->currentScene = scene;
 	}
 
@@ -315,66 +352,88 @@ Scene* RuntimeDomain::OpenScene(const string& path, SceneMeta& resSceneMeta) {
 	return scene;
 }
 
-void RuntimeDomain::RenderScene(const Scene& scene, const Camera& camera) {
-	for (auto go : *scene.gameObjects) {
-		vector<SkinMeshRenderer*> skinMeshRenderers = vector<SkinMeshRenderer*>();
+void RuntimeDomain::RenderScene(const Scene &scene, const Camera &camera)
+{
+	for (auto go : *scene.gameObjects)
+	{
+		vector<SkinMeshRenderer *> skinMeshRenderers = vector<SkinMeshRenderer *>();
 		go->GetAllComponents<SkinMeshRenderer>(skinMeshRenderers);
-		for (auto skinMeshRenderer : skinMeshRenderers) {
+		for (auto skinMeshRenderer : skinMeshRenderers)
+		{
 			DrawSkinMeshRenderer(skinMeshRenderer, camera);
 		}
 
-		if (skinMeshRenderers.size() > 0)continue;
+		if (skinMeshRenderers.size() > 0)
+			continue;
 
-		vector<MeshRenderer*> meshRenderers = vector<MeshRenderer*>();
+		vector<MeshRenderer *> meshRenderers = vector<MeshRenderer *>();
 		go->GetAllComponents<MeshRenderer>(meshRenderers);
-		for (auto meshRenderer : meshRenderers) {
+		for (auto meshRenderer : meshRenderers)
+		{
 			DrawMeshRenderer(meshRenderer, camera);
 		}
 	}
 }
 
-void RuntimeDomain::RendererSceneShadowMap(const Scene& scene, const Camera& camera) {
-	DirectLight* dl = _runtimeContext->sceneDirectLight;
-	if (dl == nullptr) return;
+void RuntimeDomain::RendererSceneShadowMap(const Scene &scene, const Camera &camera)
+{
+	DirectLight *dl = _runtimeContext->sceneDirectLight;
+	if (dl == nullptr)
+		return;
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT);
-		Camera lightCam = camera;
-		lightCam.transform = new Transform();
-		lightCam.transform->SetPosition(dl->transform->GetPosition());
-		lightCam.transform->SetRotation(dl->transform->GetRotation());
-		RenderScene(scene, lightCam);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		delete lightCam.transform;
+
+		Camera dlCam = Camera();
+		dlCam.CopyFrom(camera);
+		dlCam.transform = new Transform();
+		dlCam.transform->SetPosition(dl->transform->GetPosition());
+		dlCam.transform->SetRotation(dl->transform->GetRotation());
+		RenderScene(scene, dlCam);
 	}
 }
 
-void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer* skinMeshRenderer, const Camera& camera) {
+void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer *skinMeshRenderer, const Camera &camera)
+{
 	auto meshRenderers = skinMeshRenderer->meshRenderers;
-	for (auto meshRenderer : *meshRenderers) {
+	for (auto meshRenderer : *meshRenderers)
+	{
 		DrawMeshRenderer(meshRenderer, camera);
 	}
 }
 
-void RuntimeDomain::DrawMeshRenderer(const MeshRenderer* meshRenderer, const Camera& camera) {
-	const Transform* transfrom = meshRenderer->transform;
-	Material* material;
-	if (!TryLoadMaterialByGUID(meshRenderer->materialGUID, material)) {
+void RuntimeDomain::DrawMeshRenderer(const MeshRenderer *meshRenderer, const Camera &camera)
+{
+	const Transform *transfrom = meshRenderer->transform;
+	Material *material;
+	// 判定是否为主摄像机
+	const Camera *mainCam = _runtimeContext->mainCamera;
+	const bool isMainCam = camera.gameObject && mainCam->gameObject->GetGID() == camera.gameObject->GetGID();
+	if (!isMainCam)
+	{
+		material = _runtimeContext->GetMaterialRepo()->errorMat;
+	}
+	else if (!TryLoadMaterialByGUID(meshRenderer->materialGUID, material))
+	{
 		material = _runtimeContext->GetMaterialRepo()->defaultMaterial;
 	}
 
 	BindShader(transfrom, material->shader, camera);
-	if (material->diffuseTexture != nullptr)material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
-	if (material->specularTexture != nullptr)material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
+	if (material->diffuseTexture != nullptr)
+		material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
+	if (material->specularTexture != nullptr)
+		material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
 
-	IndexBuffer* ib = meshRenderer->ib;
+	IndexBuffer *ib = meshRenderer->ib;
 	meshRenderer->va->Bind();
 	ib->Bind();
 	glDrawElements(GL_TRIANGLES, ib->GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void RuntimeDomain::MetaToCamera(const CameraMeta& cameraMeta, Camera& camera) {
+void RuntimeDomain::MetaToCamera(const CameraMeta &cameraMeta, Camera &camera)
+{
 	camera.cameraType = cameraMeta.cameraType;
 	camera.nearPlane = cameraMeta.nearPlane;
 	camera.farPlane = cameraMeta.farPlane;
@@ -384,7 +443,8 @@ void RuntimeDomain::MetaToCamera(const CameraMeta& cameraMeta, Camera& camera) {
 	camera.scrHeight = cameraMeta.scrHeight;
 }
 
-void RuntimeDomain::MetaToDirectLight(const DirectLightMeta& directLightMeta, DirectLight& directLight) {
+void RuntimeDomain::MetaToDirectLight(const DirectLightMeta &directLightMeta, DirectLight &directLight)
+{
 	directLight.color = directLightMeta.color;
 	directLight.shadowType = directLightMeta.shadowType;
 	directLight.scrWidth = directLightMeta.scrWidth;
@@ -395,31 +455,34 @@ void RuntimeDomain::MetaToDirectLight(const DirectLightMeta& directLightMeta, Di
 	directLight.orthoSize = directLightMeta.orthoSize;
 }
 
-void RuntimeDomain::MetaToMeshFilter(const MeshFilterMeta& meshFilterMeta, MeshFilter& meshFilter) {
-	Mesh* mesh = new Mesh();
+void RuntimeDomain::MetaToMeshFilter(const MeshFilterMeta &meshFilterMeta, MeshFilter &meshFilter)
+{
+	Mesh *mesh = new Mesh();
 	_runtimeContext->GetMeshRepo()->TryGetMesh(meshFilterMeta.modelGUID, meshFilterMeta.meshIndex, mesh);
 	meshFilter.mesh = mesh;
 }
 
-void RuntimeDomain::MetaToMeshRenderer(const MeshRendererMeta& meshRendererMeta, MeshRenderer& meshRenderer) {
+void RuntimeDomain::MetaToMeshRenderer(const MeshRendererMeta &meshRendererMeta, MeshRenderer &meshRenderer)
+{
 	meshRenderer.materialGUID = meshRenderer.materialGUID;
-
 }
 
-void RuntimeDomain::MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshRendererMeta, SkinMeshRenderer& skinMeshRenderer) {
-	vector<MeshFilter*>* meshFilters = new vector<MeshFilter*>();
-	vector<MeshRenderer*>* meshRenderers = new vector<MeshRenderer*>();
+void RuntimeDomain::MetaToSkinMeshRenderer(const SkinMeshRendererMeta &skinMeshRendererMeta, SkinMeshRenderer &skinMeshRenderer)
+{
+	vector<MeshFilter *> *meshFilters = new vector<MeshFilter *>();
+	vector<MeshRenderer *> *meshRenderers = new vector<MeshRenderer *>();
 
-	for (int i = 0; i < skinMeshRendererMeta.meshFilterMetas.size(); i++) {
-		MeshFilterMeta* mfMeta = skinMeshRendererMeta.meshFilterMetas[i];
-		MeshFilter* meshFilter = new MeshFilter();
+	for (int i = 0; i < skinMeshRendererMeta.meshFilterMetas.size(); i++)
+	{
+		MeshFilterMeta *mfMeta = skinMeshRendererMeta.meshFilterMetas[i];
+		MeshFilter *meshFilter = new MeshFilter();
 		meshFilter->gameObject = skinMeshRenderer.gameObject;
 		meshFilter->transform = skinMeshRenderer.transform;
 		_runtimeContext->GetMeshRepo()->TryGetMesh(mfMeta->modelGUID, mfMeta->meshIndex, meshFilter->mesh);
 		meshFilters->push_back(meshFilter);
 
-		MeshRendererMeta* mrMeta = skinMeshRendererMeta.meshRendererMetas[i];
-		MeshRenderer* meshRenderer = new MeshRenderer();
+		MeshRendererMeta *mrMeta = skinMeshRendererMeta.meshRendererMetas[i];
+		MeshRenderer *meshRenderer = new MeshRenderer();
 		meshRenderer->gameObject = skinMeshRenderer.gameObject;
 		meshRenderer->transform = skinMeshRenderer.transform;
 		meshRenderer->materialGUID = mrMeta->materialGUID;
@@ -431,7 +494,8 @@ void RuntimeDomain::MetaToSkinMeshRenderer(const SkinMeshRendererMeta& skinMeshR
 	skinMeshRenderer.meshRenderers = meshRenderers;
 }
 
-void RuntimeDomain::MetaToTransform(const TransformMeta& transformMeta, Transform& transform) {
+void RuntimeDomain::MetaToTransform(const TransformMeta &transformMeta, Transform &transform)
+{
 	transform.SetPosition(transformMeta.position);
 	transform.SetRotation(transformMeta.rotation);
 	transform.SetScale(transformMeta.scale);
@@ -439,9 +503,11 @@ void RuntimeDomain::MetaToTransform(const TransformMeta& transformMeta, Transfor
 	transform.childrenGIDs_forSerialize = *transformMeta.childrenGIDs;
 }
 
-void RuntimeDomain::GUIDToPrefabMeta(const string& guid, PrefabMeta& prefabMeta) {
+void RuntimeDomain::GUIDToPrefabMeta(const string &guid, PrefabMeta &prefabMeta)
+{
 	string prefabPath;
-	if (!EditorDatabase::TryGetAssetPathFromGUID(guid, prefabPath)) {
+	if (!EditorDatabase::TryGetAssetPathFromGUID(guid, prefabPath))
+	{
 		cout << "RuntimeDomain::GUIDToPrefabMeta: Can't find prefab path by guid: " << guid << endl;
 		return;
 	}
@@ -449,49 +515,58 @@ void RuntimeDomain::GUIDToPrefabMeta(const string& guid, PrefabMeta& prefabMeta)
 	PrefabMeta_DeserializeFrom(prefabMeta, prefabPath);
 }
 
-inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta*> componentMetas, GameObject& gameObject) {
-	for (ComponentMeta* componentMeta : componentMetas) {
+inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta *> componentMetas, GameObject &gameObject)
+{
+	for (ComponentMeta *componentMeta : componentMetas)
+	{
 		ComponentType_ componentType = componentMeta->componentType;
-		if (componentType == ComponentType_Transform) {
-			TransformMeta* transformMeta = static_cast<TransformMeta*>(componentMeta);
+		if (componentType == ComponentType_Transform)
+		{
+			TransformMeta *transformMeta = static_cast<TransformMeta *>(componentMeta);
 			MetaToTransform(*transformMeta, *gameObject.transform());
 		}
 
-		if (componentType == ComponentType_Camera) {
-			Camera* camera = gameObject.AddComponent<Camera>();
-			CameraMeta* cameraMeta = static_cast<CameraMeta*>(componentMeta);
+		if (componentType == ComponentType_Camera)
+		{
+			Camera *camera = gameObject.AddComponent<Camera>();
+			CameraMeta *cameraMeta = static_cast<CameraMeta *>(componentMeta);
 			MetaToCamera(*cameraMeta, *camera);
 			continue;
 		}
 
-		if (componentType == ComponentType_DirectLight) {
-			DirectLight* directLight = gameObject.AddComponent<DirectLight>();
-			DirectLightMeta* directLightMeta = static_cast<DirectLightMeta*>(componentMeta);
+		if (componentType == ComponentType_DirectLight)
+		{
+			DirectLight *directLight = gameObject.AddComponent<DirectLight>();
+			DirectLightMeta *directLightMeta = static_cast<DirectLightMeta *>(componentMeta);
 			MetaToDirectLight(*directLightMeta, *directLight);
 			continue;
 		}
 
-		if (componentType == ComponentType_MeshFilter) {
-			MeshFilter* meshFilter = gameObject.AddComponent<MeshFilter>();
-			MeshFilterMeta* meshFilterMeta = static_cast<MeshFilterMeta*>(componentMeta);
+		if (componentType == ComponentType_MeshFilter)
+		{
+			MeshFilter *meshFilter = gameObject.AddComponent<MeshFilter>();
+			MeshFilterMeta *meshFilterMeta = static_cast<MeshFilterMeta *>(componentMeta);
 			MetaToMeshFilter(*meshFilterMeta, *meshFilter);
 			continue;
 		}
 
-		if (componentType == ComponentType_MeshRenderer) {
-			MeshRenderer* meshRenderer = gameObject.AddComponent<MeshRenderer>();
-			MeshRendererMeta* meshRendererMeta = static_cast<MeshRendererMeta*>(componentMeta);
+		if (componentType == ComponentType_MeshRenderer)
+		{
+			MeshRenderer *meshRenderer = gameObject.AddComponent<MeshRenderer>();
+			MeshRendererMeta *meshRendererMeta = static_cast<MeshRendererMeta *>(componentMeta);
 			MetaToMeshRenderer(*meshRendererMeta, *meshRenderer);
-			MeshFilter* meshFilter = gameObject.GetComponent<MeshFilter>();
-			if (meshFilter != nullptr) {
+			MeshFilter *meshFilter = gameObject.GetComponent<MeshFilter>();
+			if (meshFilter != nullptr)
+			{
 				meshRenderer->GenerateRenderer(meshFilter);
 			}
 			continue;
 		}
 
-		if (componentType == ComponentType_SkinMeshRenderer) {
-			SkinMeshRenderer* skinMeshRenderer = gameObject.AddComponent<SkinMeshRenderer>();
-			SkinMeshRendererMeta* skinMeshRendererMeta = static_cast<SkinMeshRendererMeta*>(componentMeta);
+		if (componentType == ComponentType_SkinMeshRenderer)
+		{
+			SkinMeshRenderer *skinMeshRenderer = gameObject.AddComponent<SkinMeshRenderer>();
+			SkinMeshRendererMeta *skinMeshRendererMeta = static_cast<SkinMeshRendererMeta *>(componentMeta);
 			MetaToSkinMeshRenderer(*skinMeshRendererMeta, *skinMeshRenderer);
 			continue;
 		}
@@ -500,7 +575,8 @@ inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta*> compon
 	}
 }
 
-void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMeta, GameObject& gameObject) {
+void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta &prefabInstanceMeta, GameObject &gameObject)
+{
 	gameObject.SetGID(prefabInstanceMeta.gameObjectMeta->gid);
 
 	PrefabMeta prefabMeta = PrefabMeta();
@@ -511,37 +587,45 @@ void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta& prefabInstanceMet
 	gameObject.SetName(prefabInstanceMeta.gameObjectMeta->name);
 }
 
-void RuntimeDomain::MetaToGameObject(const PrefabMeta& prefabMeta, GameObject& gameObject) {
+void RuntimeDomain::MetaToGameObject(const PrefabMeta &prefabMeta, GameObject &gameObject)
+{
 	gameObject.SetName(prefabMeta.name);
 	_MetaToGameObject(prefabMeta.componentMetas, gameObject);
 }
 
-void RuntimeDomain::MetaToGameObject(const GameObjectMeta& gameObjectMeta, GameObject& gameObject) {
+void RuntimeDomain::MetaToGameObject(const GameObjectMeta &gameObjectMeta, GameObject &gameObject)
+{
 	gameObject.SetGID(gameObjectMeta.gid);
 	gameObject.SetName(gameObjectMeta.name);
 	_MetaToGameObject(gameObjectMeta.componentMetas, gameObject);
 }
 
-void RuntimeDomain::MetaToScene(const SceneMeta& sceneMeta, Scene& scene) {
-	for (GameObjectMeta* meta : sceneMeta.gameObjectMetas) {
-		GameObject* go = new GameObject();
+void RuntimeDomain::MetaToScene(const SceneMeta &sceneMeta, Scene &scene)
+{
+	for (GameObjectMeta *meta : sceneMeta.gameObjectMetas)
+	{
+		GameObject *go = new GameObject();
 		MetaToGameObject(*meta, *go);
 		scene.gameObjects->push_back(go);
 	}
 
-	for (PrefabInstanceMeta* meta : sceneMeta.prefabInstanceMetas) {
-		GameObject* go = new GameObject();
+	for (PrefabInstanceMeta *meta : sceneMeta.prefabInstanceMetas)
+	{
+		GameObject *go = new GameObject();
 		MetaToGameObject(*meta, *go);
 		scene.gameObjects->push_back(go);
 	}
 
 	// Serialize Transform Father And Children.
-	for (auto go : *scene.gameObjects) {
-		Transform* trans = go->transform();
-		Scene* curScene = _runtimeContext->currentScene;
-		for (auto childGID : trans->childrenGIDs_forSerialize) {
-			GameObject* childGO = curScene->Find(childGID);
-			if (childGO == nullptr) {
+	for (auto go : *scene.gameObjects)
+	{
+		Transform *trans = go->transform();
+		Scene *curScene = _runtimeContext->currentScene;
+		for (auto childGID : trans->childrenGIDs_forSerialize)
+		{
+			GameObject *childGO = curScene->Find(childGID);
+			if (childGO == nullptr)
+			{
 				cout << "RuntimeDomain::MetaToTransform: Can't find child gameobject by gid: " << childGID << endl;
 				continue;
 			}
@@ -549,5 +633,3 @@ void RuntimeDomain::MetaToScene(const SceneMeta& sceneMeta, Scene& scene) {
 		}
 	}
 }
-
-

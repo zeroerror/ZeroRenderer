@@ -4,20 +4,20 @@
 
 using namespace std;
 
-class MaterialRepo {
+class MaterialRepo
+{
 
 public:
 	MaterialRepo();
 	~MaterialRepo();
 
-	bool TryAddMaterial(const string& guid, Material*& material);
-	bool TryGetMaterialByGUID(const string& guid, Material*& material);
+	bool TryAddMaterial(const string &guid, Material *&material);
+	bool TryGetMaterialByGUID(const string &guid, Material *&material);
 
-	Material* defaultMaterial;
+	Material *defaultMaterial;
+	Material *errorMat;
 
 private:
-	unordered_map<string, Material*> allMaterials_sortedByPath;
-	unordered_map<string, Material*> allMaterials_sortedByGUID;
-
+	unordered_map<string, Material *> allMaterials_sortedByPath;
+	unordered_map<string, Material *> allMaterials_sortedByGUID;
 };
-

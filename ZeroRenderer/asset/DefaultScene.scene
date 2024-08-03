@@ -8,8 +8,8 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 0 20 -10
-rotation: 0.258819 0 0 0.965926
+position: -0.568808198 9.56653404 18.4576855
+rotation: -0.00174409221 -0.994926810 0.0990001783 -0.0175337140
 scale: 1 1 1
 --ComponentEnd
 --ComponentStart:
@@ -31,8 +31,8 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 0 10 0
-rotation: 0 0.247404 0 0.968912
+position: -11.5350056 9.58073616 -19.5911102
+rotation: 0.119332671 0.176934510 -0.0216177218 0.976728261
 scale: 1 1 1
 --ComponentEnd
 --ComponentStart:

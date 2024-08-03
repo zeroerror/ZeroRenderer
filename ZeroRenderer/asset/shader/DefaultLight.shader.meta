@@ -2,12 +2,4 @@ guid: 4fa3f76955080b44
 
 UniformsStart: 
 
-uniformName: u_mixedColor
-uniformType: 4
-uniformValue: 0.0 1.0 0.0
-
-uniformName: u_mixedFactor
-uniformType: 2
-uniformValue: 0.0
-
 UniformsEnd
