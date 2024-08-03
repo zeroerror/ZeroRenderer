@@ -18,7 +18,8 @@ using namespace Serialization;
 using namespace glm;
 using namespace std;
 
-enum EditorPanelFlags_ {
+enum EditorPanelFlags_
+{
 	EditorPanelFlags_None = 0,
 	EditorPanelFlags_TitleBar,
 	EditorPanelFlags_SceneView,
@@ -27,14 +28,15 @@ enum EditorPanelFlags_ {
 	EditorPanelFlags_ProjectRightColunm,
 };
 
-class EditorApp {
+class EditorApp
+{
 
 public:
-	RuntimeContext* _runtimeContext;
-	RuntimeDomain* _runtimeDomain;
-	EditorContext* _editorContext;
-	EditorDomain* _editorDomain;
-	GLFWwindow* window;
+	RuntimeContext *_runtimeContext;
+	RuntimeDomain *_runtimeDomain;
+	EditorContext *_editorContext;
+	EditorDomain *_editorDomain;
+	GLFWwindow *window;
 
 	EditorApp();
 	~EditorApp();
@@ -44,7 +46,7 @@ private:
 	bool _alreadyShutDown;
 	void _ShutDown();
 
-#pragma region [EDITOR TIME]
+#pragma region[EDITOR TIME]
 
 private:
 	float _lastTime;
@@ -53,7 +55,7 @@ private:
 
 #pragma endregion
 
-#pragma region [EDITOR CACHE]
+#pragma region[EDITOR CACHE]
 
 private:
 	EditorPanelFlags_ _curChoosedPanelFlags;
@@ -61,82 +63,83 @@ private:
 
 #pragma endregion
 
-#pragma region [Title Bar]
+#pragma region[Title Bar]
 
 private:
 	void _ShowTitleBarCanvas();
 
 #pragma endregion
 
-#pragma region [Hierarchy]
+#pragma region[Hierarchy]
 
 private:
-	GameObject* _curHierarchyChoosedGameObject;
-	unordered_map<GameObject*, bool> _hierarchyGameObjectFoldExpandMap;
-	vector<GameObject*> _hierarchyRootGameObjects;
+	GameObject *_curHierarchyChoosedGameObject;
+	unordered_map<GameObject *, bool> _hierarchyGameObjectFoldExpandMap;
+	vector<GameObject *> _hierarchyRootGameObjects;
 	double _hierarchyGameObjectClickTime;
-	void _ShowHierarchy(const Transform* transform, int depth);
+	void _ShowHierarchy(const Transform *transform, int depth);
 	void _InitHierarchy();
-	bool _IsHierarchyGameObjectShow(const GameObject* gameObject);
+	bool _IsHierarchyGameObjectShow(const GameObject *gameObject);
 	void _ShowHierarchyCanvas();
 
 #pragma endregion
 
-#pragma region [Project]
+#pragma region[Project]
 
 private:
-	AssetTreeNode* _projectRootNode;
-	AssetTreeNode* _curProjectChoosedNode;
-	AssetTreeNode* _curProjectDetailsChoosedNode;
+	AssetTreeNode *_projectRootNode;
+	AssetTreeNode *_curProjectChoosedNode;
+	AssetTreeNode *_curProjectDetailsChoosedNode;
 	unsigned int _projectFolderTextureID;
 	double _projectAssetClickTime;
 
 	void _ShowProjectLeftColumnCanvas();
 	void _ShowProjectRightColumnCanvas();
-	void _ShowProjectMainPanel(AssetTreeNode* node, string dir, float xOffset);
-	void _ShowProjectDetailsPanel(const AssetTreeNode* node);
+	void _ShowProjectMainPanel(AssetTreeNode *node, string dir, float xOffset);
+	void _ShowProjectDetailsPanel(const AssetTreeNode *node);
 
 #pragma endregion
 
-#pragma region [Scene View]
+#pragma region[Scene View]
 
 private:
 	GLuint _frameBuffer;
 	GLuint _sceneViewTexture;
+	GLuint _depthTexture;
 	void _InitSceneView();
 	void _InitSceneViewFrameBuffer();
 	void _RenderSceneViewFrameBuffer();
-	void _ShowSceneViewCanvas(const vec2& min, const vec2& max);
-	void _TickSceneView(const float& dt);
+	void _ShowSceneViewCanvas(const vec2 &min, const vec2 &max);
+	void _TickSceneView(const float &dt);
 
 #pragma endregion
 
-#pragma region [EDITOR EVENT]
+#pragma region[EDITOR EVENT]
 
 private:
 	void _Tick_Event_DirectoryBackward();
-	void _Tick_Event_SceneView(const float& deltaTime);
+	void _Tick_Event_SceneView(const float &deltaTime);
 	void _Tick_Events();
 
 #pragma endregion
 
-#pragma region [GL]
+#pragma region[GL]
 
 private:
-	void _ShowFPS(GLFWwindow* window);
+	void _ShowFPS(GLFWwindow *window);
 	void _ImGui_NewFrame();
 	void _ImGuiShutDown();
 	void _GLShutDown();
 
 #pragma endregion
 
-#pragma region [EDITOR INPUT]
+#pragma region[EDITOR INPUT]
 
 	void _Tick_EditorInput();
 
 #pragma endregion
 
-#pragma region [EDITOR WINDOW Config]
+#pragma region[EDITOR WINDOW Config]
 
 private:
 	int EDITOR_WINDOW_WIDTH;
@@ -163,5 +166,4 @@ private:
 	void _InitEditorWindowCongfig();
 
 #pragma endregion
-
 };

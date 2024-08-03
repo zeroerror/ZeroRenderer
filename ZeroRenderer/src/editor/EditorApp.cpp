@@ -144,11 +144,15 @@ void EditorApp::_ShutDown()
 
 GLuint _frameBuffer;
 GLuint _sceneViewTexture;
+GLuint _depthTexture;
 void EditorApp::_InitSceneViewFrameBuffer()
 {
+	// 初始化GL默认参数
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
+	// 生成帧缓冲FBO
 	glGenFramebuffers(1, &_frameBuffer);
+	// 绑定帧缓冲, 开始初始化
 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
 	glGenTextures(1, &_sceneViewTexture);
 	glBindTexture(GL_TEXTURE_2D, _sceneViewTexture);
@@ -158,6 +162,12 @@ void EditorApp::_InitSceneViewFrameBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _sceneViewTexture, 0);
+	// 初始化深度纹理
+	glGenTextures(1, &_depthTexture);
+	glBindTexture(GL_TEXTURE_2D, _depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0);
+	// 解除绑定, 保证不会影响后续操作
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
