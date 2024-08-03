@@ -56,36 +56,33 @@ uniform float u_mixedFactor;
 
 void main()
 {
+    // 贴图
     vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
     vec4 specularColor = texture(u_specularMap, v_texCoord);
     specularColor.a = 1;
     vec4 texColor = diffuseColor + specularColor;
-
     vec4 outColor = texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
-     //- Lambert Light Model -
-     float dot = dot(v_normal, u_lightDirection);
-     float intensity = -min(dot, 0.0);
-     vec3 diffuse = u_lightColor * intensity; 
-     outColor.rgb *= diffuse;
-
-    //  //------ Shadow -------
-    //  vec4 light_glPos = u_lightMVPMatrix * v_worldPos;
-    //  vec2 depthCoord = 0.5 * light_glPos.xy / light_glPos.w + 0.5;
-    //  float mapDepth = texture(u_depthMap, depthCoord).r;
-    //  float curDepth = light_glPos.z / light_glPos.w;
-    //  curDepth = curDepth * 0.5 + 0.5;
-    //  curDepth = curDepth > 1.0 ? 1.0 : curDepth;
-    //  float bias = min(0.00002 * (1 + dot), 0.00002);
-    //  float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
-    //  if(mapDepth<0)mapDepth=-mapDepth;
-    // outColor.rgb = vec3(mapDepth, mapDepth, mapDepth);
-
-     // ------ Ambient Light -------
-     vec3 ambientColor = texColor.xyz;
-     float ambientStrength = 0.2;
-     vec3 ambient = ambientColor * ambientStrength;
-     outColor.rgb += ambient;
-    
+    // 漫反射
+    float dot = dot(v_normal, u_lightDirection);
+    float intensity = -min(dot, 0.0);
+    vec3 diffuse = u_lightColor * intensity; 
+    outColor.rgb *= diffuse;
+    // 深度贴图阴影
+    vec4 light_glPos = u_lightMVPMatrix * v_worldPos;
+    vec2 depthCoord = 0.5 * light_glPos.xy / light_glPos.w + 0.5;
+    float mapDepth = texture(u_depthMap, depthCoord).r;
+    float curDepth = light_glPos.z / light_glPos.w;
+    curDepth = curDepth * 0.5 + 0.5;
+    curDepth = curDepth > 1.0 ? 1.0 : curDepth;
+    float bias = min(0.00002 * (1 + dot), 0.00002);
+    float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
+    outColor.rgb *= shadowFactor;
+    // 环境光
+    vec3 ambientColor = texColor.xyz;
+    float ambientStrength = 0.2;
+    vec3 ambient = ambientColor * ambientStrength;
+    outColor.rgb += ambient;
+    // 输出
     color = outColor;
 }
 

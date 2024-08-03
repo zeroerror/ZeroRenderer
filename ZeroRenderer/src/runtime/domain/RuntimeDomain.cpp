@@ -339,16 +339,16 @@ Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
 	glGenFramebuffers(1, &_runtimeContext->currentSceneShadowMapFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
 	glGenTextures(1, &_runtimeContext->currentSceneShadowMapTexture);
-	glActiveTexture(TEX_SLOT_DEPTH_MAP);
 	glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 2000, 2000, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	return scene;
 }
 
@@ -380,19 +380,15 @@ void RuntimeDomain::RendererSceneShadowMap(const Scene &scene, const Camera &cam
 	DirectLight *dl = _runtimeContext->sceneDirectLight;
 	if (dl == nullptr)
 		return;
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		Camera dlCam = Camera();
-		dlCam.CopyFrom(camera);
-		dlCam.transform = new Transform();
-		dlCam.transform->SetPosition(dl->transform->GetPosition());
-		dlCam.transform->SetRotation(dl->transform->GetRotation());
-		RenderScene(scene, dlCam);
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
+	glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	Camera dlCam = Camera();
+	dlCam.CopyFrom(camera);
+	dlCam.transform = new Transform();
+	dlCam.transform->SetPosition(dl->transform->GetPosition());
+	dlCam.transform->SetRotation(dl->transform->GetRotation());
+	RenderScene(scene, dlCam);
 }
 
 void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer *skinMeshRenderer, const Camera &camera)
@@ -421,10 +417,17 @@ void RuntimeDomain::DrawMeshRenderer(const MeshRenderer *meshRenderer, const Cam
 	}
 
 	BindShader(transfrom, material->shader, camera);
+
+	// Bind Texture
+	// 漫反射贴图
 	if (material->diffuseTexture != nullptr)
 		material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
+	// 高光贴图
 	if (material->specularTexture != nullptr)
 		material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
+	// 深度贴图
+	GLCall(glActiveTexture(GL_TEXTURE0 + TEX_SLOT_DEPTH_MAP));
+	GLCall(glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture));
 
 	IndexBuffer *ib = meshRenderer->ib;
 	meshRenderer->va->Bind();

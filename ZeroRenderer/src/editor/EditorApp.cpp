@@ -148,8 +148,11 @@ GLuint _depthTexture;
 void EditorApp::_InitSceneViewFrameBuffer()
 {
 	// 初始化GL默认参数
-	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glDepthFunc(GL_LESS);
+	glDepthMask(GL_TRUE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	// 生成帧缓冲FBO
 	glGenFramebuffers(1, &_frameBuffer);
 	// 绑定帧缓冲, 开始初始化
@@ -184,11 +187,10 @@ void EditorApp::_RenderSceneViewFrameBuffer()
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
 		Camera sceneCam = *_editorContext->sceneView->SceneViewCamera();
-		// {
-		// 	// 渲染深度图
-		// 	_runtimeDomain->RendererSceneShadowMap(*_runtimeContext->currentScene, sceneCam);
-		// }
-
+		{
+			// 渲染深度图
+			_runtimeDomain->RendererSceneShadowMap(*_runtimeContext->currentScene, sceneCam);
+		}
 		{
 			// 渲染场景
 			glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
