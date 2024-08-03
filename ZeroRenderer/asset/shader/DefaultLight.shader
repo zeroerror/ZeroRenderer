@@ -69,20 +69,11 @@ void main()
     outColor.rgb *= diffuse;
     // 深度贴图阴影
     vec4 light_glPos = u_lightMVPMatrix * v_worldPos;
-    vec2 depthCoord = 0.5 * light_glPos.xy / light_glPos.w + 0.5;
+    vec2 depthCoord = (light_glPos.xy / light_glPos.w) * 0.5 + 0.5;
     float mapDepth = texture(u_depthMap, depthCoord).r;
     float curDepth = light_glPos.z / light_glPos.w;
-    curDepth = curDepth * 0.5 + 0.5;
-    curDepth = curDepth > 1.0 ? 1.0 : curDepth;
-    float bias = min(0.00002 * (1 + dot), 0.00002);
-    float shadowFactor = curDepth < mapDepth + bias ? 1.0 : 0.0;
+    float shadowFactor = curDepth < mapDepth + 0 ? 1.0 : 0.0;
     outColor.rgb *= shadowFactor;
-    // 环境光
-    vec3 ambientColor = texColor.xyz;
-    float ambientStrength = 0.2;
-    vec3 ambient = ambientColor * ambientStrength;
-    outColor.rgb += ambient;
-    // 输出
     color = outColor;
 }
 

@@ -187,21 +187,16 @@ void EditorApp::_RenderSceneViewFrameBuffer()
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
 		Camera sceneCam = *_editorContext->sceneView->SceneViewCamera();
-		{
-			// 渲染深度图
-			_runtimeDomain->RendererSceneShadowMap(*_runtimeContext->currentScene, sceneCam);
-		}
+		// 渲染深度图
+		_runtimeDomain->RendererSceneShadowMap(*_runtimeContext->currentScene, sceneCam);
 		{
 			// 渲染场景
 			glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
 			glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
 			_runtimeDomain->RenderScene(*_runtimeContext->currentScene, sceneCam);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
 		// {
 		// 	// TEST 查看深度图
 		// 	glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);

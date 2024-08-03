@@ -340,14 +340,14 @@ Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
 	glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
 	glGenTextures(1, &_runtimeContext->currentSceneShadowMapTexture);
 	glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 2048, 2048, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	const float imgW = _runtimeContext->sceneDirectLight->scrWidth;
+	const float imgH = _runtimeContext->sceneDirectLight->scrHeight;
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, imgW, imgH, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	return scene;
 }
@@ -389,6 +389,7 @@ void RuntimeDomain::RendererSceneShadowMap(const Scene &scene, const Camera &cam
 	dlCam.transform->SetPosition(dl->transform->GetPosition());
 	dlCam.transform->SetRotation(dl->transform->GetRotation());
 	RenderScene(scene, dlCam);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void RuntimeDomain::DrawSkinMeshRenderer(const SkinMeshRenderer *skinMeshRenderer, const Camera &camera)
