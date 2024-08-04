@@ -3,8 +3,12 @@
 
 DirectLight::DirectLight()
 {
-	color = glm::vec3(1.0f, 1.0f, 1.0f);
 	componentType = ComponentType_DirectLight;
+	color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	orthoSize = 20.0f;
+	nearPlane = 0.1f;
+	farPlane = 100.0f;
 }
 
 DirectLight::~DirectLight()

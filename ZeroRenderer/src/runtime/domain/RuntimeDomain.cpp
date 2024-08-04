@@ -151,7 +151,7 @@ void RuntimeDomain::BindShader(const Transform *transform, Shader *shader, const
 	vec3 dlPos = dl->transform->GetPosition();
 	vec3 dlColor = dl->color;
 	vec3 dlDir = dl->transform->GetForward();
-	mat4 dlMVP = Camera::GetMVPMatrix_Ortho(modelPos, *dl->transform, 20, 0.1, 100);
+	mat4 dlMVP = Camera::GetMVPMatrix_Ortho(modelPos, *dl->transform, dl->orthoSize, dl->nearPlane, dl->farPlane);
 
 	shader->Bind();
 	// TODO: 从 ShaderMeta 中读取 Uniform
@@ -404,6 +404,7 @@ void RuntimeDomain::RendererSceneShadowMap(const Scene &scene, const Camera &cam
 	dlCam.transform->SetPosition(dl->transform->GetPosition());
 	dlCam.transform->SetRotation(dl->transform->GetRotation());
 	dlCam.cameraType = CameraType::None;
+	dlCam.orthoSize = dl->orthoSize;
 	RenderScene(scene, dlCam);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

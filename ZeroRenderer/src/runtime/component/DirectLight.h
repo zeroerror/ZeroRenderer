@@ -13,4 +13,7 @@ public:
 public:
 	glm::vec3 color;
 	ShadowType shadowType;
+	float orthoSize;
+	float nearPlane;
+	float farPlane;
 };

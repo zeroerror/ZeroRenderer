@@ -54,7 +54,7 @@ uniform vec3 u_mixedColor;
 uniform float u_mixedFactor;
 
 // 贴图采样
-vec4 sampleTexture()
+vec4 getTextureColor()
 {
     vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
     vec4 specularColor = texture(u_specularMap, v_texCoord);
@@ -63,10 +63,10 @@ vec4 sampleTexture()
     return texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
 }
 
-// 环境光
-vec3 calcAmbient(float ambientIntensity)
+// 获取环境光颜色
+vec3 getAmbientColor(float ambientIntensity)
 {
-    vec4 color = texture(u_diffuseMap, v_texCoord);
+    vec4 color = getTextureColor();
     vec3 factor = color.rgb * ambientIntensity;
     return factor;
 }
@@ -81,7 +81,6 @@ float getShadowFactor()
     shadowCoord = shadowCoord * 0.5 + 0.5; // 从 [-1, 1] 范围转换到 [0, 1]
     // 取样深度贴图
     float sampleDepth = texture(u_depthMap, shadowCoord.xy).r;
-    // 应用阴影
     return (shadowCoord.z > sampleDepth + 0.001)? 0.0 : 1.0;
 }
 
@@ -97,7 +96,7 @@ void main()
 {
     // ============== 贴图采样
     vec4 outColor = vec4(1.0);
-    outColor = sampleTexture();
+    outColor = getTextureColor();
     // // ============== 漫反射
     float diffuseFactor = getDiffuseFactor();
     outColor.rgb *= diffuseFactor;
@@ -105,7 +104,10 @@ void main()
     float shadowFactor = getShadowFactor();
     outColor.rgb *= shadowFactor;
     // ============== 环境光
-    vec3 ambientColor = calcAmbient(0.33);
+    float ambientIntensity = 0;
+    if(shadowFactor==0) ambientIntensity = 0.16;
+    else ambientIntensity = 0.3;
+    vec3 ambientColor = getAmbientColor(ambientIntensity);
     outColor.rgb += ambientColor;
     // ============== 输出
     color = outColor;
