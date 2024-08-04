@@ -53,5 +53,5 @@ bool TextureRepo::TryGetTextureByGUID(const std::string &guid, Texture *&texture
 Texture *TextureRepo::DefaultDiffuseTexture() { return this->_defaultDiffuseTexture; }
 void TextureRepo::_CreateDefaultDiffuseTexture()
 {
-	this->_defaultDiffuseTexture = new Texture("asset/texture/jerry.png");
+	this->_defaultDiffuseTexture = new Texture("asset/texture/wall.jpg");
 }

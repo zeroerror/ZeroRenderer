@@ -86,12 +86,11 @@ float getShadowFactor()
 }
 
 // 计算漫反射
-vec3 calculateDiffuse()
+float getDiffuseFactor()
 {
     vec3 normal = normalize(v_normal);
-    float dotNL = max(dot(normal, -u_lightDirection), 0.0);
-    vec3 diffuse = u_lightColor * dotNL;
-    return diffuse;
+    float factor = max(-dot(normal, u_lightDirection), 0.0);
+    return factor;
 }
 
 void main()
@@ -99,15 +98,15 @@ void main()
     // ============== 贴图采样
     vec4 outColor = vec4(1.0);
     outColor = sampleTexture();
-    // ============== 环境光
-    vec3 ambientColor = calcAmbient(0.1);
-    outColor.rgb += ambientColor;
-    // ============== 漫反射
-    vec3 diffuseColor = calculateDiffuse();
-    outColor.rgb *= diffuseColor;
+    // // ============== 漫反射
+    float diffuseFactor = getDiffuseFactor();
+    outColor.rgb *= diffuseFactor;
     // ============== 阴影
     float shadowFactor = getShadowFactor();
     outColor.rgb *= shadowFactor;
+    // ============== 环境光
+    vec3 ambientColor = calcAmbient(0.33);
+    outColor.rgb += ambientColor;
     // ============== 输出
     color = outColor;
 }
