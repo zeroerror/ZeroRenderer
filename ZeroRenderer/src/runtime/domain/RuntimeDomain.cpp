@@ -126,23 +126,37 @@ void RuntimeDomain::BindShader(const Transform *transform, Shader *shader, const
 		return;
 	}
 
-	ShaderMeta shaderMeta = ShaderMeta();
-	ShaderMeta_DeserializeFrom(&shaderMeta, shader->GetPath());
+	// 模型参数
 	vec3 modelPos = transform->GetPosition();
 	qua modelRot = transform->GetRotation();
 	vec3 modelScale = transform->GetScale();
-
-	DirectLight *light = _runtimeContext->sceneDirectLight;
-	mat4 lightMVPMatrix = light->GetMVPMatrix_Perspective(modelPos);
-	vec3 lightPos = light->transform->GetPosition();
-	vec3 lightColor = light->color;
-	vec3 lightDirection = -light->GetLightDirection();
-
-	mat4 cameraMVPMatrix = camera.GetMVPMatrix_Perspective(modelPos);
 	mat4 modelRotMatrix = toMat4(modelRot);
+	// 摄像机参数
+	mat4 camMVP;
+	if (camera.cameraType == CameraType::Perspective)
+	{
+		camMVP = camera.GetMVPMatrix_Perspective(modelPos);
+	}
+	else if (camera.cameraType == CameraType::Ortho)
+	{
+		camMVP = camera.GetMVPMatrix_Ortho(modelPos);
+	}
+	else
+	{
+		// 深度贴图的绘制 使用正交视角 防止透视投影的透视失真
+		camMVP = camera.GetMVPMatrix_Ortho(modelPos);
+	}
+	// 所有光源参数
+	DirectLight *dl = _runtimeContext->sceneDirectLight;
+	vec3 dlPos = dl->transform->GetPosition();
+	vec3 dlColor = dl->color;
+	vec3 dlDir = dl->transform->GetForward();
+	mat4 dlMVP = dl->GetMVPMatrix_Ortho(modelPos);
 
 	shader->Bind();
-
+	// TODO: 从 ShaderMeta 中读取 Uniform
+	// ShaderMeta shaderMeta = ShaderMeta();
+	// ShaderMeta_DeserializeFrom(&shaderMeta, shader->GetPath());
 	// for (int i = 0; i < shaderMeta.uniforms.size(); i++) {
 	// 	ShaderUniform uniform = shaderMeta.uniforms[i];
 	// 	string uniformName = uniform.name;
@@ -173,15 +187,15 @@ void RuntimeDomain::BindShader(const Transform *transform, Shader *shader, const
 	shader->SetUniform1i("u_diffuseMap", TEX_SLOT_DIFFUSE_MAP);
 	shader->SetUniform1i("u_specularMap", TEX_SLOT_SPECULAR_MAP);
 
-	shader->SetUniformMat4f("u_mvp", cameraMVPMatrix);
+	shader->SetUniformMat4f("u_mvp", camMVP);
 	shader->SetUniform3f("u_modPosition", modelPos.x, modelPos.y, modelPos.z);
 	shader->SetUniformMat4f("u_modRotationMatrix", modelRotMatrix);
 	shader->SetUniform3f("u_modScale", modelScale.x, modelScale.y, modelScale.z);
 
-	shader->SetUniform3f("u_lightPosition", lightPos.x, lightPos.y, lightPos.z);
-	shader->SetUniform3f("u_lightDirection", lightDirection.x, lightDirection.y, lightDirection.z);
-	shader->SetUniform3f("u_lightColor", lightColor.x, lightColor.y, lightColor.z);
-	shader->SetUniformMat4f("u_lightMVPMatrix", lightMVPMatrix);
+	shader->SetUniform3f("u_lightPosition", dlPos.x, dlPos.y, dlPos.z);
+	shader->SetUniform3f("u_lightDirection", dlDir.x, dlDir.y, dlDir.z);
+	shader->SetUniform3f("u_lightColor", dlColor.x, dlColor.y, dlColor.z);
+	shader->SetUniformMat4f("u_lightMVPMatrix", dlMVP);
 	shader->SetUniform1f("u_nearPlane", camera.nearPlane);
 	shader->SetUniform1f("u_farPlane", camera.farPlane);
 }
@@ -388,6 +402,9 @@ void RuntimeDomain::RendererSceneShadowMap(const Scene &scene, const Camera &cam
 	dlCam.transform = new Transform();
 	dlCam.transform->SetPosition(dl->transform->GetPosition());
 	dlCam.transform->SetRotation(dl->transform->GetRotation());
+	dlCam.cameraType = CameraType::None;
+	dlCam.nearPlane = dl->nearPlane;
+	dlCam.farPlane = dl->farPlane;
 	RenderScene(scene, dlCam);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

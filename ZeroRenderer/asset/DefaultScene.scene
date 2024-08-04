@@ -14,6 +14,7 @@ scale: 1 1 1
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_Camera
+cameraType: 2
 scrWidth: 1920
 scrHeight: 1080
 fov: 45
@@ -31,8 +32,8 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: -11.5350056 9.58073616 -19.5911102
-rotation: 0.119332671 0.176934510 -0.0216177218 0.976728261
+position: -14.0699024 22.3305988 -39.9160156
+rotation: 0.188807100 0.101286329 -0.0195829812 0.976573825
 scale: 1 1 1
 --ComponentEnd
 --ComponentStart:

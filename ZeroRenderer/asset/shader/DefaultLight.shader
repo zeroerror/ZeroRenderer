@@ -56,24 +56,36 @@ uniform float u_mixedFactor;
 
 void main()
 {
-    // 贴图
+    // ============== 贴图
     vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
     vec4 specularColor = texture(u_specularMap, v_texCoord);
     specularColor.a = 1;
     vec4 texColor = diffuseColor + specularColor;
     vec4 outColor = texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
-    // 漫反射
-    float dot = dot(v_normal, u_lightDirection);
-    float intensity = -min(dot, 0.0);
-    vec3 diffuse = u_lightColor * intensity; 
-    outColor.rgb *= diffuse;
-    // 深度贴图阴影
-    vec4 light_glPos = u_lightMVPMatrix * v_worldPos;
-    vec2 depthCoord = (light_glPos.xy / light_glPos.w) * 0.5 + 0.5;
-    float mapDepth = texture(u_depthMap, depthCoord).r;
-    float curDepth = light_glPos.z / light_glPos.w;
-    float shadowFactor = curDepth < mapDepth + 0 ? 1.0 : 0.0;
-    outColor.rgb *= shadowFactor;
-    color = outColor;
-}
+    
+    // ============== 漫反射
+    // vec3 normal = normalize(v_normal); // 规范化法线向量
+    // float dotNL = max(dot(normal, -u_lightDirection), 0.0); // 计算法线与光方向的点积，并取最大值
+    // vec3 diffuse = u_lightColor * dotNL; // 计算漫反射分量
+    // outColor.rgb *= diffuse; // 应用漫反射到输出颜色
+    
+    // ============== 深度贴图阴影
+    // 计算光源空间的片段位置
+    vec4 lightSpacePos = u_lightMVPMatrix * v_worldPos;
+    // 将光源空间的位置转化为标准化设备坐标
+    vec3 shadowCoord = lightSpacePos.xyz / lightSpacePos.w;
+    shadowCoord = shadowCoord * 0.5 + 0.5; // 从 [-1, 1] 范围转换到 [0, 1]
+    // 取样深度贴图
+    float sampleDepth = texture(u_depthMap, shadowCoord.xy).r;
+    // 判断当前片段是否在阴影中
+    float curDepth = -shadowCoord.z;
+    float shadow = (curDepth > sampleDepth + 0.005) ? 0.5 : 1.0;
+    // 应用阴影
+    outColor.rgb *= shadow;
 
+    // 输出
+    color = outColor;
+
+if (isnan(lightSpacePos.x))  color.rgb = vec3(1, 0, 0); // 表示 NaN 值
+
+}

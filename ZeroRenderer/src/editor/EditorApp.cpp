@@ -184,17 +184,22 @@ void EditorApp::_InitSceneView()
 
 void EditorApp::_RenderSceneViewFrameBuffer()
 {
+	SceneView *sceneView = _editorContext->sceneView;
+	if (!sceneView)
+		return;
+	Camera* sceneCam = sceneView->SceneViewCamera();
+	if (!sceneCam)
+		return;
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
-		Camera sceneCam = *_editorContext->sceneView->SceneViewCamera();
 		// 渲染深度图
-		_runtimeDomain->RendererSceneShadowMap(*_runtimeContext->currentScene, sceneCam);
+		_runtimeDomain->RendererSceneShadowMap(*_runtimeContext->currentScene, *sceneCam);
 		{
 			// 渲染场景
 			glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
 			glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			_runtimeDomain->RenderScene(*_runtimeContext->currentScene, sceneCam);
+			_runtimeDomain->RenderScene(*_runtimeContext->currentScene, *sceneCam);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 		// {
@@ -210,6 +215,9 @@ void EditorApp::_RenderSceneViewFrameBuffer()
 		// 	DirectLight *dl = _runtimeContext->sceneDirectLight;
 		// 	dlCam.transform->SetPosition(dl->transform->GetPosition());
 		// 	dlCam.transform->SetRotation(dl->transform->GetRotation());
+		// 	dlCam.cameraType = CameraType::None;
+		// 	dlCam.nearPlane = dl->nearPlane;
+		// 	dlCam.farPlane = dl->farPlane;
 		// 	_runtimeDomain->RenderScene(*_runtimeContext->currentScene, dlCam);
 		// 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// }

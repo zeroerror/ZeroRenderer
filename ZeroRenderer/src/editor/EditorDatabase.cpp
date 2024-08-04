@@ -498,6 +498,7 @@ void EditorDatabase::GenerateDefaultSceneMeta()
 	GameObjectMeta *cameraGOMeta = new GameObjectMeta();
 	cameraGOMeta->name = "Camera";
 	CameraMeta *cameraMeta = cameraGOMeta->AddComponentMeta<CameraMeta>();
+	cameraMeta->cameraType = CameraType::Perspective;
 	cameraMeta->scrWidth = scrWidth;
 	cameraMeta->scrHeight = scrHeight;
 	cameraGOMeta->transformMeta->position = vec3(0, 20, -10);
