@@ -33,11 +33,16 @@ void Camera::Update(const float &dt)
 
 glm::mat4 Camera::GetMVPMatrix_Ortho(const glm::vec3 &modelPos) const
 {
+	return Camera::GetMVPMatrix_Ortho(modelPos, *transform, orthoSize, nearPlane, farPlane);
+}
+
+glm::mat4 Camera::GetMVPMatrix_Ortho(const glm::vec3 &modelPos, const Transform &trans, const float &orthoSize, const float &nearPlane, const float &farPlane)
+{
 	// 模型矩阵
-	glm::vec3 pos = transform->GetPosition();
+	glm::vec3 pos = trans.GetPosition();
 	glm::mat4 model = glm::translate(glm::mat4(1), modelPos - pos);
 	// 视图矩阵
-	glm::quat rot = transform->GetRotation();
+	glm::quat rot = trans.GetRotation();
 	rot = rot * glm::quat(glm::vec3(0, glm::radians(180.0f), 0));
 	glm::mat4 view = glm::toMat4(glm::inverse(rot));
 	// 正交投影矩阵

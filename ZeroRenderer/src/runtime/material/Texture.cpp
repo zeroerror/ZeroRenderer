@@ -3,7 +3,8 @@
 #include "Texture.h"
 #include "GLDebug.h"
 
-Texture::Texture(const std::string& path) {
+Texture::Texture(const std::string &path)
+{
 	stbi_set_flip_vertically_on_load(1);
 	m_LocalBuffer = stbi_load(path.c_str(), &width, &height, &m_BPP, 4);
 
@@ -18,7 +19,8 @@ Texture::Texture(const std::string& path) {
 	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_LocalBuffer));
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 
-	if (m_LocalBuffer) {
+	if (m_LocalBuffer)
+	{
 		stbi_image_free(m_LocalBuffer);
 	}
 
@@ -26,19 +28,22 @@ Texture::Texture(const std::string& path) {
 	std::cout << "Texture::Texture() " << m_RendererID << std::endl;
 }
 
-Texture::~Texture() {
+Texture::~Texture()
+{
 	std::cout << "Texture::~Texture() " << m_RendererID << std::endl;
-	GLCall(glDeleteTextures(1,&m_RendererID));
+	GLCall(glDeleteTextures(1, &m_RendererID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-unsigned int Texture::GetID()const { return m_RendererID; }
+unsigned int Texture::GetID() const { return m_RendererID; }
 
-void Texture::Bind(unsigned int slot)const {
+void Texture::Bind(unsigned int slot) const
+{
 	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 }
 
-void Texture::UnBind()const {
+void Texture::UnBind() const
+{
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }

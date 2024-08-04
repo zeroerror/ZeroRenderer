@@ -31,7 +31,6 @@ void main()
     v_glPos = glPos;
 }
 
-
 #shader fragment
 #version 330 core
 
@@ -54,22 +53,27 @@ uniform float u_farPlane;
 uniform vec3 u_mixedColor;
 uniform float u_mixedFactor;
 
-void main()
+// 贴图采样
+vec4 sampleTexture()
 {
-    // ============== 贴图
     vec4 diffuseColor = texture(u_diffuseMap, v_texCoord);
     vec4 specularColor = texture(u_specularMap, v_texCoord);
     specularColor.a = 1;
     vec4 texColor = diffuseColor + specularColor;
-    vec4 outColor = texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
-    
-    // ============== 漫反射
-    // vec3 normal = normalize(v_normal); // 规范化法线向量
-    // float dotNL = max(dot(normal, -u_lightDirection), 0.0); // 计算法线与光方向的点积，并取最大值
-    // vec3 diffuse = u_lightColor * dotNL; // 计算漫反射分量
-    // outColor.rgb *= diffuse; // 应用漫反射到输出颜色
-    
-    // ============== 深度贴图阴影
+    return texColor + vec4(u_mixedColor, 0.0) * u_mixedFactor;
+}
+
+// 环境光
+vec3 calcAmbient(float ambientIntensity)
+{
+    vec4 color = texture(u_diffuseMap, v_texCoord);
+    vec3 factor = color.rgb * ambientIntensity;
+    return factor;
+}
+
+// 获取阴影颜色因子
+float getShadowFactor()
+{
     // 计算光源空间的片段位置
     vec4 lightSpacePos = u_lightMVPMatrix * v_worldPos;
     // 将光源空间的位置转化为标准化设备坐标
@@ -77,15 +81,34 @@ void main()
     shadowCoord = shadowCoord * 0.5 + 0.5; // 从 [-1, 1] 范围转换到 [0, 1]
     // 取样深度贴图
     float sampleDepth = texture(u_depthMap, shadowCoord.xy).r;
-    // 判断当前片段是否在阴影中
-    float curDepth = -shadowCoord.z;
-    float shadow = (curDepth > sampleDepth + 0.005) ? 0.5 : 1.0;
     // 应用阴影
-    outColor.rgb *= shadow;
-
-    // 输出
-    color = outColor;
-
-if (isnan(lightSpacePos.x))  color.rgb = vec3(1, 0, 0); // 表示 NaN 值
-
+    return (shadowCoord.z > sampleDepth + 0.001)? 0.0 : 1.0;
 }
+
+// 计算漫反射
+vec3 calculateDiffuse()
+{
+    vec3 normal = normalize(v_normal);
+    float dotNL = max(dot(normal, -u_lightDirection), 0.0);
+    vec3 diffuse = u_lightColor * dotNL;
+    return diffuse;
+}
+
+void main()
+{
+    // ============== 贴图采样
+    vec4 outColor = vec4(1.0);
+    outColor = sampleTexture();
+    // ============== 环境光
+    vec3 ambientColor = calcAmbient(0.1);
+    outColor.rgb += ambientColor;
+    // ============== 漫反射
+    vec3 diffuseColor = calculateDiffuse();
+    outColor.rgb *= diffuseColor;
+    // ============== 阴影
+    float shadowFactor = getShadowFactor();
+    outColor.rgb *= shadowFactor;
+    // ============== 输出
+    color = outColor;
+}
+

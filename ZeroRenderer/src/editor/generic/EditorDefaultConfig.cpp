@@ -1,8 +1,8 @@
 #include "EditorDefaultConfig.h"
 
 string EditorDefaultConfig::_defaultScenePath = "asset/DefaultScene.scene";
-string EditorDefaultConfig::_defaultShaderPath = "asset/shader/DefaultLight.shader";
-string EditorDefaultConfig::_errorShaderPath = "asset/shader/Error.shader";
+string EditorDefaultConfig::_defaultShaderPath = "asset/shader/DefaultLight.glsl";
+string EditorDefaultConfig::_errorShaderPath = "asset/shader/Error.glsl";
 
 string EditorDefaultConfig::_defaultComponentStartStr = "--ComponentStart:";
 string EditorDefaultConfig::_defaultGameObjectStartStr = "====GameObjectStart:";

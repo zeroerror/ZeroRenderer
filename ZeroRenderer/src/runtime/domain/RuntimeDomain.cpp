@@ -151,7 +151,7 @@ void RuntimeDomain::BindShader(const Transform *transform, Shader *shader, const
 	vec3 dlPos = dl->transform->GetPosition();
 	vec3 dlColor = dl->color;
 	vec3 dlDir = dl->transform->GetForward();
-	mat4 dlMVP = dl->GetMVPMatrix_Ortho(modelPos);
+	mat4 dlMVP = Camera::GetMVPMatrix_Ortho(modelPos, *dl->transform, 20, 0.1, 100);
 
 	shader->Bind();
 	// TODO: 从 ShaderMeta 中读取 Uniform
@@ -346,17 +346,17 @@ Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
 		_runtimeContext->currentScene = scene;
 	}
 
-	_runtimeContext->mainCamera = scene->Find("Camera")->GetComponent<Camera>();
-	_runtimeContext->sceneDirectLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
+	auto mainCam = scene->Find("Camera")->GetComponent<Camera>();
+	auto directLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
+	_runtimeContext->mainCamera = mainCam;
+	_runtimeContext->sceneDirectLight = directLight;
 
 	// Scene Shadow FBO and Texture
 	glGenFramebuffers(1, &_runtimeContext->currentSceneShadowMapFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
 	glGenTextures(1, &_runtimeContext->currentSceneShadowMapTexture);
 	glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture);
-	const float imgW = _runtimeContext->sceneDirectLight->scrWidth;
-	const float imgH = _runtimeContext->sceneDirectLight->scrHeight;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, imgW, imgH, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, mainCam->scrWidth, mainCam->scrHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -372,13 +372,14 @@ void RuntimeDomain::RenderScene(const Scene &scene, const Camera &camera)
 	{
 		vector<SkinMeshRenderer *> skinMeshRenderers = vector<SkinMeshRenderer *>();
 		go->GetAllComponents<SkinMeshRenderer>(skinMeshRenderers);
-		for (auto skinMeshRenderer : skinMeshRenderers)
-		{
-			DrawSkinMeshRenderer(skinMeshRenderer, camera);
-		}
-
 		if (skinMeshRenderers.size() > 0)
+		{
+			for (auto skinMeshRenderer : skinMeshRenderers)
+			{
+				DrawSkinMeshRenderer(skinMeshRenderer, camera);
+			}
 			continue;
+		}
 
 		vector<MeshRenderer *> meshRenderers = vector<MeshRenderer *>();
 		go->GetAllComponents<MeshRenderer>(meshRenderers);
@@ -403,8 +404,6 @@ void RuntimeDomain::RendererSceneShadowMap(const Scene &scene, const Camera &cam
 	dlCam.transform->SetPosition(dl->transform->GetPosition());
 	dlCam.transform->SetRotation(dl->transform->GetRotation());
 	dlCam.cameraType = CameraType::None;
-	dlCam.nearPlane = dl->nearPlane;
-	dlCam.farPlane = dl->farPlane;
 	RenderScene(scene, dlCam);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -439,10 +438,24 @@ void RuntimeDomain::DrawMeshRenderer(const MeshRenderer *meshRenderer, const Cam
 	// Bind Texture
 	// 漫反射贴图
 	if (material->diffuseTexture != nullptr)
+	{
 		material->diffuseTexture->Bind(TEX_SLOT_DIFFUSE_MAP);
+	}
+	else
+	{
+		GLCall(glActiveTexture(GL_TEXTURE0 + TEX_SLOT_DIFFUSE_MAP));
+		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+	}
 	// 高光贴图
 	if (material->specularTexture != nullptr)
+	{
 		material->specularTexture->Bind(TEX_SLOT_SPECULAR_MAP);
+	}
+	else
+	{
+		GLCall(glActiveTexture(GL_TEXTURE0 + TEX_SLOT_SPECULAR_MAP));
+		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
+	}
 	// 深度贴图
 	GLCall(glActiveTexture(GL_TEXTURE0 + TEX_SLOT_DEPTH_MAP));
 	GLCall(glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture));
@@ -468,12 +481,6 @@ void RuntimeDomain::MetaToDirectLight(const DirectLightMeta &directLightMeta, Di
 {
 	directLight.color = directLightMeta.color;
 	directLight.shadowType = directLightMeta.shadowType;
-	directLight.scrWidth = directLightMeta.scrWidth;
-	directLight.scrHeight = directLightMeta.scrHeight;
-	directLight.fov = directLightMeta.fov;
-	directLight.nearPlane = directLightMeta.nearPlane;
-	directLight.farPlane = directLightMeta.farPlane;
-	directLight.orthoSize = directLightMeta.orthoSize;
 }
 
 void RuntimeDomain::MetaToMeshFilter(const MeshFilterMeta &meshFilterMeta, MeshFilter &meshFilter)

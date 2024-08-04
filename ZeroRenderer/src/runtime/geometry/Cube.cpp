@@ -5,12 +5,14 @@
 #include "IndexBuffer.h"
 #include "Material.h"
 
-Cube::Cube() {
+Cube::Cube()
+{
 	std::cout << "Cube::Cube()" << std::endl;
 	transform = new Transform();
 }
 
-Cube::~Cube() {
+Cube::~Cube()
+{
 	std::cout << "Cube::~Cube()" << std::endl;
 	delete transform;
 	delete va;
@@ -19,7 +21,8 @@ Cube::~Cube() {
 	delete ib;
 }
 
-void Cube::Ctor(float width, float height, float depth) {
+void Cube::Ctor(float width, float height, float depth)
+{
 	this->width = width;
 	this->height = height;
 	this->depth = depth;
@@ -61,16 +64,16 @@ void Cube::Ctor(float width, float height, float depth) {
 	normal_luf = glm::normalize(normal_luf);
 
 	this->vb->Ctor(new float[64]{
-		// 顶点坐标 + 纹理坐标
-		-halfWidth, -halfHeight, -halfDepth, 0.0f, 0.0f, normal_ldb.x,normal_ldb.y,normal_ldb.z,
-		halfWidth, -halfHeight, -halfDepth, 1.0f, 0.0f, normal_rdb.x,normal_rdb.y,normal_rdb.z,
-		halfWidth, halfHeight, -halfDepth, 1.0f, 1.0f, normal_rub.x,normal_rub.y,normal_rub.z,
-		-halfWidth, halfHeight, -halfDepth, 0.0f, 1.0f, normal_lub.x,normal_lub.y,normal_lub.z,
-		-halfWidth, -halfHeight, halfDepth, 0.0f, 0.0f, normal_ldf.x,normal_ldf.y,normal_ldf.z,
-		halfWidth, -halfHeight, halfDepth, 1.0f, 0.0f, normal_rdf.x,normal_rdf.y,normal_rdf.z,
-		halfWidth, halfHeight, halfDepth, 1.0f, 1.0f, normal_ruf.x,normal_ruf.y,normal_ruf.z,
-		-halfWidth, halfHeight, halfDepth, 0.0f, 1.0f, normal_luf.x,normal_luf.y,normal_luf.z
-				   }, 64);
+					   // 顶点坐标 + 纹理坐标
+					   -halfWidth, -halfHeight, -halfDepth, 0.0f, 0.0f, normal_ldb.x, normal_ldb.y, normal_ldb.z,
+					   halfWidth, -halfHeight, -halfDepth, 1.0f, 0.0f, normal_rdb.x, normal_rdb.y, normal_rdb.z,
+					   halfWidth, halfHeight, -halfDepth, 1.0f, 1.0f, normal_rub.x, normal_rub.y, normal_rub.z,
+					   -halfWidth, halfHeight, -halfDepth, 0.0f, 1.0f, normal_lub.x, normal_lub.y, normal_lub.z,
+					   -halfWidth, -halfHeight, halfDepth, 0.0f, 0.0f, normal_ldf.x, normal_ldf.y, normal_ldf.z,
+					   halfWidth, -halfHeight, halfDepth, 1.0f, 0.0f, normal_rdf.x, normal_rdf.y, normal_rdf.z,
+					   halfWidth, halfHeight, halfDepth, 1.0f, 1.0f, normal_ruf.x, normal_ruf.y, normal_ruf.z,
+					   -halfWidth, halfHeight, halfDepth, 0.0f, 1.0f, normal_luf.x, normal_luf.y, normal_luf.z},
+				   64);
 
 	this->m_vbLayout = new VertexBufferLayout();
 	this->m_vbLayout->Push<float>(3);
@@ -83,25 +86,23 @@ void Cube::Ctor(float width, float height, float depth) {
 	this->ib->Ctor(m_indiceArray, 36);
 }
 
-
-Cube* Cube::CreateCube(const float& width, const float& height, const float& depth) {
-	Cube* cube = new Cube();
+Cube *Cube::CreateCube(const float &width, const float &height, const float &depth)
+{
+	Cube *cube = new Cube();
 	cube->Ctor(width, height, depth);
 	return cube;
 }
 
 unsigned int Cube::m_indiceArray[36] = {
-	0, 1, 2,  // 面0
+	0, 1, 2, // 面0
 	2, 3, 0,
-	1, 5, 6,  // 面1
+	1, 5, 6, // 面1
 	6, 2, 1,
-	5, 4, 7,  // 面2
+	5, 4, 7, // 面2
 	7, 6, 5,
-	4, 0, 3,  // 面3
+	4, 0, 3, // 面3
 	3, 7, 4,
-	3, 2, 6,  // 面4
+	3, 2, 6, // 面4
 	6, 7, 3,
-	4, 5, 1,  // 面5
-	1, 0, 4
-};
-
+	4, 5, 1, // 面5
+	1, 0, 4};
