@@ -4,20 +4,22 @@
 #include "EditorUICanvas.h"
 #include "SceneView.h"
 
-class EditorContext {
+class EditorContext
+{
 
 public:
 	EditorContext();
 	~EditorContext();
 
-	SceneMeta* currentSceneMeta;
-	SceneView* sceneView;
+	SceneMeta *currentSceneMeta;
+	SceneView *sceneView;
 
-	EditorUICanvas* rootCanvas;
-	EditorUICanvasNode* titleBarCanvasNode;
-	EditorUICanvasNode* sceneViewCanvasNode;
-	EditorUICanvasNode* hierarchyCanvasNode;
-	EditorUICanvasNode* projectLeftCanvasNode;
-	EditorUICanvasNode* projectRightCanvasNode;
+	EditorUICanvas *rootCanvas;
 
+	EditorUICanvasNode *titleBarCanvasNode;
+	EditorUICanvasNode *sceneViewCanvasNode;
+	EditorUICanvasNode *hierarchyCanvasNode;
+	EditorUICanvasNode *inspectorCanvasNode;
+	EditorUICanvasNode *projectLeftCanvasNode;
+	EditorUICanvasNode *projectRightCanvasNode;
 };

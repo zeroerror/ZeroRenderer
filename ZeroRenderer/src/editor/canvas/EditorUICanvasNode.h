@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include "Rect.h"
 #include "AlignType.h"
 #include <vector>
@@ -6,26 +6,30 @@
 
 using namespace std;
 
-class EditorUICanvasNode {
+class EditorUICanvasNode
+{
 
 public:
-	EditorUICanvasNode(const Rect& rect, const AlignType& alignType);
-	~EditorUICanvasNode();
-
+	typedef function<void(const Rect &rect)> Callback;
+	Callback drawCb;
 	Rect rect;
 	AlignType alignType;
-
-	typedef function<void(const Rect& rect)> Callback;
-	Callback callback;
-
-    void Draw();
-
 	string name;
 
+	/**
+	 * @brief Construct a new Editor UICanvas Node object
+	 */
+	EditorUICanvasNode(const Rect &rect, const AlignType &alignType);
+	~EditorUICanvasNode();
+
+	void Draw();
+
 public:
-	EditorUICanvasNode* father;
-	EditorUICanvasNode* child;
+	EditorUICanvasNode *father;
+	EditorUICanvasNode *child;
 
-	bool IsInCanvas(const vec2& pos);
-
+	/**
+	 * @brief Check if the position is in the canvas
+	 */
+	bool IsInCanvas(const vec2 &pos);
 };

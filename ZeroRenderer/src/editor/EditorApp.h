@@ -24,6 +24,7 @@ enum EditorPanelFlags_
 	EditorPanelFlags_TitleBar,
 	EditorPanelFlags_SceneView,
 	EditorPanelFlags_Hierarchy,
+	EditorPanelFlags_Inspector,
 	EditorPanelFlags_ProjectLeftColunm,
 	EditorPanelFlags_ProjectRightColunm,
 };
@@ -46,7 +47,7 @@ private:
 	bool _alreadyShutDown;
 	void _ShutDown();
 
-#pragma region[EDITOR TIME]
+#pragma region[Editor Time]
 
 private:
 	float _lastTime;
@@ -55,7 +56,7 @@ private:
 
 #pragma endregion
 
-#pragma region[EDITOR CACHE]
+#pragma region[Editor Cahe]
 
 private:
 	EditorPanelFlags_ _curChoosedPanelFlags;
@@ -77,10 +78,55 @@ private:
 	unordered_map<GameObject *, bool> _hierarchyGameObjectFoldExpandMap;
 	vector<GameObject *> _hierarchyRootGameObjects;
 	double _hierarchyGameObjectClickTime;
-	void _ShowHierarchy(const Transform *transform, int depth);
+
+	/**
+	 * @brief Init the hierarchy of the scene
+	 */
 	void _InitHierarchy();
-	bool _IsHierarchyGameObjectShow(const GameObject *gameObject);
+
+	/**
+	 * @brief Show the hierarchy canvas
+	 */
 	void _ShowHierarchyCanvas();
+
+	/**
+	 * @brief Show the hierarchy of the scene
+	 */
+	void _ShowHierarchy(const Transform *transform, int depth);
+
+	/**
+	 * @brief Check if the game object is shown in the hierarchy
+	 */
+	bool _IsHierarchyGameObjectShow(const GameObject *gameObject);
+
+#pragma endregion
+
+#pragma region[Inspector]
+
+private:
+	/**
+	 * @brief Show game object's info in the inspector
+	 */
+	void _ShowInspector(GameObject *go);
+
+	/**
+	 * @brief Show component's info in the inspector
+	 */
+	void _ShowInspectorComponent(const Component *component);
+
+#pragma endregion
+
+#pragma region[GUI]
+
+	/**
+	 * @brief Show GUI 'vec3' widget
+	 */
+	void GUI_ShowWidgetVec3(vec3 &vec, const char *format, const int padding, function<void(const vec3 &)> editCb);
+
+	/**
+	 * @brief Show GUI 'float' widget
+	 */
+	void GUI_ShowWidgetFloat(float &value, const char *format, const int padding, function<void(const float &)> editCb);
 
 #pragma endregion
 
@@ -114,7 +160,7 @@ private:
 
 #pragma endregion
 
-#pragma region[EDITOR EVENT]
+#pragma region[Editor Event]
 
 private:
 	void _Tick_Event_DirectoryBackward();
@@ -133,13 +179,13 @@ private:
 
 #pragma endregion
 
-#pragma region[EDITOR INPUT]
+#pragma region[Editor Input]
 
 	void _Tick_EditorInput();
 
 #pragma endregion
 
-#pragma region[EDITOR WINDOW Config]
+#pragma region[Editor Window Config]
 
 private:
 	int EDITOR_WINDOW_WIDTH;
@@ -153,6 +199,9 @@ private:
 
 	int EDITOR_WINDOW_HIERARCHY_WIDTH;
 	int EDITOR_WINDOW_HIERARCHY_HEIGHT;
+
+	int EDITOR_WINDOW_INSPECTOR_WIDTH;
+	int EDITOR_WINDOW_INSPECTOR_HEIGHT;
 
 	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH;
 	int EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT;

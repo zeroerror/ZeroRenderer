@@ -47,50 +47,61 @@ EditorApp::EditorApp()
 	// Init Hierarchy
 	_InitHierarchy();
 
-	// Editor Canvas
+	// Editor Canvas's Layout
 	_editorContext->rootCanvas = new EditorUICanvas(Rect(1920, 1080, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
 
 	_editorContext->titleBarCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_TITLE_BAR_WIDTH, EDITOR_WINDOW_TITLE_BAR_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->titleBarCanvasNode->callback = [this](const Rect &rect)
+	_editorContext->titleBarCanvasNode->drawCb = [this](const Rect &rect)
 	{
 		_ShowTitleBarCanvas();
 	};
 
 	_editorContext->sceneViewCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_SCENE_WIDTH, EDITOR_WINDOW_SCENE_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->sceneViewCanvasNode->callback = [this](const Rect &rect)
+	_editorContext->sceneViewCanvasNode->drawCb = [this](const Rect &rect)
 	{
 		_ShowSceneViewCanvas(rect.GetLeftTop(), rect.GetRightBottom());
 	};
 
 	_editorContext->hierarchyCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_HIERARCHY_WIDTH, EDITOR_WINDOW_HIERARCHY_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->hierarchyCanvasNode->callback = [this](const Rect &rect)
+	_editorContext->hierarchyCanvasNode->drawCb = [this](const Rect &rect)
 	{
 		_ShowHierarchyCanvas();
 	};
 
+	_editorContext->inspectorCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_INSPECTOR_WIDTH, EDITOR_WINDOW_INSPECTOR_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
+	_editorContext->inspectorCanvasNode->drawCb = [this](const Rect &rect)
+	{
+		_ShowInspector(_curHierarchyChoosedGameObject);
+	};
+
 	_editorContext->projectLeftCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->projectLeftCanvasNode->callback = [this](const Rect &rect)
+	_editorContext->projectLeftCanvasNode->drawCb = [this](const Rect &rect)
 	{
 		_ShowProjectLeftColumnCanvas();
 	};
 
 	_editorContext->projectRightCanvasNode = new EditorUICanvasNode(Rect(EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_WIDTH, EDITOR_WINDOW_PROJECT_RIGHT_COLUNM_HEIGHT, 0, 0, AnchorPointType::LeftTop), AlignType::LeftTop);
-	_editorContext->projectRightCanvasNode->callback = [this](const Rect &rect)
+	_editorContext->projectRightCanvasNode->drawCb = [this](const Rect &rect)
 	{
 		_ShowProjectRightColumnCanvas();
 	};
 
+	// Set Canvas Node Name
 	_editorContext->titleBarCanvasNode->name = "TitleBarCanvasNode";
 	_editorContext->sceneViewCanvasNode->name = "SceneViewCanvasNode";
 	_editorContext->hierarchyCanvasNode->name = "HierarchyCanvasNode";
+	_editorContext->inspectorCanvasNode->name = "InspectorCanvasNode";
 	_editorContext->projectLeftCanvasNode->name = "ProjectLeftCanvasNode";
 	_editorContext->projectRightCanvasNode->name = "ProjectRightCanvasNode";
 
-	_editorContext->rootCanvas->Add(_editorContext->titleBarCanvasNode);
-	_editorContext->rootCanvas->Add(_editorContext->sceneViewCanvasNode);
-	_editorContext->rootCanvas->Add(_editorContext->hierarchyCanvasNode);
-	_editorContext->rootCanvas->Add(_editorContext->projectLeftCanvasNode);
-	_editorContext->rootCanvas->Add(_editorContext->projectRightCanvasNode);
+	// Add Canvas Node
+	auto rootCanvas = _editorContext->rootCanvas;
+	rootCanvas->Add(_editorContext->titleBarCanvasNode);
+	rootCanvas->Add(_editorContext->sceneViewCanvasNode);
+	rootCanvas->Add(_editorContext->hierarchyCanvasNode);
+	rootCanvas->Add(_editorContext->inspectorCanvasNode);
+	rootCanvas->Add(_editorContext->projectLeftCanvasNode);
+	rootCanvas->Add(_editorContext->projectRightCanvasNode);
 }
 
 EditorApp::~EditorApp()
@@ -187,7 +198,7 @@ void EditorApp::_RenderSceneViewFrameBuffer()
 	SceneView *sceneView = _editorContext->sceneView;
 	if (!sceneView)
 		return;
-	Camera* sceneCam = sceneView->SceneViewCamera();
+	Camera *sceneCam = sceneView->SceneViewCamera();
 	if (!sceneCam)
 		return;
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
@@ -232,11 +243,14 @@ void EditorApp::_InitEditorWindowCongfig()
 	EDITOR_WINDOW_TITLE_BAR_WIDTH = EDITOR_WINDOW_WIDTH;
 	EDITOR_WINDOW_TITLE_BAR_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.1f;
 
-	EDITOR_WINDOW_SCENE_WIDTH = EDITOR_WINDOW_WIDTH * 0.75f;
+	EDITOR_WINDOW_SCENE_WIDTH = EDITOR_WINDOW_WIDTH * 0.6f;
 	EDITOR_WINDOW_SCENE_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.6f;
 
-	EDITOR_WINDOW_HIERARCHY_WIDTH = EDITOR_WINDOW_WIDTH * 0.25f;
+	EDITOR_WINDOW_HIERARCHY_WIDTH = EDITOR_WINDOW_WIDTH * 0.2f;
 	EDITOR_WINDOW_HIERARCHY_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.6f;
+
+	EDITOR_WINDOW_INSPECTOR_WIDTH = EDITOR_WINDOW_WIDTH * 0.2f;
+	EDITOR_WINDOW_INSPECTOR_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.6f;
 
 	EDITOR_WINDOW_PROJECT_LEFT_COLUNM_WIDTH = EDITOR_WINDOW_WIDTH * 0.25f;
 	EDITOR_WINDOW_PROJECT_LEFT_COLUNM_HEIGHT = EDITOR_WINDOW_HEIGHT * 0.3f;
@@ -396,20 +410,24 @@ void EditorApp::_ShowHierarchy(const Transform *tran, int depth)
 	if (tran == nullptr)
 		return;
 
-	GameObject *go = tran->gameObject;
-
 	ImGui::Indent(depth * 20.0f);
+
+	// Display item and check if selected
+	GameObject *go = tran->gameObject;
 	if (ImGui::Selectable(go->GetName().c_str(), _curHierarchyChoosedGameObject == go))
 	{
 		double nowClickTime = glfwGetTime();
 		double clickTimeOffset = nowClickTime - _hierarchyGameObjectClickTime;
 		_hierarchyGameObjectClickTime = nowClickTime;
 
+		// Double click
 		if (clickTimeOffset < 0.2f)
 		{
+			// Focus on go
 			_editorDomain->SceneView_FocusOn(go->transform()->GetPosition());
 			if (go->transform()->GetChildCount() > 0)
 			{
+				// Toggle fold
 				_hierarchyGameObjectFoldExpandMap.at(go) = !_hierarchyGameObjectFoldExpandMap.at(go);
 			}
 		}
@@ -417,6 +435,7 @@ void EditorApp::_ShowHierarchy(const Transform *tran, int depth)
 		_curHierarchyChoosedGameObject = go;
 	}
 
+	// Folder is expanded
 	if (_hierarchyGameObjectFoldExpandMap.at(go))
 	{
 		int childCount = tran->GetChildCount();
@@ -427,6 +446,124 @@ void EditorApp::_ShowHierarchy(const Transform *tran, int depth)
 	}
 
 	ImGui::Unindent(depth * 20.0f);
+}
+
+#pragma endregion
+
+#pragma region[Inspector]
+
+void EditorApp::_ShowInspector(GameObject *go)
+{
+	ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
+	if (go == nullptr)
+	{
+		// Clear Inspector
+		ImGui::Text("No GameObject Choosed");
+	}
+	else
+	{
+		// Display GameObject Name
+		ImGui::Text(go->GetName().c_str());
+		ImGui::Separator();
+		// Display transform and components
+		auto trans = go->transform();
+		_ShowInspectorComponent(trans);
+		auto coms = go->GetAllComponents();
+		for (Component *com : coms)
+		{
+			_ShowInspectorComponent(com);
+		}
+	}
+	ImGui::End();
+}
+
+void EditorApp::_ShowInspectorComponent(const Component *com)
+{
+	auto comType = com->componentType;
+
+	// Display component name
+	const char *name = ComponentType_Names[comType];
+	ImGui::Text(name);
+
+	// Display component data
+	switch (comType)
+	{
+	case ComponentType_Transform:
+		auto trans = dynamic_cast<Transform *>(const_cast<Component *>(com));
+		function<void(const vec3 &)> cb = [this](const vec3 &pos)
+		{
+			_curHierarchyChoosedGameObject->transform()->SetPosition(pos);
+		};
+		function<void(const vec3 &)> cb2 = [this](const vec3 &euler)
+		{
+			_curHierarchyChoosedGameObject->transform()->SetRotation(euler);
+		};
+		function<void(const vec3 &)> cb3 = [this](const vec3 &scale)
+		{
+			_curHierarchyChoosedGameObject->transform()->SetScale(scale);
+		};
+
+		ImGui::Text("Transform");
+		ImGui::Indent(10.0f);
+
+		ImGui::PushID(11); // TODO ImGui ID Service
+		auto pos = trans->GetPosition();
+		ImGui::Text("position:");
+		GUI_ShowWidgetVec3(pos, "%.2f", 0, cb);
+		ImGui::PopID();
+
+		ImGui::PushID(12); // TODO ImGui ID Service
+		auto rot = trans->GetRotation();
+		auto rotEuler = glm::degrees(glm::eulerAngles(rot));
+		ImGui::Text("rotation:");
+		GUI_ShowWidgetVec3(rotEuler, "%.2f", 0, cb2);
+		ImGui::PopID();
+
+		ImGui::PushID(13); // TODO ImGui ID Service
+		auto scale = trans->GetScale();
+		ImGui::Text("scale:");
+		GUI_ShowWidgetVec3(scale, "%.2f", 0, cb3);
+
+		ImGui::Unindent(10.0f);
+		ImGui::PopID();
+
+		break;
+	}
+}
+
+#pragma endregion
+
+#pragma region[GUI]
+
+void EditorApp::GUI_ShowWidgetVec3(vec3 &vec, const char *format, const int padding, function<void(const vec3 &)> editCb)
+{
+	ImGui::SetNextItemWidth(50.0f);
+	ImGui::PushID(1); // TODO ImGui ID Service
+	GUI_ShowWidgetFloat(vec.x, format, padding, [editCb, &vec](const float &value)
+						{ editCb(vec); });
+	ImGui::PopID();
+
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(50.0f);
+	ImGui::PushID(2); // TODO ImGui ID Service
+	GUI_ShowWidgetFloat(vec.y, format, padding, [editCb, &vec](const float &value)
+						{ editCb(vec); });
+	ImGui::PopID();
+
+	ImGui::SetNextItemWidth(50.0f);
+	ImGui::SameLine();
+	ImGui::PushID(3); // TODO ImGui ID Service
+	GUI_ShowWidgetFloat(vec.z, format, padding, [editCb, &vec](const float &value)
+						{ editCb(vec); });
+	ImGui::PopID();
+}
+
+void EditorApp::GUI_ShowWidgetFloat(float &value, const char *format, const int padding, function<void(const float &)> editCb)
+{
+	ImGui::InputFloat("", &value, 0.0f, 0.0f, format);
+	if (ImGui::IsItemDeactivatedAfterEdit())
+		if (editCb)
+			editCb(value);
 }
 
 #pragma endregion
@@ -462,7 +599,7 @@ void EditorApp::_ShowProjectMainPanel(AssetTreeNode *node, string dir, float xOf
 	string assetName = node->assetName;
 	const char *assetNamec = assetName.c_str();
 	string choosedPath = dir + assetName;
-	ImGui::PushID(1);
+	ImGui::PushID(1); // TODO ImGui ID Service
 	if (ImGui::Selectable(assetNamec, _curProjectChoosedNode == node))
 	{
 		double nowClickTime = glfwGetTime();
@@ -501,7 +638,7 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode *node)
 	ImGui::Text(_curProjectChoosedNode->assetPath.c_str());
 	ImGui::Spacing();
 	ImGui::Indent(10.0f);
-	ImGui::PushID(2);
+	ImGui::PushID(2); // TODO ImGui ID Service
 	for (auto kvp : node->childNodes)
 	{
 		AssetTreeNode *node = kvp.second;
@@ -656,6 +793,10 @@ void EditorApp::_Tick_EditorInput()
 	else if (hitCanvasNode == _editorContext->hierarchyCanvasNode)
 	{
 		this->_curChoosedPanelFlags = EditorPanelFlags_Hierarchy;
+	}
+	else if (hitCanvasNode == _editorContext->inspectorCanvasNode)
+	{
+		this->_curChoosedPanelFlags = EditorPanelFlags_Inspector;
 	}
 	else if (hitCanvasNode == _editorContext->projectLeftCanvasNode)
 	{

@@ -1,10 +1,12 @@
 #pragma once
 
-enum EditorPanelFlags_ {
+enum EditorPanelFlags_
+{
 	EditorPanelFlags_None = 0,
 	EditorPanelFlags_TitleBar,
 	EditorPanelFlags_SceneView,
 	EditorPanelFlags_Hierarchy,
+	EditorPanelFlags_Inspector,
 	EditorPanelFlags_ProjectLeftColunm,
 	EditorPanelFlags_ProjectRightColunm,
 };
