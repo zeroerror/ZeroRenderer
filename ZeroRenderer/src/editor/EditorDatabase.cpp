@@ -507,6 +507,9 @@ void EditorDatabase::GenerateDefaultSceneMeta()
 	cameraMeta->cameraType = CameraType::Perspective;
 	cameraMeta->scrWidth = scrWidth;
 	cameraMeta->scrHeight = scrHeight;
+	cameraMeta->nearPlane = 0.1f;
+	cameraMeta->farPlane = 100.0f;
+	cameraMeta->fov = 45.0f;
 	cameraGOMeta->transformMeta->position = vec3(0, 20, -10);
 	cameraGOMeta->transformMeta->rotation = quat(vec3(radians(30.0f), radians(0.0f), radians(0.0f)));
 	cameraGOMeta->gid = gid++;
@@ -523,6 +526,7 @@ void EditorDatabase::GenerateDefaultSceneMeta()
 	directLightGOMeta->transformMeta->rotation = quat(vec3(30, 0, 0));
 	directLightMeta->nearPlane = cameraMeta->nearPlane;
 	directLightMeta->farPlane = cameraMeta->farPlane;
+	directLightMeta->orthoSize = 20;
 	directLightMeta->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	directLightGOMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(directLightGOMeta);
