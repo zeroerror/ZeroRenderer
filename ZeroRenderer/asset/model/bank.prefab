@@ -1,0 +1,57 @@
+--ComponentStart:
+componentType: ComponentType_Transform
+position: 0 0 0
+rotation: 0 0 0 1
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_SkinMeshRenderer
+componentType: ComponentType_MeshFilter
+modelGUID: 3d7168e8f3a8700a
+meshIndex: 0
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 3d7168e8f3a8700a
+meshIndex: 1
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 3d7168e8f3a8700a
+meshIndex: 2
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 3d7168e8f3a8700a
+meshIndex: 3
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 3d7168e8f3a8700a
+meshIndex: 4
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 3d7168e8f3a8700a
+meshIndex: 5
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: 3d7168e8f3a8700a
+meshIndex: 6
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 699cdea50bc3d311
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: e6f09c112bbdc18b
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5b26cb4fefc8f640
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 4638d47e3399cdd3
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 3f2a5fb7ff65d765
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: a7117f206cb7c0c3
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: bf38f2cd3e20d266
+--ComponentEnd
+--ComponentEnd

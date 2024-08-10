@@ -717,12 +717,14 @@ void Serialization::PrefabMeta_DeserializeFrom(PrefabMeta &prefabMeta, const str
 			}
 			if (key == "guid:")
 			{
-				prefabMeta.guid = key.c_str();
+				iss >> key;
+				prefabMeta.guid = key;
 				continue;
 			}
 
 			if (key == "name:")
 			{
+				iss >> key;
 				prefabMeta.name = key.c_str();
 				continue;
 			}

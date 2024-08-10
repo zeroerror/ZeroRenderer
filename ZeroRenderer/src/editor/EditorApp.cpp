@@ -420,7 +420,13 @@ void EditorApp::_ShowHierarchy(const Transform *tran, int depth)
 
 	// Display item and check if selected
 	GameObject *go = tran->gameObject;
-	if (ImGui::Selectable(go->GetName().c_str(), _curHierarchyChoosedGameObject == go))
+	std::string name = go->GetName();
+	const char *label = name.c_str();
+	if (!label || strlen(label) == 0)
+	{
+		label = "Unknown";
+	}
+	if (ImGui::Selectable(label, _curHierarchyChoosedGameObject == go))
 	{
 		double nowClickTime = glfwGetTime();
 		double clickTimeOffset = nowClickTime - _hierarchyGameObjectClickTime;
@@ -442,6 +448,11 @@ void EditorApp::_ShowHierarchy(const Transform *tran, int depth)
 	}
 
 	// Folder is expanded
+	auto iter = _hierarchyGameObjectFoldExpandMap.find(go);
+	if (iter == _hierarchyGameObjectFoldExpandMap.end())
+	{
+		_hierarchyGameObjectFoldExpandMap.insert(make_pair(go, false));
+	}
 	if (_hierarchyGameObjectFoldExpandMap.at(go))
 	{
 		int childCount = tran->GetChildCount();
@@ -645,14 +656,17 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode *node)
 	ImGui::Spacing();
 	ImGui::Indent(10.0f);
 	ImGui::PushID(2); // TODO ImGui ID Service
+
 	for (auto kvp : node->childNodes)
 	{
 		AssetTreeNode *node = kvp.second;
+		//- display dir
 		if (node->isDir)
 		{
 			ImGui::Image(reinterpret_cast<ImTextureID>(_projectFolderTextureID), ImVec2(32, 32));
 			ImGui::SameLine();
 		}
+		// - display a selectable label, check if selected, set as current selected node when double click
 		const char *assetNamec = node->assetName.c_str();
 		if (ImGui::Selectable(assetNamec, _curProjectDetailsChoosedNode == node))
 		{
@@ -671,7 +685,38 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode *node)
 			}
 		}
 	}
+
 	ImGui::PopID();
+
+	// when drag a selected node, set it as current selected node and listen for drop
+	if (_curProjectDetailsChoosedNode != nullptr)
+	{
+		if (EditorInputManager::GetMouseButtonDown(MouseButtons_Left))
+		{
+		}
+		else if (EditorInputManager::GetMouseButtonUp(MouseButtons_Left))
+		{
+			const string assetPath = _curProjectDetailsChoosedNode->assetPath;
+			string guid;
+			if (EditorDatabase::TryGetGUIDFromAssetPath(assetPath, guid))
+			{
+
+				GameObject *go = _runtimeDomain->assetToGameObject(guid);
+				if (go)
+				{
+					if (_curHierarchyChoosedGameObject != nullptr)
+					{
+						go->transform()->SetFather(_curHierarchyChoosedGameObject->transform());
+					}
+					else
+					{
+						vector<GameObject *> *gameObjects = _runtimeContext->currentScene->gameObjects;
+						gameObjects->push_back(go);
+					}
+				}
+			}
+		}
+	}
 }
 
 #pragma endregion

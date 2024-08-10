@@ -117,6 +117,10 @@ void EditorDatabase::ImportAssets(const string &dir)
 			{
 				EditorDatabase::ImportModel(assetPath);
 			}
+			else if (extensionStr == FileSuffix::SUFFIX_FBX)
+			{
+				EditorDatabase::ImportModel(assetPath);
+			}
 			else if (extensionStr == FileSuffix::SUFFIX_PREFAB)
 			{
 				string guid = GenerateGUIDFromAssetPath(assetPath);

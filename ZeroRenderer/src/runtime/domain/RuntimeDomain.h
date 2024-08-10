@@ -129,7 +129,7 @@ public:
 	 */
 	void DrawMeshRenderer(const MeshRenderer *meshRenderer, const Camera &camera);
 
-	// ============================ All meta's methods that convert to a runtime object. =====================================
+	// ============================ All meta's methods that convert to a runtime game object. =====================================
 	void MetaToDirectLight(const DirectLightMeta &directLightMeta, DirectLight &directLight);
 	void MetaToCamera(const CameraMeta &cameraMeta, Camera &camera);
 	void MetaToMeshFilter(const MeshFilterMeta &meshFilterMeta, MeshFilter &meshFilter);
@@ -141,6 +141,9 @@ public:
 	void MetaToGameObject(const PrefabInstanceMeta &prefabInstanceMeta, GameObject &gameObject);
 	void MetaToGameObject(const GameObjectMeta &gameObjectMeta, GameObject &gameObject);
 	void MetaToScene(const SceneMeta &sceneMeta, Scene &scene);
+
+	// ============================ All asset's methods that convert to a runtime game object. =====================================
+	GameObject* assetToGameObject(const string guid);
 
 private:
 	void _MetaToGameObject(const vector<ComponentMeta *> componentMetas, GameObject &gameObject);

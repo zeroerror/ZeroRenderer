@@ -1,0 +1,28 @@
+--ComponentStart:
+componentType: ComponentType_Transform
+fatherGID: 0
+childrenGIDs: 
+------childrenGIDs
+position: 0 0 0
+rotation: 0 0 0 1
+scale: 1 1 1
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_Transform
+fatherGID: 0
+childrenGIDs: 
+------childrenGIDs
+position: 0 0 0
+rotation: 0 0 0 1
+scale: 1 1 1
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_SkinMeshRenderer
+componentType: ComponentType_MeshFilter
+modelGUID: 322e75bd8441a52b
+meshIndex: 0
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: a31a97886f22d7d2
+--ComponentEnd
+--ComponentEnd

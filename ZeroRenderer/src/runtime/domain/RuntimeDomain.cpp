@@ -553,7 +553,7 @@ inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta *> compo
 		ComponentType_ componentType = componentMeta->componentType;
 		if (componentType == ComponentType_Transform)
 		{
-			Transform* tf = gameObject.AddComponent<Transform>();
+			Transform *tf = gameObject.AddComponent<Transform>();
 			TransformMeta *transformMeta = static_cast<TransformMeta *>(componentMeta);
 			MetaToTransform(*transformMeta, *tf);
 		}
@@ -665,4 +665,17 @@ void RuntimeDomain::MetaToScene(const SceneMeta &sceneMeta, Scene &scene)
 			trans->AddChild(childGO->transform());
 		}
 	}
+}
+
+GameObject *RuntimeDomain::assetToGameObject(const string guid)
+{
+	PrefabMeta prefabMeta = PrefabMeta();
+	GUIDToPrefabMeta(guid, prefabMeta);
+	if (prefabMeta.transformMeta == nullptr)
+		return nullptr;
+	GameObject *gameObject = new GameObject();
+	gameObject->SetGUID(guid);
+	gameObject->SetName(prefabMeta.name);
+	MetaToGameObject(prefabMeta, *gameObject);
+	return gameObject;
 }
