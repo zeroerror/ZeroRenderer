@@ -18,6 +18,8 @@
 #include "Serialization.h"
 #include "EditorModelManager.h"
 #include "EditorDefaultConfig.h"
+#include "MeshFilter.h"
+#include "MeshRenderer.h"
 
 using namespace Serialization;
 using namespace std;
@@ -512,38 +514,14 @@ void EditorDatabase::GenerateDefaultSceneMeta()
 	GameObjectMeta *directLightGOMeta = new GameObjectMeta();
 	directLightGOMeta->name = "DirectLight";
 	DirectLightMeta *directLightMeta = directLightGOMeta->AddComponentMeta<DirectLightMeta>();
-	directLightMeta->scrWidth = scrWidth;
-	directLightMeta->scrHeight = scrHeight;
 	directLightMeta->shadowType = ShadowType::Hard;
 	directLightGOMeta->transformMeta->position = vec3(0, 10.0f, 0);
 	directLightGOMeta->transformMeta->rotation = quat(vec3(30, 0, 0));
-	directLightMeta->fov = cameraMeta->fov;
-	directLightMeta->scrWidth = cameraMeta->scrWidth;
-	directLightMeta->scrHeight = cameraMeta->scrHeight;
 	directLightMeta->nearPlane = cameraMeta->nearPlane;
 	directLightMeta->farPlane = cameraMeta->farPlane;
 	directLightMeta->color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	directLightGOMeta->gid = gid++;
 	sceneMeta.gameObjectMetas.push_back(directLightGOMeta);
-
-	// Create a depth map 2D image.
-	// GameObjectMeta* depthMapImageGOMeta = new GameObjectMeta();
-	// depthMapImageGOMeta->name = "DepthMapImage";
-	// depthMapImageGOMeta->transformMeta->position = vec3(0.0f, 10.0f, 20.0f);
-	// depthMapImageGOMeta->transformMeta->rotation = vec3(0.0f, radians(180.0f), 0.0f);
-	// meshFilterMeta = cameraGOMeta->AddComponentMeta<MeshFilterMeta>();
-	// meshRendererMeta = cameraGOMeta->AddComponentMeta<MeshRendererMeta>();
-	// meshRendererMeta->materialGUID = depthMapMatGUID;
-	// sceneMeta.gameObjectMetas.push_back(depthMapImageGOMeta);
-
-	//// ---- Create a central light source cube
-	// GameObjectMeta* lightCubeGOMeta = new GameObjectMeta();
-	// lightCubeGOMeta->name = "LightCube";
-	// lightCubeGOMeta->transformMeta->scale = vec3(0.2f, 0.2f, 1.0f);
-	// meshFilterMeta = lightCubeGOMeta->AddComponentMeta<MeshFilterMeta>();
-	// meshRendererMeta = lightCubeGOMeta->AddComponentMeta<MeshRendererMeta>();
-	// meshRendererMeta->materialGUID = lightCubeMatGUID;
-	// sceneMeta.gameObjectMetas.push_back(lightCubeGOMeta);
 
 	// ---- Create the ground
 	GameObjectMeta *groundCubeGOMeta = new GameObjectMeta();
@@ -621,12 +599,14 @@ void EditorDatabase::GenerateDefaultSceneMeta()
 	if (TryGetGUIDFromAssetPath("asset/model/nanosuit/nanosuit.prefab", prefabGUID))
 	{
 		PrefabInstanceMeta *prefabInstanceMeta = new PrefabInstanceMeta();
+		GameObjectMeta *goMeta = prefabInstanceMeta->gameObjectMeta;
 		prefabInstanceMeta->guid = prefabGUID;
-		prefabInstanceMeta->gameObjectMeta->name = "Nanosuit";
-		prefabInstanceMeta->gameObjectMeta->gid = gid++;
-		prefabInstanceMeta->gameObjectMeta->transformMeta->position = vec3(0, 0, 0);
-		prefabInstanceMeta->gameObjectMeta->transformMeta->rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
-		prefabInstanceMeta->gameObjectMeta->transformMeta->scale = vec3(0.25f, 0.25f, 0.25f);
+		goMeta->name = "Nanosuit";
+		goMeta->gid = gid++;
+		TransformMeta *tfMeta = goMeta->transformMeta;
+		tfMeta->position = vec3(0, 0, 0);
+		tfMeta->rotation = quat(vec3(radians(0.0f), radians(0.0f), radians(0.0f)));
+		tfMeta->scale = vec3(0.25f, 0.25f, 0.25f);
 		sceneMeta.prefabInstanceMetas.push_back(prefabInstanceMeta);
 	}
 
@@ -676,4 +656,94 @@ void EditorDatabase::GenerateDefaultShader()
 	uniforms.push_back(uniform);
 
 	ShaderMeta_SerializeTo(shaderMeta, defaultShaderPath);
+}
+
+/**
+ * @brief Save scene to meta file
+ * @param scene Scene to save
+ * @param path Path to save
+ */
+void EditorDatabase::SaveSceneToMeta(const Scene &scene, const string &path)
+{
+	SceneMeta sceneMeta = SceneMeta();
+	sceneMeta.guid = GenerateGUIDFromAssetPath(path);
+	vector<GameObject *> *gameObjects = scene.gameObjects;
+	for (GameObject *go : *gameObjects)
+	{
+		GameObjectMeta *goMeta = new GameObjectMeta();
+		// gid
+		goMeta->gid = go->GetGID();
+		// name
+		goMeta->name = go->GetName();
+		// all components
+		vector<ComponentMeta *> *componentMetas = &goMeta->componentMetas;
+		for (Component *com : go->GetAllComponents())
+		{
+			ComponentType_ componentType = com->componentType;
+			if (componentType == ComponentType_Transform)
+			{
+				TransformMeta *transformMeta = goMeta->transformMeta;
+				Transform *transform = go->transform();
+				transformMeta->position = transform->GetPosition();
+				transformMeta->rotation = transform->GetRotation();
+				transformMeta->scale = transform->GetScale();
+				transformMeta->childrenGIDs = &transform->childrenGIDs_forSerialize;
+				transformMeta->fatherGID = transform->fatherGID_forSerialize;
+			}
+			else if (componentType == ComponentType_Camera)
+			{
+				Camera *camera = static_cast<Camera *>(com);
+				CameraMeta *cameraMeta = new CameraMeta();
+				cameraMeta->cameraType = camera->cameraType;
+				cameraMeta->nearPlane = camera->nearPlane;
+				cameraMeta->farPlane = camera->farPlane;
+				cameraMeta->fov = camera->fov;
+				cameraMeta->scrWidth = camera->scrWidth;
+				cameraMeta->scrHeight = camera->scrHeight;
+				cameraMeta->orthoSize = camera->orthoSize;
+				componentMetas->push_back(cameraMeta);
+			}
+			else if (componentType == ComponentType_DirectLight)
+			{
+				DirectLight *directLight = static_cast<DirectLight *>(com);
+				DirectLightMeta *directLightMeta = new DirectLightMeta();
+				directLightMeta->color = directLight->color;
+				directLightMeta->shadowType = directLight->shadowType;
+				directLightMeta->nearPlane = directLight->nearPlane;
+				directLightMeta->farPlane = directLight->farPlane;
+				directLightMeta->orthoSize = directLight->orthoSize;
+				componentMetas->push_back(directLightMeta);
+			}
+			else if (componentType == ComponentType_MeshFilter)
+			{
+				MeshFilter *meshFilter = static_cast<MeshFilter *>(com);
+				MeshFilterMeta *meshFilterMeta = new MeshFilterMeta();
+				meshFilterMeta->modelGUID = meshFilter->modelGUID_editorCache;
+				meshFilterMeta->meshIndex = meshFilter->meshIndex_editorCache;
+				componentMetas->push_back(meshFilterMeta);
+			}
+			else if (componentType == ComponentType_MeshRenderer)
+			{
+				MeshRenderer *meshRenderer = static_cast<MeshRenderer *>(com);
+				MeshRendererMeta *meshRendererMeta = new MeshRendererMeta();
+				meshRendererMeta->materialGUID = meshRenderer->materialGUID;
+				componentMetas->push_back(meshRendererMeta);
+			}
+		}
+
+		// Check if the game object is a prefab instance
+		const string guid = go->GetGUID();
+		if (guid != "")
+		{
+			PrefabInstanceMeta *prefabInstanceMeta = new PrefabInstanceMeta();
+			prefabInstanceMeta->guid = guid;
+			prefabInstanceMeta->gameObjectMeta = goMeta;
+			sceneMeta.prefabInstanceMetas.push_back(prefabInstanceMeta);
+		}
+		else
+		{
+			sceneMeta.gameObjectMetas.push_back(goMeta);
+		}
+	}
+	Serialization::SceneMeta_SerializeTo(sceneMeta, path);
 }

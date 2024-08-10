@@ -1,0 +1,9 @@
+############## 24/8/10
+运行时创建的 GO 有记录 GUID, 代表为预制体实例
+prefabInstanceMeta数据转化运行时GO三步骤
+    prefabInstanceMeta.prefabMeta               -> 数据输入gameobject
+    prefabInstanceMeta.gameObjectMeta.trans     -> 数据输入gameobject.trans
+    prefabInstanceMeta.name                     -> 数据输入gameobject.name
+对应的运行时GO数据转化prefabInstanceMeta相反, 逻辑实现在Serialization
+ + 在 RuntimeDomain 中对 void MetaToGameObject(const PrefabInstanceMeta &prefabInstanceMeta, GameObject &gameObject); 添加guid记录
+GameObject与GameObjectMeta的h代码, 修复添加组件接口, 保证transform的正确添加

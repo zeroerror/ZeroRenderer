@@ -489,6 +489,8 @@ void RuntimeDomain::MetaToMeshFilter(const MeshFilterMeta &meshFilterMeta, MeshF
 	Mesh *mesh = new Mesh();
 	_runtimeContext->GetMeshRepo()->TryGetMesh(meshFilterMeta.modelGUID, meshFilterMeta.meshIndex, mesh);
 	meshFilter.mesh = mesh;
+	meshFilter.meshIndex_editorCache = meshFilterMeta.meshIndex;
+	meshFilter.modelGUID_editorCache = meshFilterMeta.modelGUID;
 }
 
 void RuntimeDomain::MetaToMeshRenderer(const MeshRendererMeta &meshRendererMeta, MeshRenderer &meshRenderer)
@@ -551,8 +553,9 @@ inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta *> compo
 		ComponentType_ componentType = componentMeta->componentType;
 		if (componentType == ComponentType_Transform)
 		{
+			Transform* tf = gameObject.AddComponent<Transform>();
 			TransformMeta *transformMeta = static_cast<TransformMeta *>(componentMeta);
-			MetaToTransform(*transformMeta, *gameObject.transform());
+			MetaToTransform(*transformMeta, *tf);
 		}
 
 		if (componentType == ComponentType_Camera)
@@ -607,6 +610,7 @@ inline void RuntimeDomain::_MetaToGameObject(const vector<ComponentMeta *> compo
 void RuntimeDomain::MetaToGameObject(const PrefabInstanceMeta &prefabInstanceMeta, GameObject &gameObject)
 {
 	gameObject.SetGID(prefabInstanceMeta.gameObjectMeta->gid);
+	gameObject.SetGUID(prefabInstanceMeta.guid);
 
 	PrefabMeta prefabMeta = PrefabMeta();
 	GUIDToPrefabMeta(prefabInstanceMeta.guid, prefabMeta);

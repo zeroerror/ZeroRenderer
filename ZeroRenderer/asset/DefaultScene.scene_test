@@ -8,8 +8,8 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: -17.5021 24.7817 -49.0829
-rotation: 0.135005 0.0460814 -0.00628604 0.989758
+position: -16.0344 26.4793 -48.8825
+rotation: 0.209153 0.104678 -0.0225247 0.972006
 scale: 1 1 1
 --ComponentEnd
 --ComponentStart:
@@ -80,7 +80,7 @@ childrenGIDs:
 ------childrenGIDs
 position: -8 2.5 0
 rotation: 0 0 0 1
-scale: 1 10 5
+scale: 1 5 10
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshFilter
@@ -232,7 +232,7 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: -11 0 0
+position: -10 0 0
 rotation: 0 0 0 1
 scale: 0.25 0.25 0.25
 --ComponentEnd

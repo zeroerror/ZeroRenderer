@@ -2,6 +2,7 @@
 #include "AlignType.h"
 #include "EditorUICanvas.h"
 #include "EditorInputManager.h"
+#include "EditorDefaultConfig.h"
 
 // ********************** EDITOR USER CONFIG **********************
 EditorApp::EditorApp()
@@ -312,6 +313,11 @@ void EditorApp::_ShowTitleBarCanvas()
 	if (ImGui::Button("Generate Default Shader"))
 	{
 		EditorDatabase::GenerateDefaultShader();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Save Scene"))
+	{
+		EditorDatabase::SaveSceneToMeta(*_runtimeContext->currentScene, EditorDefaultConfig::DefaultScenePath());
 	}
 	ImGui::End();
 }

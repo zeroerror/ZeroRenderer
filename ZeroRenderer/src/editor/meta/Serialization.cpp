@@ -115,12 +115,12 @@ void Serialization::CameraMeta_SerializeTo(const CameraMeta &cameraMeta, strings
 {
 	ss << "componentType: " << ComponentType_Names[cameraMeta.componentType] << endl;
 	ss << "cameraType: " << static_cast<int>(cameraMeta.cameraType) << endl;
-	ss << "scrWidth: " << cameraMeta.scrWidth << endl;
-	ss << "scrHeight: " << cameraMeta.scrHeight << endl;
-	ss << "fov: " << cameraMeta.fov << endl;
 	ss << "nearPlane: " << cameraMeta.nearPlane << endl;
 	ss << "farPlane: " << cameraMeta.farPlane << endl;
 	ss << "orthoSize: " << cameraMeta.orthoSize << endl;
+	ss << "scrWidth: " << cameraMeta.scrWidth << endl;
+	ss << "scrHeight: " << cameraMeta.scrHeight << endl;
+	ss << "fov: " << cameraMeta.fov << endl;
 }
 
 void Serialization::CameraMeta_DeserializeFrom(CameraMeta *cameraMeta, stringstream &ss)
@@ -181,9 +181,6 @@ void Serialization::DirectLightMeta_SerializeTo(const DirectLightMeta &directLig
 	ss << "componentType: " << ComponentType_Names[directLightMeta.componentType] << endl;
 	ss << "color: " << directLightMeta.color.x << ' ' << directLightMeta.color.y << ' ' << directLightMeta.color.z << endl;
 	ss << "shadowType: " << static_cast<int>(directLightMeta.shadowType) << endl;
-	ss << "scrWidth: " << directLightMeta.scrWidth << endl;
-	ss << "scrHeight: " << directLightMeta.scrHeight << endl;
-	ss << "fov: " << directLightMeta.fov << endl;
 	ss << "nearPlane: " << directLightMeta.nearPlane << endl;
 	ss << "farPlane: " << directLightMeta.farPlane << endl;
 }
@@ -217,20 +214,10 @@ void Serialization::DirectLightMeta_DeserializeFrom(DirectLightMeta *directLight
 			iss >> key;
 			directLightMeta->shadowType = (ShadowType)(atoi(key.c_str()));
 		}
-		else if (key == "scrWidth:")
+		else if (key == "orthoSize:")
 		{
 			iss >> key;
-			directLightMeta->scrWidth = atof(key.c_str());
-		}
-		else if (key == "scrHeight:")
-		{
-			iss >> key;
-			directLightMeta->scrHeight = atof(key.c_str());
-		}
-		else if (key == "fov:")
-		{
-			iss >> key;
-			directLightMeta->fov = atof(key.c_str());
+			directLightMeta->orthoSize = atof(key.c_str());
 		}
 		else if (key == "nearPlane:")
 		{

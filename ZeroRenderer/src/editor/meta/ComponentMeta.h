@@ -7,8 +7,8 @@ class GameObjectMeta;
 class ComponentMeta
 {
 public:
+	virtual ~ComponentMeta() {}
 	ComponentType_ componentType;
-	GameObjectMeta* gameObjectMeta;
-	TransformMeta* transformMeta;
+	GameObjectMeta *gameObjectMeta;
+	TransformMeta *transformMeta;
 };
-
