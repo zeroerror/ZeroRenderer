@@ -675,8 +675,8 @@ void EditorDatabase::SaveSceneToMeta(const Scene &scene, const string &path)
 {
 	SceneMeta sceneMeta = SceneMeta();
 	sceneMeta.guid = GenerateGUIDFromAssetPath(path);
-	vector<GameObject *> *gameObjects = scene.gameObjects;
-	for (GameObject *go : *gameObjects)
+	vector<GameObject *> *allGameObjects = scene.allGameObjects;
+	for (GameObject *go : *allGameObjects)
 	{
 		GameObjectMeta *goMeta = new GameObjectMeta();
 		// gid

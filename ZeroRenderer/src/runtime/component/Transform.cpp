@@ -81,26 +81,51 @@ glm::vec3 Transform::GetRight() const
 
 void Transform::SetFather(Transform *father)
 {
-	this->_father = father;
-	father->_children->push_back(this);
+	if (father)
+	{
+		// 新的父节点不为空, 添加到新的父节点
+		father->AddChild(this);
+	}
+	else if (this->_father)
+	{
+		// 新的父节点为空, 从当前父节点移除
+		this->_father->RemoveChild(this);
+	}
 }
 
 void Transform::AddChild(Transform *child)
 {
-	this->_children->push_back(child);
+	if (!child)
+	{
+		return;
+	}
+	// 移除原来的父节点
+	Transform *oldFather = child->_father;
+	if (oldFather)
+	{
+		oldFather->RemoveChild(child);
+	}
+	// 设置新的父节点
 	child->_father = this;
+	this->_children->push_back(child);
+	childrenGIDs_forSerialize.push_back(child->gameObject->GetGID());
 }
 
-void Transform::RemoveChild(const Transform &child)
+void Transform::RemoveChild(Transform *trans)
 {
-	for (int i = 0; i < _children->size(); i++)
+	if (!trans)
+		return;
+	const int matchGID = trans->gameObject->GetGID();
+	const int index = GetIndex(matchGID);
+	if (index == -1)
 	{
-		if (_children->at(i)->gameObject->GetGID() == child.gameObject->GetGID())
-		{
-			_children->erase(_children->begin() + i);
-			break;
-		}
+		return;
 	}
+	// 移除子节点
+	_children->erase(_children->begin() + index);
+	childrenGIDs_forSerialize.erase(childrenGIDs_forSerialize.begin() + index);
+	trans->_father = nullptr;
+	trans->fatherGID_forSerialize = 0;
 }
 
 Transform *Transform::GetFather() const { return _father; }
@@ -114,7 +139,7 @@ Transform *Transform::GetChild(int index) const
 	return (*_children)[index];
 }
 
-void Transform::ForEachChild(void (*func)(Transform *transform))
+void Transform::ForEachChild(std::function<void(Transform *)> func) const
 {
 	for (auto child : *_children)
 	{
@@ -122,32 +147,52 @@ void Transform::ForEachChild(void (*func)(Transform *transform))
 	}
 }
 
-Transform *Transform::Find(const string &path)
+Transform *Transform::FindByPath(const string &relativePath) const
 {
-	return _Find(path, this);
-}
-
-Transform *Transform::_Find(const string &path, Transform *transform) const
-{
-	if (transform == nullptr)
+	const string norPath = FileHelper::NormalizedPath(relativePath);
+	if (norPath == "")
+	{
 		return nullptr;
-
-	size_t end1 = path.find_last_of("/");
-	if (end1 == string::npos)
-		return _Find(path);
-
-	size_t end2 = path.find_last_of("/");
-	string name;
-	if (end2 == string::npos)
-		name = path.substr(end1 + 1);
-	else
-		name = path.substr(end1 + 1, end2);
-
-	Transform *next = _Find(name);
-	_Find(name, next);
+	}
+	auto first = norPath.find_first_of('/');
+	auto name = norPath.substr(0, first);
+	auto child = FindByName(name);
+	if (child == nullptr)
+	{
+		return nullptr;
+	}
+	if (first == string::npos)
+	{
+		return child;
+	}
+	return child->FindByPath(norPath.substr(first + 1));
 }
 
-Transform *Transform::_Find(const string &name) const
+Transform *Transform::FindByGid(const int gid) const
+{
+	for (auto child : *_children)
+	{
+		if (child->gameObject->GetGID() == gid)
+		{
+			return child;
+		}
+	}
+	return nullptr;
+}
+
+int Transform::GetIndex(const int gid) const
+{
+	for (int i = 0; i < _children->size(); i++)
+	{
+		if ((*_children)[i]->gameObject->GetGID() == gid)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+Transform *Transform::FindByName(const string &name) const
 {
 	for (auto child : *_children)
 	{

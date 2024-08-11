@@ -5,16 +5,25 @@
 #include "GameObject.h"
 using namespace std;
 
-class Scene {
+class Scene
+{
 
 public:
 	Scene();
 	~Scene();
 
-	vector<GameObject*>* gameObjects;
+	vector<GameObject *> *rootGameObjects;
+	vector<GameObject *> *allGameObjects;
 
-	GameObject* Find(const string& name);
-	GameObject* Find(const int& gid);
+	/**
+	 * @brief 根据相对路径查找GameObject
+	 * @param relativePath 相对路径, 如: "root/child1/child2"
+	 */
+	GameObject *FindByPath(const string &relativePath);
 
+	/**
+	 * @brief 根据gid全局查找GameObject
+	 * @param gid gid
+	 */
+	GameObject *FindByGid(const int &gid);
 };
-

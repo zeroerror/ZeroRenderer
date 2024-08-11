@@ -32,48 +32,36 @@ void GameObject::SetGID(const int &gid) { _gid = gid; }
 string GameObject::GetGUID() const { return _guid; }
 void GameObject::SetGUID(const string &guid) { _guid = guid; }
 
-GameObject *GameObject::Find(const string &path)
+GameObject *GameObject::FindByPath(const string &path)
 {
-	return _Find(path, this);
-}
-
-GameObject *GameObject::_Find(const string &path, GameObject *gameObject) const
-{
-	if (gameObject == nullptr)
-	{
-		return nullptr;
-	}
-
-	size_t end1 = path.find_last_of("/");
-	if (end1 == string::npos)
-	{
-		return _Find(path);
-	}
-
-	size_t end2 = path.find_last_of("/");
-	string name;
-	if (end2 == string::npos)
-	{
-		name = path.substr(end1 + 1);
-	}
-	else
-	{
-		name = path.substr(end1 + 1, end2);
-	}
-	string nexPath = path.substr(end1 + 1);
-
-	GameObject *nextGO = _Find(name);
-
-	return _Find(nexPath, nextGO);
-}
-
-GameObject *GameObject::_Find(const string &name) const
-{
-	Transform *res = _transform->Find(name);
+	Transform *res = _transform->FindByPath(path);
 	if (res == nullptr)
 	{
 		return nullptr;
 	}
-
 	return res->gameObject;
+}
+
+GameObject *GameObject::_FindByName(const string &name) const
+{
+	Transform *res = _transform->FindByName(name);
+	if (res == nullptr)
+	{
+		return nullptr;
+	}
+	return res->gameObject;
+}
+
+/**
+ * @brief 深度遍历(dfs: depth first search)所有子节点
+ */
+void GameObject::dfsChildren(std::function<void(GameObject *)> callback)
+{
+	std::function<void(Transform *)> func = [callback](Transform *trans)
+	{
+		GameObject *nextGO = trans->gameObject;
+		callback(nextGO);
+		nextGO->dfsChildren(callback);
+	};
+	_transform->ForEachChild(func);
 }

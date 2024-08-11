@@ -376,8 +376,8 @@ void EditorApp::_InitHierarchy()
 	_hierarchyGameObjectFoldExpandMap = unordered_map<GameObject *, bool>();
 	_hierarchyRootGameObjects = vector<GameObject *>();
 
-	vector<GameObject *> *gameObjects = _runtimeContext->currentScene->gameObjects;
-	for (GameObject *go : *gameObjects)
+	vector<GameObject *> *allGameObjects = _runtimeContext->currentScene->allGameObjects;
+	for (GameObject *go : *allGameObjects)
 	{
 		_hierarchyGameObjectFoldExpandMap.insert(make_pair(go, false));
 		if (go->transform()->GetFather() == nullptr)
@@ -474,17 +474,15 @@ void EditorApp::_ShowInspector(GameObject *go)
 	ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 	if (go == nullptr)
 	{
-		// Clear Inspector
+		// Clear inspector
 		ImGui::Text("No GameObject Choosed");
 	}
 	else
 	{
-		// Display GameObject Name
+		// Display gameObject Name
 		ImGui::Text(go->GetName().c_str());
 		ImGui::Separator();
-		// Display transform and components
-		auto trans = go->transform();
-		_ShowInspectorComponent(trans);
+		// Display components
 		auto coms = go->GetAllComponents();
 		for (Component *com : coms)
 		{
@@ -710,8 +708,8 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode *node)
 					}
 					else
 					{
-						vector<GameObject *> *gameObjects = _runtimeContext->currentScene->gameObjects;
-						gameObjects->push_back(go);
+						vector<GameObject *> *allGameObjects = _runtimeContext->currentScene->allGameObjects;
+						allGameObjects->push_back(go);
 					}
 					_curProjectDetailsChoosedNode = nullptr;
 				}

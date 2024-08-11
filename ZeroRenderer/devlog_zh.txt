@@ -7,3 +7,12 @@ prefabInstanceMeta数据转化运行时GO三步骤
 对应的运行时GO数据转化prefabInstanceMeta相反, 逻辑实现在Serialization
  + 在 RuntimeDomain 中对 void MetaToGameObject(const PrefabInstanceMeta &prefabInstanceMeta, GameObject &gameObject); 添加guid记录
 GameObject与GameObjectMeta的h代码, 修复添加组件接口, 保证transform的正确添加
+
+############## 24/8/11
+修复go子节点未渲染
+transform不记录father和child的序列化gid，直接通过father和child去反序列化
+
+
+
+############## 
+实现List, 替换vector

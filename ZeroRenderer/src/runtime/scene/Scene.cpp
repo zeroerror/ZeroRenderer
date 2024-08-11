@@ -3,45 +3,48 @@
 #include "Serialization.h"
 using namespace Serialization;
 
-Scene::Scene() {
-	gameObjects = new vector<GameObject*>();
+Scene::Scene()
+{
+	rootGameObjects = new vector<GameObject *>();
+	allGameObjects = new vector<GameObject *>();
 }
 
-Scene::~Scene() {
-	for (auto go : *gameObjects) {
+Scene::~Scene()
+{
+	for (auto go : *allGameObjects)
+	{
 		delete go;
 	}
-	delete gameObjects;
+	delete allGameObjects;
 }
 
-GameObject* Scene::Find(const string& path) {
+GameObject *Scene::FindByPath(const string &path)
+{
 	string normalizedPath = FileHelper::NormalizedPath(path);
-	size_t end1 = normalizedPath.find_last_of("/");
-	if (end1 == string::npos) {
-		for (auto go : *gameObjects) {
-			if (go->GetName() == normalizedPath) {
-				return go;
+	auto firstIndex = normalizedPath.find_first_of('/');
+	auto name = normalizedPath.substr(0, firstIndex);
+	vector<GameObject *> *rootGos = rootGameObjects;
+	for (auto go : *rootGos)
+	{
+		if (go->GetName() == name)
+		{
+			string realPath = normalizedPath.substr(firstIndex + 1);
+			GameObject *result = go->FindByPath(realPath);
+			if (result != nullptr)
+			{
+				return result;
 			}
 		}
-
-		return nullptr;
 	}
-
-	normalizedPath = normalizedPath.substr(end1 + 1);
-	for (auto go : *gameObjects) {
-		GameObject* res = go->Find(normalizedPath);
-		if (res != nullptr) {
-			return res;
-		}
-	}
-
-	return nullptr;
 }
 
-GameObject* Scene::Find(const int& gid) {
-	for (auto go : *gameObjects) {
+GameObject *Scene::FindByGid(const int &gid)
+{
+	for (auto go : *allGameObjects)
+	{
 		int id = go->GetGID();
-		if (id == gid) {
+		if (id == gid)
+		{
 			return go;
 		}
 	}

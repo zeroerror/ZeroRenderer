@@ -346,8 +346,8 @@ Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
 		_runtimeContext->currentScene = scene;
 	}
 
-	auto mainCam = scene->Find("Camera")->GetComponent<Camera>();
-	auto directLight = scene->Find("DirectLight")->GetComponent<DirectLight>();
+	auto mainCam = scene->FindByPath("Root/Camera")->GetComponent<Camera>();
+	auto directLight = scene->FindByPath("Root/DirectLight")->GetComponent<DirectLight>();
 	_runtimeContext->mainCamera = mainCam;
 	_runtimeContext->sceneDirectLight = directLight;
 
@@ -366,27 +366,34 @@ Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
 	return scene;
 }
 
+inline void _renderGO(RuntimeDomain *domain, GameObject *go, const Camera &camera)
+{
+	vector<SkinMeshRenderer *> skinMeshRenderers = vector<SkinMeshRenderer *>();
+	go->GetAllComponents<SkinMeshRenderer>(skinMeshRenderers);
+	if (skinMeshRenderers.size() > 0)
+	{
+		for (auto skinMeshRenderer : skinMeshRenderers)
+		{
+			domain->DrawSkinMeshRenderer(skinMeshRenderer, camera);
+		}
+		return;
+	}
+
+	vector<MeshRenderer *> meshRenderers = vector<MeshRenderer *>();
+	go->GetAllComponents<MeshRenderer>(meshRenderers);
+	for (auto meshRenderer : meshRenderers)
+	{
+		domain->DrawMeshRenderer(meshRenderer, camera);
+	}
+}
+
 void RuntimeDomain::RenderScene(const Scene &scene, const Camera &camera)
 {
-	for (auto go : *scene.gameObjects)
+	for (GameObject *go : *scene.rootGameObjects)
 	{
-		vector<SkinMeshRenderer *> skinMeshRenderers = vector<SkinMeshRenderer *>();
-		go->GetAllComponents<SkinMeshRenderer>(skinMeshRenderers);
-		if (skinMeshRenderers.size() > 0)
-		{
-			for (auto skinMeshRenderer : skinMeshRenderers)
-			{
-				DrawSkinMeshRenderer(skinMeshRenderer, camera);
-			}
-			continue;
-		}
-
-		vector<MeshRenderer *> meshRenderers = vector<MeshRenderer *>();
-		go->GetAllComponents<MeshRenderer>(meshRenderers);
-		for (auto meshRenderer : meshRenderers)
-		{
-			DrawMeshRenderer(meshRenderer, camera);
-		}
+		_renderGO(this, go, camera);
+		go->dfsChildren([this, camera](GameObject *childGO)
+						{ _renderGO(this, childGO, camera); });
 	}
 }
 
@@ -633,37 +640,59 @@ void RuntimeDomain::MetaToGameObject(const GameObjectMeta &gameObjectMeta, GameO
 	_MetaToGameObject(gameObjectMeta.componentMetas, gameObject);
 }
 
+/**
+ * @brief 添加 GameObject 到 Scene
+ */
+inline void __AddGoToScene(GameObject *go, Scene &scene)
+{
+	vector<GameObject *> *allGameObjects = scene.allGameObjects;
+	vector<GameObject *> *rootGameObjects = scene.rootGameObjects;
+	allGameObjects->push_back(go);
+	const int fatherGID_forSerialize = go->transform()->fatherGID_forSerialize;
+	if (!fatherGID_forSerialize)
+	{
+		rootGameObjects->push_back(go);
+	}
+	else
+	{
+		for (int i = 0; i < allGameObjects->size(); i++)
+		{
+			GameObject *fatherGO = allGameObjects->at(i);
+			if (fatherGO->GetGID() == fatherGID_forSerialize)
+			{
+				go->transform()->SetFather(fatherGO->transform());
+				break;
+			}
+		}
+	}
+	vector<int> childrenGIDs_forSerialize = go->transform()->childrenGIDs_forSerialize;
+	for (int childGID : childrenGIDs_forSerialize)
+	{
+		for (int i = 0; i < allGameObjects->size(); i++)
+		{
+			GameObject *childGO = allGameObjects->at(i);
+			if (childGO->GetGID() == childGID)
+			{
+				go->transform()->AddChild(childGO->transform());
+				break;
+			}
+		}
+	}
+}
+
 void RuntimeDomain::MetaToScene(const SceneMeta &sceneMeta, Scene &scene)
 {
 	for (GameObjectMeta *meta : sceneMeta.gameObjectMetas)
 	{
 		GameObject *go = new GameObject();
 		MetaToGameObject(*meta, *go);
-		scene.gameObjects->push_back(go);
+		__AddGoToScene(go, scene);
 	}
-
 	for (PrefabInstanceMeta *meta : sceneMeta.prefabInstanceMetas)
 	{
 		GameObject *go = new GameObject();
 		MetaToGameObject(*meta, *go);
-		scene.gameObjects->push_back(go);
-	}
-
-	// Serialize Transform Father And Children.
-	for (auto go : *scene.gameObjects)
-	{
-		Transform *trans = go->transform();
-		Scene *curScene = _runtimeContext->currentScene;
-		for (auto childGID : trans->childrenGIDs_forSerialize)
-		{
-			GameObject *childGO = curScene->Find(childGID);
-			if (childGO == nullptr)
-			{
-				cout << "RuntimeDomain::MetaToTransform: Can't find child gameobject by gid: " << childGID << endl;
-				continue;
-			}
-			trans->AddChild(childGO->transform());
-		}
+		__AddGoToScene(go, scene);
 	}
 }
 

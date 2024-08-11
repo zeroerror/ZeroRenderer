@@ -3,10 +3,12 @@
 class Transform;
 class Component;
 
-#include <vector>
-#include <sstream>
 #include "Camera.h"
 #include "DirectLight.h"
+
+#include <vector>
+#include <sstream>
+#include <functional>
 
 using namespace std;
 
@@ -19,7 +21,12 @@ public:
 
 	Transform *transform() const;
 	vector<Component *> GetAllComponents();
-	GameObject *Find(const string &path);
+
+	/**
+	 * @brief 根据相对路径查找GameObject
+	 * @param relativePath 相对路径, 如: "root/child1/child2"
+	 */
+	GameObject *FindByPath(const string &relativePath);
 
 	string GetName() const;
 	void SetName(const string &name);
@@ -104,12 +111,20 @@ public:
 		}
 	}
 
+	/**
+	 * @brief 深度遍历(dfs: depth first search)所有子节点
+	 */
+	void dfsChildren(std::function<void(GameObject *)> callback);
+
 private:
 	string _name;
 	int _gid;
 	string _guid;
 	Transform *_transform;
 	vector<Component *> _components;
-	GameObject *_Find(const string &path, GameObject *gameObject) const;
-	GameObject *_Find(const string &name) const;
+
+	/**
+	 * @brief 通过名字查找GameObject
+	 */
+	GameObject *_FindByName(const string &name) const;
 };
