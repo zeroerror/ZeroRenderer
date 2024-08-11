@@ -32,7 +32,7 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 0 10 0
+position: -15 10 -30
 rotation: 0.25 0.25 -0.0669873 0.933013
 scale: 1 1 1
 --ComponentEnd

@@ -522,7 +522,7 @@ void EditorDatabase::GenerateDefaultSceneMeta()
 	directLightGOMeta->name = "DirectLight";
 	DirectLightMeta *directLightMeta = directLightGOMeta->AddComponentMeta<DirectLightMeta>();
 	directLightMeta->shadowType = ShadowType::Hard;
-	directLightGOMeta->transformMeta->position = vec3(0, 10.0f, 0);
+	directLightGOMeta->transformMeta->position = vec3(-15.0f, 10.0f, -30.0f);
 	directLightGOMeta->transformMeta->rotation = quat(vec3(radians(30.0f), radians(30.0f), radians(0.0f)));
 	directLightMeta->nearPlane = cameraMeta->nearPlane;
 	directLightMeta->farPlane = cameraMeta->farPlane;
