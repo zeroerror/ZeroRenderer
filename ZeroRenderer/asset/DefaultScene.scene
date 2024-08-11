@@ -8,8 +8,8 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: -17.5021 24.7817 -49.0829
-rotation: 0.135005 0.0460814 -0.00628604 0.989758
+position: 0 20 -10
+rotation: 0.258819 0 0 0.965926
 scale: 1 1 1
 --ComponentEnd
 --ComponentStart:
@@ -17,7 +17,7 @@ componentType: ComponentType_Camera
 cameraType: 2
 nearPlane: 0.1
 farPlane: 100
-orthoSize: 20
+orthoSize: 0
 scrWidth: 1920
 scrHeight: 1080
 fov: 45
@@ -32,8 +32,8 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: -14.0699 22.3306 -39.916
-rotation: 0.188807 0.101286 -0.019583 0.976574
+position: 0 10 0
+rotation: 0.25 0.25 -0.0669873 0.933013
 scale: 1 1 1
 --ComponentEnd
 --ComponentStart:
@@ -55,7 +55,7 @@ childrenGIDs:
 ------childrenGIDs
 position: 0 -0.05 0
 rotation: 0 0 0 1
-scale: 60 0.1 60
+scale: 20 0.1 30
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshFilter
@@ -65,7 +65,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 
+materialGUID: 81689f3660ca1299
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -80,7 +80,7 @@ childrenGIDs:
 ------childrenGIDs
 position: -8 2.5 0
 rotation: 0 0 0 1
-scale: 1 10 5
+scale: 1 5 10
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshFilter
@@ -90,7 +90,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 
+materialGUID: 81689f3660ca1299
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -115,7 +115,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 
+materialGUID: 81689f3660ca1299
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -140,7 +140,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 
+materialGUID: 81689f3660ca1299
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -165,7 +165,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 
+materialGUID: 81689f3660ca1299
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -190,7 +190,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 
+materialGUID: 81689f3660ca1299
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -232,26 +232,9 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: -11 0 0
-rotation: 0 0 0 1
-scale: 0.25 0.25 0.25
---ComponentEnd
-====GameObjectEnd
-====PrefabInstanceEnd
-
-====PrefabInstanceStart:
-guid: d142966ddb65f43c
-====GameObjectStart:
-gid: 0
-name: BANK
---ComponentStart:
-componentType: ComponentType_Transform
-fatherGID: 0
-childrenGIDs: 
-------childrenGIDs
 position: 0 0 0
 rotation: 0 0 0 1
-scale: 1 1 1
+scale: 0.25 0.25 0.25
 --ComponentEnd
 ====GameObjectEnd
 ====PrefabInstanceEnd

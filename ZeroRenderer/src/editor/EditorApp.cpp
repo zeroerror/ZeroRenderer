@@ -713,6 +713,7 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode *node)
 						vector<GameObject *> *gameObjects = _runtimeContext->currentScene->gameObjects;
 						gameObjects->push_back(go);
 					}
+					_curProjectDetailsChoosedNode = nullptr;
 				}
 			}
 		}
