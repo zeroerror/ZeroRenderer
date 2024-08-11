@@ -51,3 +51,45 @@ GameObject *Scene::FindByGid(const int &gid)
 
 	return nullptr;
 }
+
+/**
+ * @brief 添加 GameObject 到 Scene
+ */
+void Scene::AddGameObject(GameObject *go)
+{
+	if (!go->GetGID()) {
+		go->SetGID(allGameObjects->size() + 1);
+	}
+		
+	allGameObjects->push_back(go);
+	const int fatherGID_forSerialize = go->transform()->fatherGID_forSerialize;
+	if (!fatherGID_forSerialize)
+	{
+		rootGameObjects->push_back(go);
+	}
+	else
+	{
+		for (int i = 0; i < allGameObjects->size(); i++)
+		{
+			GameObject *fatherGO = allGameObjects->at(i);
+			if (fatherGO->GetGID() == fatherGID_forSerialize)
+			{
+				go->transform()->SetFather(fatherGO->transform());
+				break;
+			}
+		}
+	}
+	vector<int> childrenGIDs_forSerialize = go->transform()->childrenGIDs_forSerialize;
+	for (int childGID : childrenGIDs_forSerialize)
+	{
+		for (int i = 0; i < allGameObjects->size(); i++)
+		{
+			GameObject *childGO = allGameObjects->at(i);
+			if (childGO->GetGID() == childGID)
+			{
+				go->transform()->AddChild(childGO->transform());
+				break;
+			}
+		}
+	}
+}

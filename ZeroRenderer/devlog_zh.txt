@@ -11,6 +11,7 @@ GameObject与GameObjectMeta的h代码, 修复添加组件接口, 保证transform
 ############## 24/8/11
 修复go子节点未渲染
 transform不记录father和child的序列化gid，直接通过father和child去反序列化
+TRS根据父子关系，节点TRS改变时 更新所有子节点世界TRS，同时更新本地TRS
 
 
 

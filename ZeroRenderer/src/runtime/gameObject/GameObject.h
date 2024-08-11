@@ -114,7 +114,7 @@ public:
 	/**
 	 * @brief 深度遍历(dfs: depth first search)所有子节点
 	 */
-	void dfsChildren(std::function<void(GameObject *)> callback);
+	void DFSChildren(std::function<void(GameObject *)> callback);
 
 private:
 	string _name;

@@ -392,7 +392,7 @@ void RuntimeDomain::RenderScene(const Scene &scene, const Camera &camera)
 	for (GameObject *go : *scene.rootGameObjects)
 	{
 		_renderGO(this, go, camera);
-		go->dfsChildren([this, camera](GameObject *childGO)
+		go->DFSChildren([this, camera](GameObject *childGO)
 						{ _renderGO(this, childGO, camera); });
 	}
 }
@@ -640,59 +640,19 @@ void RuntimeDomain::MetaToGameObject(const GameObjectMeta &gameObjectMeta, GameO
 	_MetaToGameObject(gameObjectMeta.componentMetas, gameObject);
 }
 
-/**
- * @brief 添加 GameObject 到 Scene
- */
-inline void __AddGoToScene(GameObject *go, Scene &scene)
-{
-	vector<GameObject *> *allGameObjects = scene.allGameObjects;
-	vector<GameObject *> *rootGameObjects = scene.rootGameObjects;
-	allGameObjects->push_back(go);
-	const int fatherGID_forSerialize = go->transform()->fatherGID_forSerialize;
-	if (!fatherGID_forSerialize)
-	{
-		rootGameObjects->push_back(go);
-	}
-	else
-	{
-		for (int i = 0; i < allGameObjects->size(); i++)
-		{
-			GameObject *fatherGO = allGameObjects->at(i);
-			if (fatherGO->GetGID() == fatherGID_forSerialize)
-			{
-				go->transform()->SetFather(fatherGO->transform());
-				break;
-			}
-		}
-	}
-	vector<int> childrenGIDs_forSerialize = go->transform()->childrenGIDs_forSerialize;
-	for (int childGID : childrenGIDs_forSerialize)
-	{
-		for (int i = 0; i < allGameObjects->size(); i++)
-		{
-			GameObject *childGO = allGameObjects->at(i);
-			if (childGO->GetGID() == childGID)
-			{
-				go->transform()->AddChild(childGO->transform());
-				break;
-			}
-		}
-	}
-}
-
 void RuntimeDomain::MetaToScene(const SceneMeta &sceneMeta, Scene &scene)
 {
 	for (GameObjectMeta *meta : sceneMeta.gameObjectMetas)
 	{
 		GameObject *go = new GameObject();
 		MetaToGameObject(*meta, *go);
-		__AddGoToScene(go, scene);
+		_runtimeContext->currentScene->AddGameObject(go);
 	}
 	for (PrefabInstanceMeta *meta : sceneMeta.prefabInstanceMetas)
 	{
 		GameObject *go = new GameObject();
 		MetaToGameObject(*meta, *go);
-		__AddGoToScene(go, scene);
+		_runtimeContext->currentScene->AddGameObject(go);
 	}
 }
 

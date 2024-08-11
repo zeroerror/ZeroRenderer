@@ -426,7 +426,23 @@ void EditorApp::_ShowHierarchy(const Transform *tran, int depth)
 	{
 		label = "Unknown";
 	}
-	if (ImGui::Selectable(label, _curHierarchyChoosedGameObject == go))
+	const int gid = go->GetGID();
+	const string gidStr = to_string(gid);
+	const size_t gidStrLen = gidStr.length();
+	const size_t labelLen = strlen(label);
+	char *labelChars = new char[gidStrLen + labelLen + 1];
+	// 遍历设置每个字符
+	for (int i = 0; i < labelLen; i++)
+	{
+		labelChars[i] = label[i];
+	}
+	for (int i = 0; i < gidStrLen; i++)
+	{
+		labelChars[labelLen + i] = gidStr[i];
+	}
+	labelChars[gidStrLen + labelLen] = '\0';
+
+	if (ImGui::Selectable(labelChars, _curHierarchyChoosedGameObject == go))
 	{
 		double nowClickTime = glfwGetTime();
 		double clickTimeOffset = nowClickTime - _hierarchyGameObjectClickTime;
@@ -446,6 +462,7 @@ void EditorApp::_ShowHierarchy(const Transform *tran, int depth)
 
 		_curHierarchyChoosedGameObject = go;
 	}
+	delete[] labelChars;
 
 	// Folder is expanded
 	auto iter = _hierarchyGameObjectFoldExpandMap.find(go);
@@ -702,15 +719,8 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode *node)
 				GameObject *go = _runtimeDomain->assetToGameObject(guid);
 				if (go)
 				{
-					if (_curHierarchyChoosedGameObject != nullptr)
-					{
-						go->transform()->SetFather(_curHierarchyChoosedGameObject->transform());
-					}
-					else
-					{
-						vector<GameObject *> *allGameObjects = _runtimeContext->currentScene->allGameObjects;
-						allGameObjects->push_back(go);
-					}
+					go->transform()->SetFather(_curHierarchyChoosedGameObject->transform());
+					_runtimeContext->currentScene->AddGameObject(go);
 					_curProjectDetailsChoosedNode = nullptr;
 				}
 			}

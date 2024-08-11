@@ -20,26 +20,116 @@ public:
 	Transform();
 	~Transform();
 
+	/**
+	 * @brief 获取世界坐标系下的坐标
+	 */
 	vec3 GetPosition() const;
+
+	/**
+	 * @brief 设置世界坐标系下的坐标
+	 * @param newPosition 新的世界坐标系下的坐标
+	 */
 	void SetPosition(const vec3 &newPosition);
+
+	/**
+	 * @brief 获取世界坐标系下的旋转
+	 */
 	quat GetRotation() const;
+
+	/**
+	 * @brief 设置世界坐标系下的旋转
+	 * @param newRotation 新的世界坐标系下的旋转
+	 */
 	void SetRotation(const quat &newRotation);
+
+	/**
+	 * @brief 设置世界坐标系下的旋转
+	 * @param eulerAngles 新的世界坐标系下的旋转
+	 */
 	void SetRotation(const vec3 &eulerAngles);
 
+	/**
+	 * @brief 获取世界坐标系下的缩放
+	 */
 	vec3 GetScale() const;
+
+	/**
+	 * @brief 设置世界坐标系下的缩放
+	 * @param newScale 新的世界坐标系下的缩放
+	 */
 	void SetScale(const vec3 &newScale);
+
+	/**
+	 * @brief 获取本地坐标系下的坐标
+	 */
+	vec3 GetLocalPosition() const;
+
+	/**
+	 * @brief 设置本地坐标系下的坐标
+	 * @param newPosition 新的本地坐标系下的坐标
+	 */
+	void SetLocalPosition(const vec3 &newPosition);
+
+	/**
+	 * @brief 获取本地坐标系下的旋转
+	 */
+	quat GetLocalRotation() const;
+
+	/**
+	 * @brief 设置本地坐标系下的旋转
+	 * @param newRotation 新的本地坐标系下的旋转
+	 */
+	void SetLocalRotation(const quat &newRotation);
+
+	/**
+	 * @brief 设置本地坐标系下的旋转
+	 * @param eulerAngles 新的本地坐标系下的旋转
+	 */
+	void SetLocalRotation(const vec3 &eulerAngles);
+
+	/**
+	 * @brief 获取本地坐标系下的缩放
+	 */
+	vec3 GetLocalScale() const;
+
+	/**
+	 * @brief 设置本地坐标系下的缩放
+	 * @param newScale 新的本地坐标系下的缩放
+	 */
+	void SetLocalScale(const vec3 &newScale);
+
+	/**
+	 * @brief 获取世界坐标系下的前方向
+	 */
 	vec3 GetForward() const;
+
+	/**
+	 * @brief 获取世界坐标系下的上方向
+	 */
 	vec3 GetUp() const;
+
+	/**
+	 * @brief 获取世界坐标系下的右方向
+	 */
 	vec3 GetRight() const;
 
-private:
-	vec3 m_forward;
-	vec3 m_up;
-	vec3 m_right;
+	/**
+	 * @brief 深度优先遍历所有子节点
+	 */
+	void DFSChildren(std::function<void(Transform *)> callback);
 
+private:
 	vec3 _position;
 	quat _rotation;
 	vec3 _scale;
+
+	vec3 _localPosition;
+	quat _localRotation;
+	vec3 _localScale;
+
+	vec3 m_forward;
+	vec3 m_up;
+	vec3 m_right;
 
 public:
 	/**
@@ -97,6 +187,26 @@ public:
 	 * @param gid gid
 	 */
 	Transform *FindByGid(const int gid) const;
+
+	/**
+	 * @brief 更新本地坐标系下的坐标
+	 */
+	void UpdateLocalTRS_T();
+
+	/**
+	 * @brief 更新本地坐标系下的坐标
+	 */
+	void UpdateLocalTRS_R();
+
+	/**
+	 * @brief 更新本地坐标系下的缩放
+	 */
+	void UpdateLocalTRS_S();
+
+	/**
+	 * @brief 更新本地坐标系下的TRS
+	 */
+	void UpdateLocalTRS();
 
 	/**
 	 * @brief 获取子节点数量

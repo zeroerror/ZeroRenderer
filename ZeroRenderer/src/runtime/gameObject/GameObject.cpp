@@ -55,13 +55,13 @@ GameObject *GameObject::_FindByName(const string &name) const
 /**
  * @brief 深度遍历(dfs: depth first search)所有子节点
  */
-void GameObject::dfsChildren(std::function<void(GameObject *)> callback)
+void GameObject::DFSChildren(std::function<void(GameObject *)> callback)
 {
 	std::function<void(Transform *)> func = [callback](Transform *trans)
 	{
 		GameObject *nextGO = trans->gameObject;
 		callback(nextGO);
-		nextGO->dfsChildren(callback);
+		nextGO->DFSChildren(callback);
 	};
 	_transform->ForEachChild(func);
 }

@@ -26,4 +26,6 @@ public:
 	 * @param gid gid
 	 */
 	GameObject *FindByGid(const int &gid);
+
+	void AddGameObject(GameObject *go);
 };
