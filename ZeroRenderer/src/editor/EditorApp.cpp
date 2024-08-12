@@ -374,16 +374,11 @@ void EditorApp::_TickSceneView(const float &dt)
 void EditorApp::_InitHierarchy()
 {
 	_hierarchyGameObjectFoldExpandMap = unordered_map<GameObject *, bool>();
-	_hierarchyRootGameObjects = vector<GameObject *>();
 
-	vector<GameObject *> *allGameObjects = _runtimeContext->currentScene->allGameObjects;
+	auto allGameObjects = _runtimeContext->currentScene->allGameObjects;
 	for (GameObject *go : *allGameObjects)
 	{
 		_hierarchyGameObjectFoldExpandMap.insert(make_pair(go, false));
-		if (go->transform()->GetFather() == nullptr)
-		{
-			_hierarchyRootGameObjects.push_back(go);
-		}
 	}
 }
 
@@ -402,7 +397,7 @@ void EditorApp::_ShowHierarchyCanvas()
 {
 	ImGui::Begin("Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
 
-	for (GameObject *go : _hierarchyRootGameObjects)
+	for (GameObject *go : *_runtimeContext->currentScene->rootGameObjects)
 	{
 		Transform *curTrans = go->transform();
 		_ShowHierarchy(curTrans, 0);
@@ -719,7 +714,7 @@ void EditorApp::_ShowProjectDetailsPanel(const AssetTreeNode *node)
 				GameObject *go = _runtimeDomain->assetToGameObject(guid);
 				if (go)
 				{
-					go->transform()->SetFather(_curHierarchyChoosedGameObject->transform());
+					if(_curHierarchyChoosedGameObject) go->transform()->SetFather(_curHierarchyChoosedGameObject->transform());
 					_runtimeContext->currentScene->AddGameObject(go);
 					_curProjectDetailsChoosedNode = nullptr;
 				}

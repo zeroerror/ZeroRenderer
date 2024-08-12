@@ -76,7 +76,6 @@ private:
 private:
 	GameObject *_curHierarchyChoosedGameObject;
 	unordered_map<GameObject *, bool> _hierarchyGameObjectFoldExpandMap;
-	vector<GameObject *> _hierarchyRootGameObjects;
 	double _hierarchyGameObjectClickTime;
 
 	/**

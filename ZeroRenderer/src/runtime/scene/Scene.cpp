@@ -62,24 +62,25 @@ void Scene::AddGameObject(GameObject *go)
 	}
 		
 	allGameObjects->push_back(go);
-	const int fatherGID_forSerialize = go->transform()->fatherGID_forSerialize;
+	Transform* trans = go->transform();
+	const int fatherGID_forSerialize = trans->fatherGID_forSerialize;
 	if (!fatherGID_forSerialize)
 	{
 		rootGameObjects->push_back(go);
 	}
-	else
+	else if(!trans->GetFather())
 	{
 		for (int i = 0; i < allGameObjects->size(); i++)
 		{
 			GameObject *fatherGO = allGameObjects->at(i);
 			if (fatherGO->GetGID() == fatherGID_forSerialize)
 			{
-				go->transform()->SetFather(fatherGO->transform());
+				trans->SetFather(fatherGO->transform());
 				break;
 			}
 		}
 	}
-	vector<int> childrenGIDs_forSerialize = go->transform()->childrenGIDs_forSerialize;
+	vector<int> childrenGIDs_forSerialize = trans->childrenGIDs_forSerialize;
 	for (int childGID : childrenGIDs_forSerialize)
 	{
 		for (int i = 0; i < allGameObjects->size(); i++)
@@ -87,7 +88,7 @@ void Scene::AddGameObject(GameObject *go)
 			GameObject *childGO = allGameObjects->at(i);
 			if (childGO->GetGID() == childGID)
 			{
-				go->transform()->AddChild(childGO->transform());
+				trans->AddChild(childGO->transform());
 				break;
 			}
 		}
