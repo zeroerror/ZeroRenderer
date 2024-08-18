@@ -31,6 +31,7 @@ void RuntimeDomain::PreprocessModelMeshes()
 	// Load all models'meshes to mesh repo.
 	vector<string> suffixes = vector<string>();
 	suffixes.push_back(FileSuffix::SUFFIX_OBJ);
+	suffixes.push_back(FileSuffix::SUFFIX_FBX);
 	unsigned int suffixFlag = FileSuffix::ToFileSuffixFlag(suffixes);
 
 	vector<string> filePaths;

@@ -8,8 +8,8 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 0 20 -10
-rotation: 0.258819 0 0 0.965926
+position: -15.6073 11.9403 -20.8919
+rotation: 0.119794 0.343267 -0.0441942 0.930457
 scale: 1 1 1
 --ComponentEnd
 --ComponentStart:
@@ -53,9 +53,9 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 0 -0.05 0
+position: 0 -1 0
 rotation: 0 0 0 1
-scale: 20 0.1 30
+scale: 50 2 30
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshFilter
@@ -65,7 +65,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 81689f3660ca1299
+materialGUID: 
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -78,9 +78,9 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: -8 2.5 0
+position: 16 2.5 -8
 rotation: 0 0 0 1
-scale: 1 5 10
+scale: 0.1 5 15
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshFilter
@@ -90,7 +90,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 81689f3660ca1299
+materialGUID: 
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -103,9 +103,9 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 0 2.5 -8
+position: 0 2.5 -15
 rotation: 0 0 0 1
-scale: 10 5 1
+scale: 30 5 0.1
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshFilter
@@ -115,7 +115,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 81689f3660ca1299
+materialGUID: 
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -140,7 +140,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 81689f3660ca1299
+materialGUID: 
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -153,9 +153,9 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 4 1 -4
+position: 12 1 -2
 rotation: 0 0 0 1
-scale: 2 2 2
+scale: 1 5 1
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshFilter
@@ -165,7 +165,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 81689f3660ca1299
+materialGUID: 
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -190,7 +190,7 @@ meshIndex: -1001
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_MeshRenderer
-materialGUID: 81689f3660ca1299
+materialGUID: 
 --ComponentEnd
 --ComponentEnd
 ====GameObjectEnd
@@ -202,6 +202,42 @@ name: Root
 componentType: ComponentType_Transform
 fatherGID: 0
 childrenGIDs: 
+childGID: 1
+childGID: 1
+childGID: 2
+childGID: 3
+childGID: 4
+childGID: 5
+childGID: 6
+childGID: 7
+childGID: 8
+childGID: 9
+childGID: 1
+childGID: 8
+childGID: 1
+childGID: 2
+childGID: 3
+childGID: 4
+childGID: 5
+childGID: 6
+childGID: 7
+childGID: 8
+childGID: 1
+childGID: 1
+childGID: 3
+childGID: 4
+childGID: 5
+childGID: 5
+childGID: 7
+childGID: 7
+childGID: 1
+childGID: 2
+childGID: 3
+childGID: 4
+childGID: 5
+childGID: 6
+childGID: 7
+childGID: 8
 childGID: 1
 childGID: 2
 childGID: 3
@@ -232,9 +268,43 @@ componentType: ComponentType_Transform
 fatherGID: 10
 childrenGIDs: 
 ------childrenGIDs
-position: 0 0 0
-rotation: 0 0 0 1
+position: 3 0 -3
+rotation: 0 0.422618 0 0.906308
 scale: 0.25 0.25 0.25
+--ComponentEnd
+====GameObjectEnd
+====PrefabInstanceEnd
+
+====PrefabInstanceStart:
+guid: d142966ddb65f43c
+====GameObjectStart:
+gid: 11
+name: BANK
+--ComponentStart:
+componentType: ComponentType_Transform
+fatherGID: 0
+childrenGIDs: 
+------childrenGIDs
+position: 15 5 -10
+rotation: 0 0 0 1
+scale: 1 1 1
+--ComponentEnd
+====GameObjectEnd
+====PrefabInstanceEnd
+
+====PrefabInstanceStart:
+guid: f0e9f6fe1cd076f3
+====GameObjectStart:
+gid: 12
+name: name:
+--ComponentStart:
+componentType: ComponentType_Transform
+fatherGID: 0
+childrenGIDs: 
+------childrenGIDs
+position: 5 10 0
+rotation: 0.5 0.5 -0.5 0.5
+scale: 5 5 5
 --ComponentEnd
 ====GameObjectEnd
 ====PrefabInstanceEnd

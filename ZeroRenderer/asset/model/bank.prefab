@@ -1,57 +1,140 @@
 --ComponentStart:
 componentType: ComponentType_Transform
+fatherGID: 0
+childrenGIDs: 
+------childrenGIDs
 position: 0 0 0
 rotation: 0 0 0 1
+scale: 1 1 1
+--ComponentEnd
+--ComponentStart:
+componentType: ComponentType_Transform
+fatherGID: 0
+childrenGIDs: 
+------childrenGIDs
+position: 0 0 0
+rotation: 0 0 0 1
+scale: 1 1 1
 --ComponentEnd
 --ComponentStart:
 componentType: ComponentType_SkinMeshRenderer
 componentType: ComponentType_MeshFilter
-modelGUID: 3d7168e8f3a8700a
+modelGUID: b659251d5060d422
 meshIndex: 0
 --ComponentEnd
 componentType: ComponentType_MeshFilter
-modelGUID: 3d7168e8f3a8700a
+modelGUID: b659251d5060d422
 meshIndex: 1
 --ComponentEnd
 componentType: ComponentType_MeshFilter
-modelGUID: 3d7168e8f3a8700a
+modelGUID: b659251d5060d422
 meshIndex: 2
 --ComponentEnd
 componentType: ComponentType_MeshFilter
-modelGUID: 3d7168e8f3a8700a
+modelGUID: b659251d5060d422
 meshIndex: 3
 --ComponentEnd
 componentType: ComponentType_MeshFilter
-modelGUID: 3d7168e8f3a8700a
+modelGUID: b659251d5060d422
 meshIndex: 4
 --ComponentEnd
 componentType: ComponentType_MeshFilter
-modelGUID: 3d7168e8f3a8700a
+modelGUID: b659251d5060d422
 meshIndex: 5
 --ComponentEnd
 componentType: ComponentType_MeshFilter
-modelGUID: 3d7168e8f3a8700a
+modelGUID: b659251d5060d422
 meshIndex: 6
 --ComponentEnd
-componentType: ComponentType_MeshRenderer
-materialGUID: 699cdea50bc3d311
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 7
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 8
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 9
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 10
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 11
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 12
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 13
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 14
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 15
+--ComponentEnd
+componentType: ComponentType_MeshFilter
+modelGUID: b659251d5060d422
+meshIndex: 16
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: e6f09c112bbdc18b
+materialGUID: 5126c564af41107f
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: 5b26cb4fefc8f640
+materialGUID: 5126c564af41107f
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: 4638d47e3399cdd3
+materialGUID: 5126c564af41107f
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: 3f2a5fb7ff65d765
+materialGUID: 5126c564af41107f
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: a7117f206cb7c0c3
+materialGUID: 5126c564af41107f
 --ComponentEnd
 componentType: ComponentType_MeshRenderer
-materialGUID: bf38f2cd3e20d266
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
+--ComponentEnd
+componentType: ComponentType_MeshRenderer
+materialGUID: 5126c564af41107f
 --ComponentEnd
 --ComponentEnd
