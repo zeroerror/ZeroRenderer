@@ -41,7 +41,7 @@ componentType: ComponentType_DirectLight
 color: 1 1 1
 shadowType: 1
 nearPlane: 0.1
-farPlane: 100
+farPlane: 1000
 --ComponentEnd
 ====GameObjectEnd
 

@@ -17,6 +17,8 @@ RuntimeContext::RuntimeContext()
 	errorMat->shader = _shaderRepo->ErrorShader();
 	errorMat->diffuseTexture = _textureRepo->DefaultDiffuseTexture();
 	_materialRepo->errorMat = errorMat;
+
+	currentSceneShadowMapSize = 4096;
 }
 
 RuntimeContext::~RuntimeContext()

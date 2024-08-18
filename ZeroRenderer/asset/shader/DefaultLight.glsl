@@ -79,9 +79,28 @@ float getShadowFactor()
     // 将光源空间的位置转化为标准化设备坐标
     vec3 shadowCoord = lightSpacePos.xyz / lightSpacePos.w;
     shadowCoord = shadowCoord * 0.5 + 0.5; // 从 [-1, 1] 范围转换到 [0, 1]
-    // 取样深度贴图
-    float sampleDepth = texture(u_depthMap, shadowCoord.xy).r;
-    return (shadowCoord.z > sampleDepth + 0.001)? 0.0 : 1.0;
+
+    float shadow = 0.0;
+    float totalSamples = 0.0;
+
+    // 定义采样偏移量
+    vec2 texelSize = 1.0 / textureSize(u_depthMap, 0);
+
+    // 进行 PCF 采样，例如 3x3 采样
+    int samples = 1;
+    for (int x = -samples; x <= samples; x++) 
+    {
+        for (int y = -samples; y <= samples; y++) 
+        {
+            vec2 offset = vec2(x, y) * texelSize;
+            float sampleDepth = texture(u_depthMap, shadowCoord.xy + offset).r;
+            shadow += (shadowCoord.z > sampleDepth + 0.001)? 0.1 : 1.0;
+            totalSamples++;
+        }
+    }
+
+    // 计算平均阴影值
+    return shadow / totalSamples;
 }
 
 // 计算漫反射

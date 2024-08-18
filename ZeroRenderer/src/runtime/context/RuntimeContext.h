@@ -8,30 +8,37 @@
 #include "Camera.h"
 #include "DirectLight.h"
 
-class RuntimeContext {
+class RuntimeContext
+{
 
 public:
 	RuntimeContext();
 	~RuntimeContext();
 
-	MaterialRepo* GetMaterialRepo();
-	ShaderRepo* GetShaderRepo();
-	TextureRepo* GetTextureRepo();
-	MeshRepo* GetMeshRepo();
-	SceneRepo* GetSceneRepo();
+	MaterialRepo *GetMaterialRepo();
+	ShaderRepo *GetShaderRepo();
+	TextureRepo *GetTextureRepo();
+	MeshRepo *GetMeshRepo();
+	SceneRepo *GetSceneRepo();
 
-	Camera* mainCamera;
-	DirectLight* sceneDirectLight;
-	Scene* currentScene;
+	/** 主相机 */
+	Camera *mainCamera;
+	/** 主光源 */
+	DirectLight *sceneDirectLight;
+	/** 当前场景 */
+	Scene *currentScene;
+
+	/** 阴影贴图的FBO */
 	unsigned int currentSceneShadowMapFBO;
+	/** 阴影贴图的纹理 */
 	unsigned int currentSceneShadowMapTexture;
+	/** 阴影贴图的大小 */
+	unsigned int currentSceneShadowMapSize;
 
 private:
-	MaterialRepo* _materialRepo;
-	ShaderRepo* _shaderRepo;
-	TextureRepo* _textureRepo;
-	MeshRepo* _meshRepo;
-	SceneRepo* _sceneRepo;
-
+	MaterialRepo *_materialRepo;
+	ShaderRepo *_shaderRepo;
+	TextureRepo *_textureRepo;
+	MeshRepo *_meshRepo;
+	SceneRepo *_sceneRepo;
 };
-

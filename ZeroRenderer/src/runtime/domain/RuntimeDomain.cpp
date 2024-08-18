@@ -347,8 +347,8 @@ Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
 		_runtimeContext->currentScene = scene;
 	}
 
-	auto mainCam = scene->FindByPath("Root/Camera")->GetComponent<Camera>();
-	auto directLight = scene->FindByPath("Root/DirectLight")->GetComponent<DirectLight>();
+	Camera *mainCam = scene->FindByPath("Root/Camera")->GetComponent<Camera>();
+	DirectLight *directLight = scene->FindByPath("Root/DirectLight")->GetComponent<DirectLight>();
 	_runtimeContext->mainCamera = mainCam;
 	_runtimeContext->sceneDirectLight = directLight;
 
@@ -357,7 +357,7 @@ Scene *RuntimeDomain::OpenScene(const string &path, SceneMeta &resSceneMeta)
 	glBindFramebuffer(GL_FRAMEBUFFER, _runtimeContext->currentSceneShadowMapFBO);
 	glGenTextures(1, &_runtimeContext->currentSceneShadowMapTexture);
 	glBindTexture(GL_TEXTURE_2D, _runtimeContext->currentSceneShadowMapTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, mainCam->scrWidth, mainCam->scrHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, _runtimeContext->currentSceneShadowMapSize, _runtimeContext->currentSceneShadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -413,7 +413,10 @@ void RuntimeDomain::RendererSceneShadowMap(const Scene &scene, const Camera &cam
 	dlCam.transform->SetRotation(dl->transform->GetRotation());
 	dlCam.cameraType = CameraType::None;
 	dlCam.orthoSize = dl->orthoSize;
+	// set viewport
+	glViewport(0, 0, _runtimeContext->currentSceneShadowMapSize, _runtimeContext->currentSceneShadowMapSize);
 	RenderScene(scene, dlCam);
+	glViewport(0, 0, camera.scrWidth, camera.scrHeight);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
